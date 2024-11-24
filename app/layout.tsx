@@ -18,7 +18,6 @@ export default function RootLayout({
       <html lang="en">
         <body>
           {children}
-          <Toaster position="top-right" />
         </body>
       </html>
     </ClerkProvider>

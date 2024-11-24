@@ -1,103 +1,108 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useSignUp } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
-import { createUser } from "@/actions/createUser";
+import { useState, useCallback } from 'react'
+import { useSignUp } from '@clerk/nextjs'
+import { useRouter } from 'next/navigation'
+import { toast } from 'react-hot-toast'
+import { createUser } from '@/actions/createUser'
 
 export function useCustomSignUp() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [error, setError] = useState("");
-  const [verifying, setVerifying] = useState(false);
-  const [code, setCode] = useState("");
+  const [isLoading, setIsLoading] = useState(false)
+  const [verifying, setVerifying] = useState(false)
+  const [otp, setOtp] = useState(['', '', '', '', '', ''])
+  const { isLoaded, signUp, setActive } = useSignUp()
+  const router = useRouter()
 
-  const { isLoaded, signUp, setActive } = useSignUp();
-  const router = useRouter();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-
-    if (!isLoaded) return;
+  const handleSubmit = useCallback(async (data: {
+    firstName: string
+    lastName: string
+    email: string
+    password: string
+  }) => {
+    if (!isLoaded) return
+    setIsLoading(true)
 
     try {
       await signUp.create({
-        firstName,
-        lastName,
-        emailAddress: email,
-        password,
-      });
+        firstName: data.firstName,
+        lastName: data.lastName,
+        emailAddress: data.email,
+        password: data.password,
+      })
 
-      // Send the email
-      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
-
-      // Change the UI to the pending section
-      setVerifying(true);
+      await signUp.prepareEmailAddressVerification({ strategy: "email_code" })
+      setVerifying(true)
     } catch (err: any) {
-      console.error(JSON.stringify(err, null, 2));
-      setError(err.errors[0].message);
+      console.error(JSON.stringify(err, null, 2))
+      if (err.errors?.[0]?.code === 'form_identifier_exists') {
+        toast.error('An account with this email already exists. Redirecting to sign-in...')
+        router.push('/sign-in')
+      } else {
+        toast.error(err.errors?.[0]?.message || 'An error occurred during sign up.')
+      }
+    } finally {
+      setIsLoading(false)
     }
-  };
+  }, [isLoaded, signUp, router])
 
-  const handleVerify = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-
-    if (!isLoaded) return;
+  const handleVerify = useCallback(async () => {
+    if (!isLoaded) return
+    setIsLoading(true)
 
     try {
       const completeSignUp = await signUp.attemptEmailAddressVerification({
-        code,
-      });
+        code: otp.join(''),
+      })
+
       if (completeSignUp.status !== "complete") {
-        console.log(JSON.stringify(completeSignUp, null, 2));
-        return;
+        console.log(JSON.stringify(completeSignUp, null, 2))
+        throw new Error("Unable to complete sign up")
       }
 
-      // If we get here, the user is signed up and logged in
-      if (completeSignUp.status === "complete") {
-        await setActive({ session: completeSignUp.createdSessionId });
+      await setActive({ session: completeSignUp.createdSessionId })
+      
+      const result = await createUser({
+        firstName: signUp.firstName ?? '',
+        lastName: signUp.lastName ?? '',
+        email: signUp.emailAddress ?? '',
+        clerkId: completeSignUp.createdUserId ?? '',
+      })
 
-        // Create user in our database
-        const result = await createUser({
-          firstName,
-          lastName,
-          email,
-          clerkId: completeSignUp.createdUserId ?? "",
-        });
-
-        if (result.success) {
-          router.push("/dashboard"); // Redirect to dashboard after successful sign-up
-        } else {
-          setError(
-            "Failed to create user in database. Please contact support.",
-          );
-        }
+      if (result.success) {
+        toast.success('Sign up successful!')
+        router.push('/dashboard')
+      } else {
+        toast.error('Failed to create user in database. Please contact support.')
       }
     } catch (err: any) {
-      console.error(JSON.stringify(err, null, 2));
-      setError(err.errors[0].message);
+      console.error(JSON.stringify(err, null, 2))
+      if (err.errors?.[0]?.code === 'form_code_incorrect') {
+        toast.error('Incorrect verification code. Please try again.')
+        setOtp(['', '', '', '', '', ''])
+      } else {
+        toast.error(err.errors?.[0]?.message || 'An error occurred during verification.')
+      }
+    } finally {
+      setIsLoading(false)
     }
-  };
+  }, [isLoaded, signUp, otp, setActive, router])
+
+  const handleOtpChange = useCallback((index: number, value: string) => {
+    setOtp(prev => {
+      const newOtp = [...prev]
+      newOtp[index] = value
+      return newOtp
+    })
+  }, [])
 
   return {
-    email,
-    setEmail,
-    password,
-    setPassword,
-    firstName,
-    setFirstName,
-    lastName,
-    setLastName,
-    error,
+    isLoading,
     verifying,
-    code,
-    setCode,
+    setVerifying,
+    otp,
+    handleOtpChange,
     isLoaded,
     handleSubmit,
-    handleVerify,
-  };
+    handleVerify
+  }
 }

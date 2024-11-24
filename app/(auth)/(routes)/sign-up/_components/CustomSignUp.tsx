@@ -1,20 +1,17 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useRef, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import { useSignUp } from '@clerk/nextjs'
-import { useRouter, useSearchParams } from 'next/navigation'
-import OtpInput from 'react-otp-input'
-import { toast } from 'react-hot-toast'
 import { motion } from 'framer-motion'
 import { User, Mail, Lock, ArrowRight, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { GoogleSignIn } from '@/app/(auth)/_components/GoogleSignin'
 
+import { useCustomSignUp } from '@/hooks/useCustomSignUp'
+import { GoogleSignIn } from '@/app/(auth)/_components/GoogleSignin'
 
 const schema = yup.object({
   firstName: yup.string().required('First name is required'),
@@ -36,74 +33,43 @@ export function CustomSignUp() {
     }
   })
 
-  const [isLoading, setIsLoading] = useState(false)
-  const [verifying, setVerifying] = useState(false)
-  const [otp, setOtp] = useState('')
-  const { isLoaded, signUp, setActive } = useSignUp()
-  const router = useRouter()
-  const searchParams = useSearchParams()
+  const { 
+    isLoading, 
+    verifying, 
+    setVerifying, 
+    otp, 
+    handleOtpChange,
+    isLoaded, 
+    handleSubmit: onSubmit, 
+    handleVerify
+  } = useCustomSignUp()
 
-  const onSubmit = async (data: FormData) => {
-    if (!isLoaded) return
-    setIsLoading(true)
-
-    try {
-      await signUp.create({
-        firstName: data.firstName,
-        lastName: data.lastName,
-        emailAddress: data.email,
-        password: data.password,
-      })
-
-      await signUp.prepareEmailAddressVerification({ strategy: "email_code" })
-      setVerifying(true)
-    } catch (err: any) {
-      console.error(JSON.stringify(err, null, 2))
-      if (err.errors[0].code === 'form_identifier_exists') {
-        toast.error('An account with this email already exists. Redirecting to sign-in...')
-        const redirectUrl = searchParams.get('redirect_url')
-        router.push(`/sign-in${redirectUrl ? `?redirect_url=${redirectUrl}` : ''}`)
-      } else {
-        toast.error(err.errors[0].message)
-      }
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleVerify = async () => {
-    if (!isLoaded) return
-    setIsLoading(true)
-
-    try {
-      const completeSignUp = await signUp.attemptEmailAddressVerification({
-        code: otp,
-      })
-
-      if (completeSignUp.status !== "complete") {
-        console.log(JSON.stringify(completeSignUp, null, 2))
-        throw new Error("Unable to complete sign up")
-      }
-
-      if (completeSignUp.status === "complete") {
-        await setActive({ session: completeSignUp.createdSessionId })
-        toast.success('Sign up successful!')
-        const redirectUrl = searchParams.get('redirect_url') || '/dashboard'
-        router.push(redirectUrl)
-      }
-    } catch (err: any) {
-      console.error(JSON.stringify(err, null, 2))
-      toast.error(err.errors[0].message)
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  const otpInputRefs = useRef<(HTMLInputElement | null)[]>([])
 
   useEffect(() => {
-    if (otp.length === 6) {
+    if (verifying) {
+      otpInputRefs.current[0]?.focus()
+    }
+  }, [verifying])
+
+  useEffect(() => {
+    if (otp.every(digit => digit !== '')) {
       handleVerify()
     }
-  }, [otp])
+  }, [otp, handleVerify])
+
+  const handleOtpInputChange = (index: number, value: string) => {
+    handleOtpChange(index, value)
+    if (value && index < 5) {
+      otpInputRefs.current[index + 1]?.focus()
+    }
+  }
+
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      otpInputRefs.current[index - 1]?.focus()
+    }
+  }
 
   if (!isLoaded) {
     return null
@@ -164,8 +130,7 @@ export function CustomSignUp() {
                     />
                   )}
                 />
-                {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName
-.message}</p>}
+                {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName.message}</p>}
               </div>
 
               <div className="space-y-2">
@@ -243,20 +208,34 @@ export function CustomSignUp() {
           ) : (
             <div className="space-y-4">
               <p className="text-center text-gray-700">Enter the verification code sent to your email</p>
-              <OtpInput
-                value={otp}
-                onChange={setOtp}
-                numInputs={6}
-                renderSeparator={<span className="w-2"></span>}
-                renderInput={(props) => <Input {...props} className="!w-12 text-center" />}
-                inputStyle="inputStyle"
-                containerStyle="flex justify-center space-x-2"
-              />
+              <div className="flex justify-center space-x-2">
+                {otp.map((digit, index) => (
+                  <Input
+                    key={index}
+                    type="text"
+                    maxLength={1}
+                    value={digit}
+                    onChange={(e) => handleOtpInputChange(index, e.target.value)}
+                    onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                    ref={(el) => (otpInputRefs.current[index] = el)}
+                    className="w-12 h-12 text-center text-2xl"
+                  />
+                ))}
+              </div>
               {isLoading && (
                 <div className="flex justify-center">
                   <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
                 </div>
               )}
+              <div className="mt-4 flex justify-center">
+                <Button
+                  variant="outline"
+                  onClick={() => setVerifying(false)}
+                  className="w-full max-w-[200px]"
+                >
+                  Back to Sign Up
+                </Button>
+              </div>
             </div>
           )}
         </div>
