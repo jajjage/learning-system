@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react'
 import { useSignUp } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
-import { createUser } from '@/actions/createUser'
+import { onSignUpUser } from '@/actions/auth'
 
 export function useCustomSignUp() {
   const [isLoading, setIsLoading] = useState(false)
@@ -61,14 +61,14 @@ export function useCustomSignUp() {
 
       await setActive({ session: completeSignUp.createdSessionId })
       
-      const result = await createUser({
+      const result = await onSignUpUser({
         firstName: signUp.firstName ?? '',
         lastName: signUp.lastName ?? '',
         email: signUp.emailAddress ?? '',
         clerkId: completeSignUp.createdUserId ?? '',
       })
 
-      if (result.success) {
+      if (result.status == 200) {
         toast.success('Sign up successful!')
         router.push('/dashboard')
       } else {

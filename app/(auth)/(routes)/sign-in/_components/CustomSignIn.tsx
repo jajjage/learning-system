@@ -12,7 +12,7 @@ import { Mail, Lock, ArrowRight, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { GoogleSignIn } from '@/app/(auth)/_components/GoogleSignin'
+import { GoogleAuthButton } from '@/app/(auth)/_components/GoogleSignin'
 
 
 const schema = yup.object({
@@ -166,8 +166,8 @@ export function CustomSignIn() {
                 </>
               )}
             </Button>
-
-            <div className="relative">
+          </form>
+          <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-300"></div>
               </div>
@@ -176,8 +176,7 @@ export function CustomSignIn() {
               </div>
             </div>
 
-            <GoogleSignIn />
-          </form>
+            <GoogleAuthButton method="signin"/>
         </div>
       </motion.div>
       <style jsx global>{`

@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 import { useCustomSignUp } from '@/hooks/useCustomSignUp'
-import { GoogleSignIn } from '@/app/(auth)/_components/GoogleSignin'
+import { GoogleAuthButton } from '@/app/(auth)/_components/GoogleSignin'
 
 const schema = yup.object({
   firstName: yup.string().required('First name is required'),
@@ -88,111 +88,113 @@ export function CustomSignUp() {
             Create an account
           </h2>
           {!verifying ? (
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <User className="text-gray-400" size={20} />
-                  <Label htmlFor="firstName" className="text-sm font-medium text-gray-700">
-                    First Name
-                  </Label>
+            <div className="space-y-6">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <User className="text-gray-400" size={20} />
+                    <Label htmlFor="firstName" className="text-sm font-medium text-gray-700">
+                      First Name
+                    </Label>
+                  </div>
+                  <Controller
+                    name="firstName"
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        id="firstName"
+                        type="text"
+                        className={`transition-all duration-300 ${errors.firstName ? 'ring-2 ring-red-500' : ''}`}
+                      />
+                    )}
+                  />
+                  {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName.message}</p>}
                 </div>
-                <Controller
-                  name="firstName"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      id="firstName"
-                      type="text"
-                      className={`transition-all duration-300 ${errors.firstName ? 'ring-2 ring-red-500' : ''}`}
-                    />
-                  )}
-                />
-                {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName.message}</p>}
-              </div>
 
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <User className="text-gray-400" size={20} />
-                  <Label htmlFor="lastName" className="text-sm font-medium text-gray-700">
-                    Last Name
-                  </Label>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <User className="text-gray-400" size={20} />
+                    <Label htmlFor="lastName" className="text-sm font-medium text-gray-700">
+                      Last Name
+                    </Label>
+                  </div>
+                  <Controller
+                    name="lastName"
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        id="lastName"
+                        type="text"
+                        className={`transition-all duration-300 ${errors.lastName ? 'ring-2 ring-red-500' : ''}`}
+                      />
+                    )}
+                  />
+                  {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName.message}</p>}
                 </div>
-                <Controller
-                  name="lastName"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      id="lastName"
-                      type="text"
-                      className={`transition-all duration-300 ${errors.lastName ? 'ring-2 ring-red-500' : ''}`}
-                    />
-                  )}
-                />
-                {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName.message}</p>}
-              </div>
 
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <Mail className="text-gray-400" size={20} />
-                  <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-                    Email address
-                  </Label>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Mail className="text-gray-400" size={20} />
+                    <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                      Email address
+                    </Label>
+                  </div>
+                  <Controller
+                    name="email"
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        id="email"
+                        type="email"
+                        className={`transition-all duration-300 ${errors.email ? 'ring-2 ring-red-500' : ''}`}
+                      />
+                    )}
+                  />
+                  {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
                 </div>
-                <Controller
-                  name="email"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      id="email"
-                      type="email"
-                      className={`transition-all duration-300 ${errors.email ? 'ring-2 ring-red-500' : ''}`}
-                    />
-                  )}
-                />
-                {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
-              </div>
 
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <Lock className="text-gray-400" size={20} />
-                  <Label htmlFor="password" className="text-sm font-medium text-gray-700">
-                    Password
-                  </Label>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Lock className="text-gray-400" size={20} />
+                    <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                      Password
+                    </Label>
+                  </div>
+                  <Controller
+                    name="password"
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        id="password"
+                        type="password"
+                        className={`transition-all duration-300 ${errors.password ? 'ring-2 ring-red-500' : ''}`}
+                      />
+                    )}
+                  />
+                  {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
                 </div>
-                <Controller
-                  name="password"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      id="password"
-                      type="password"
-                      className={`transition-all duration-300 ${errors.password ? 'ring-2 ring-red-500' : ''}`}
-                    />
-                  )}
-                />
-                {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
-              </div>
 
-              <Button 
-                type="submit" 
-                className="w-full bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Please wait
-                  </>
-                ) : (
-                  <>
-                    Sign up <ArrowRight className="ml-2" size={16} />
-                  </>
-                )}
-              </Button>
+                <Button 
+                  type="submit" 
+                  className="w-full bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Please wait
+                    </>
+                  ) : (
+                    <>
+                      Sign up <ArrowRight className="ml-2" size={16} />
+                    </>
+                  )}
+                </Button>
+              </form>
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
@@ -203,8 +205,8 @@ export function CustomSignUp() {
                 </div>
               </div>
 
-              <GoogleSignIn />
-            </form>
+              <GoogleAuthButton method="signup"/>
+            </div>
           ) : (
             <div className="space-y-4">
               <p className="text-center text-gray-700">Enter the verification code sent to your email</p>
@@ -217,7 +219,8 @@ export function CustomSignUp() {
                     value={digit}
                     onChange={(e) => handleOtpInputChange(index, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                    ref={(el) => (otpInputRefs.current[index] = el)}
+                    ref={(el) => {otpInputRefs.current[index] = el;
+                    }}
                     className="w-12 h-12 text-center text-2xl"
                   />
                 ))}

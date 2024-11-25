@@ -1,19 +1,28 @@
-'use client'
+"use client"
 
-import { Button } from '@/components/ui/button'
-import { useGoogleSignIn } from '@/hooks/useGoogleSignIn'
+import { Button } from "@/components/ui/button"
+import { useGoogleAuth } from "@/hooks/authentication"
 import { FcGoogle } from 'react-icons/fc'
-import { Loader2 } from 'lucide-react'
+import { Loader2 } from "lucide-react"
 
-export function GoogleSignIn() {
-  const { handleGoogleSignIn, isLoading } = useGoogleSignIn()
 
+type GoogleAuthButtonProps = {
+  method: "signup" | "signin"
+}
+
+export const GoogleAuthButton = ({ method }: GoogleAuthButtonProps) => {
+  const { signUpWith, signInWith, isLoading } = useGoogleAuth()
   return (
     <Button
+      {...(method === "signin"
+        ? {
+            onClick: () => signInWith("oauth_google"),
+          }
+        : {
+            onClick: () => signUpWith("oauth_google"),
+          })}
+      className="w-full rounded-2xl flex gap-3 bg-themeBlack border-themeGray"
       variant="outline"
-      onClick={handleGoogleSignIn}
-      disabled={isLoading}
-      className="w-full flex items-center justify-center space-x-2"
     >
       {isLoading ? (
         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -24,4 +33,3 @@ export function GoogleSignIn() {
     </Button>
   )
 }
-
