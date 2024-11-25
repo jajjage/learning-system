@@ -1,7 +1,6 @@
-import { redirect } from "next/navigation"
 import { currentUser } from "@clerk/nextjs/server"
-import { onSignInUser } from '@/actions/auth'
 import SignInCompletionClient from "@/app/(auth)/_components/SignInCompletionClient"
+import { onSignUpUser } from "@/actions/auth"
 
 
 const SignInCompletionPage = async () => {
@@ -20,12 +19,18 @@ const SignInCompletionPage = async () => {
       // Add any other fields you want to pass
     }
 
-    const result = await onSignInUser(userData)
+    const result = await onSignUpUser({
+      clerkId: user.id,
+      email: user.emailAddresses[0]?.emailAddress ?? '',
+      firstName: user.firstName ?? '',
+      lastName: user.lastName ?? '',
+      // Add any other fields you want to pass
+    })
     
-    if (result.success) {
+    if (result?.status === 200) {
       return <SignInCompletionClient isNewUser={result.isNewUser ?? false} />
     } else {
-      throw new Error(result.error || 'Failed to process user data')
+      throw new Error(result?.message || 'Failed to process user data')
     }
   } catch (error) {
     console.error('Error during user processing:', error)

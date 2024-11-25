@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react'
 import { useSignUp } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
-import { onSignUpUser } from '@/actions/auth'
+import { onSignInUser, onSignUpUser } from '@/actions/auth'
 
 export function useCustomSignUp() {
   const [isLoading, setIsLoading] = useState(false)
@@ -13,7 +13,7 @@ export function useCustomSignUp() {
   const { isLoaded, signUp, setActive } = useSignUp()
   const router = useRouter()
 
-  const handleSubmit = useCallback(async (data: {
+  const handleSubmit = async (data: {
     firstName: string
     lastName: string
     email: string
@@ -33,17 +33,22 @@ export function useCustomSignUp() {
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" })
       setVerifying(true)
     } catch (err: any) {
-      console.error(JSON.stringify(err, null, 2))
-      if (err.errors?.[0]?.code === 'form_identifier_exists') {
+      if (err.errors[0].code === 'form_identifier_exists') {
         toast.error('An account with this email already exists. Redirecting to sign-in...')
         router.push('/sign-in')
       } else {
-        toast.error(err.errors?.[0]?.message || 'An error occurred during sign up.')
+        toast.error(err.errors[0].message)
       }
     } finally {
       setIsLoading(false)
     }
-  }, [isLoaded, signUp, router])
+  }
+
+  const handleOtpChange = (index: number, value: string) => {
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+  };
 
   const handleVerify = useCallback(async () => {
     if (!isLoaded) return
@@ -61,22 +66,23 @@ export function useCustomSignUp() {
 
       await setActive({ session: completeSignUp.createdSessionId })
       
-      const result = await onSignUpUser({
+      const result = await onSignInUser({
         firstName: signUp.firstName ?? '',
         lastName: signUp.lastName ?? '',
         email: signUp.emailAddress ?? '',
         clerkId: completeSignUp.createdUserId ?? '',
       })
 
-      if (result.status == 200) {
-        toast.success('Sign up successful!')
+      if (result.success) {
+        toast.success(`${result.message}`)
         router.push('/dashboard')
       } else {
         toast.error('Failed to create user in database. Please contact support.')
       }
     } catch (err: any) {
-      console.error(JSON.stringify(err, null, 2))
-      if (err.errors?.[0]?.code === 'form_code_incorrect') {
+      if (err.errors?.[0]?.code === 'session_exists') {
+        router.push('/dashboard') // or to a page explaining the situation
+      } else if (err.errors?.[0]?.code === 'form_code_incorrect') {
         toast.error('Incorrect verification code. Please try again.')
         setOtp(['', '', '', '', '', ''])
       } else {
@@ -87,22 +93,16 @@ export function useCustomSignUp() {
     }
   }, [isLoaded, signUp, otp, setActive, router])
 
-  const handleOtpChange = useCallback((index: number, value: string) => {
-    setOtp(prev => {
-      const newOtp = [...prev]
-      newOtp[index] = value
-      return newOtp
-    })
-  }, [])
-
   return {
     isLoading,
     verifying,
     setVerifying,
     otp,
-    handleOtpChange,
+    setOtp,
     isLoaded,
     handleSubmit,
-    handleVerify
+    handleVerify,
+    handleOtpChange
   }
 }
+

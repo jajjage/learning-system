@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { GoogleAuthButton } from '@/app/(auth)/_components/GoogleSignin'
+import { onAuthenticatedUser, onSignUpUser } from '@/actions/auth'
 
 
 const schema = yup.object({
@@ -36,17 +37,17 @@ export function CustomSignIn() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = useCallback(async (data: FormData) => {
     if (!isLoaded) return
     setIsLoading(true)
-
+    const user = await onSignUpUser(data)
     try {
       const result = await signIn.create({
         identifier: data.email,
         password: data.password,
       })
 
-      if (result.status === 'complete') {
+      if (result.status === 'complete' && user.status === 200) {
         await setActive({ session: result.createdSessionId })
         toast.success('Sign in successful!')
         const redirectUrl = searchParams.get('redirect_url') || '/dashboard'
@@ -56,7 +57,9 @@ export function CustomSignIn() {
         toast.error('Sign in failed. Please try again.')
       }
     } catch (err: any) {
-      console.error(JSON.stringify(err, null, 2))
+      toast.error('Account not found. Redirecting to sign-up...')
+      const redirectUrl = searchParams.get('redirect_url')
+      router.push(`/sign-up${redirectUrl ? `?redirect_url=${redirectUrl}` : ''}`)
       if (err.errors[0].code === 'form_identifier_not_found') {
         toast.error('Account not found. Redirecting to sign-up...')
         const redirectUrl = searchParams.get('redirect_url')
@@ -67,13 +70,12 @@ export function CustomSignIn() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [isLoaded, signIn, setActive, router, searchParams])
 
   useEffect(() => {
-    const form = document.querySelector('form')
     const handleAnimationStart = (e: AnimationEvent) => {
       if (e.animationName === 'onAutoFillStart') {
-        form?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }))
+        handleSubmit(onSubmit)()
       }
     }
 
@@ -87,7 +89,7 @@ export function CustomSignIn() {
       emailInput?.removeEventListener('animationstart', handleAnimationStart as EventListener)
       passwordInput?.removeEventListener('animationstart', handleAnimationStart as EventListener)
     }
-  }, [])
+  }, [handleSubmit, onSubmit])
 
   if (!isLoaded) {
     return null
@@ -101,11 +103,11 @@ export function CustomSignIn() {
         transition={{ duration: 0.5 }}
         className="bg-white shadow-2xl rounded-2xl overflow-hidden"
       >
-        <div className="p-8">
+        <div className="p-8 space-y-5">
           <h2 className="text-3xl font-bold text-center mb-6 bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
             Sign in to your account
           </h2>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <Mail className="text-gray-400" size={20} />
@@ -176,7 +178,7 @@ export function CustomSignIn() {
               </div>
             </div>
 
-            <GoogleAuthButton method="signin"/>
+            <GoogleAuthButton method="signin" />
         </div>
       </motion.div>
       <style jsx global>{`

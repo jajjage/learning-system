@@ -14,23 +14,22 @@ type UserData = {
 export const onAuthenticatedUser = async () => {
   try {
     const clerk = await currentUser()
-    if (!clerk) return { status: 404 }
-
+    if (!clerk) return { status: "nm fjkgnqmo23" }
+  
     const user = await prisma.user.findUnique({
       where: {
         clerkId: clerk.id,
       },
       select: {
         id: true,
-        firstname: true,
-        lastname: true,
+        firstName: true,
+        lastName: true,
       },
     })
     if (user)
       return {
         status: 200,
         id: user.id,
-        image: clerk.imageUrl,
         username: `${user.firstname} ${user.lastname}`,
       }
     return {
@@ -44,30 +43,27 @@ export const onAuthenticatedUser = async () => {
 }
 
 export const onSignUpUser = async (data: {
-  firstName: string;
-  lastName: string;
   email: string;
-  clerkId: string;
 }) => {
   try {
-    const createdUser = await prisma.user.create({
-      data: {
-        ...data,
-      },
+    const dbUser = await prisma.user.findUnique({
+      where: { email: data.email },
     })
 
-    if (createdUser) {
+    
+  if(dbUser){
+    return {
+      status: 200,
+      message: "Already have an account",
+      id: dbUser.id,
+    }
+  } else {
       return {
-        status: 200,
-        message: "User successfully created",
-        id: createdUser.id,
+        status: 400,
+        message: "User could not be created! Try again",
       }
     }
-
-    return {
-      status: 400,
-      message: "User could not be created! Try again",
-    }
+    
   } catch (error) {
     return {
       status: 400,
@@ -75,37 +71,6 @@ export const onSignUpUser = async (data: {
     }
   }
 }
-
-// export const onSignInUser = async (clerkId: string) => {
-//   try {
-//     const loggedInUser = await prisma.user.findUnique({
-//       where: {
-//         clerkId,
-//       },
-//       select: {
-//         id: true,
-//       },
-//     })
-
-//     if (loggedInUser) {
-//       return {
-//         status: 200,
-//         message: "User successfully logged in",
-//         id: loggedInUser.id,
-//       }
-//     }
-
-//     return {
-//       status: 400,
-//       message: "User could not be logged in! Try again",
-//     }
-//   } catch (error) {
-//     return {
-//       status: 400,
-//       message: "Oops! something went wrong. Try again",
-//     }
-//   }
-// }
 
 export async function onSignInUser(userData: UserData) {
   try {
@@ -142,7 +107,7 @@ export async function onSignInUser(userData: UserData) {
     }
 
     // Return the user data and whether it's a new user
-    return { success: true, user: dbUser, isNewUser }
+    return { success: true, user: dbUser, isNewUser, message: "User successfully created"}
   } catch (error) {
     console.error('Error processing user:', error)
     return { success: false, error: 'Failed to process user' }
