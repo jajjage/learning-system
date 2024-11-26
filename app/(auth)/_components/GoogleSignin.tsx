@@ -2,15 +2,18 @@
 
 import { Button } from "@/components/ui/button"
 import { useGoogleAuth } from "@/hooks/authentication"
-import { FcGoogle } from 'react-icons/fc'
+import { FcGoogle } from "react-icons/fc"
 import { Loader2 } from "lucide-react"
-
+import { useSearchParams } from "next/navigation"
 
 type GoogleAuthButtonProps = {
   method: "signup" | "signin"
 }
 
 export const GoogleAuthButton = ({ method }: GoogleAuthButtonProps) => {
+  const searchParams = useSearchParams()
+  const redirectUrl = searchParams.get("redirect_url") || "/dashboard"
+  localStorage.setItem("redirect_url", redirectUrl)
   const { signUpWith, signInWith, isLoading } = useGoogleAuth()
   return (
     <Button
@@ -29,7 +32,7 @@ export const GoogleAuthButton = ({ method }: GoogleAuthButtonProps) => {
       ) : (
         <FcGoogle className="w-5 h-5" />
       )}
-      <span>{isLoading ? 'Please wait' : 'Continue with Google'}</span>
+      <span>{isLoading ? "Please wait" : "Continue with Google"}</span>
     </Button>
   )
 }
