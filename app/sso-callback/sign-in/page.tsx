@@ -1,6 +1,6 @@
 import { currentUser } from "@clerk/nextjs/server"
 import SignInCompletionClient from "@/app/(auth)/_components/SignInCompletionClient"
-import { onSignUpUser } from "@/actions/auth"
+import { onSignInUser } from "@/actions/auth"
 
 
 const SignInCompletionPage = async () => {
@@ -19,13 +19,7 @@ const SignInCompletionPage = async () => {
       // Add any other fields you want to pass
     }
 
-    const result = await onSignUpUser({
-      clerkId: user.id,
-      email: user.emailAddresses[0]?.emailAddress ?? '',
-      firstName: user.firstName ?? '',
-      lastName: user.lastName ?? '',
-      // Add any other fields you want to pass
-    })
+    const result = await onSignInUser(userData)
     
     if (result?.status === 200) {
       return <SignInCompletionClient isNewUser={result.isNewUser ?? false} />

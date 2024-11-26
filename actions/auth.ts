@@ -107,7 +107,7 @@ export async function onSignInUser(userData: UserData) {
     }
 
     // Return the user data and whether it's a new user
-    return { success: true, user: dbUser, isNewUser, message: "User successfully created"}
+    return { status: 200, success: true, user: dbUser, isNewUser, message: "User successfully created"}
   } catch (error) {
     console.error('Error processing user:', error)
     return { success: false, error: 'Failed to process user' }

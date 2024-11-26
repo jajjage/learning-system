@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { GoogleAuthButton } from '@/app/(auth)/_components/GoogleSignin'
-import { onAuthenticatedUser, onSignUpUser } from '@/actions/auth'
+import { onSignUpUser } from '@/actions/auth'
 
 
 const schema = yup.object({
