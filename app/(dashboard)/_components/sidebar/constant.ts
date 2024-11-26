@@ -4,7 +4,7 @@ export const guestRoute = [
   {
     icon: Layout,
     label: "Dashboard",
-    href: "/",
+    href: "/dashboard",
   },
   {
     icon: Compass,
@@ -13,7 +13,7 @@ export const guestRoute = [
   },
   {
     icon: Layout,
-    label: "Dashboard",
-    href: "/",
+    label: "Search",
+    href: "/item",
   },
 ]

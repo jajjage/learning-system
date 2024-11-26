@@ -46,7 +46,9 @@ export default function SignInCompletionClient({
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <Spinner className="mb-4" />
       <p className="text-lg text-gray-600">
-        {error ? "Redirecting to sign-in..." : `Redirecting to ${urlName}...`}
+        {error
+          ? "Redirecting to sign-in..."
+          : `Redirecting to ${urlName === "dashboard" ? "...." : urlName}...`}
       </p>
     </div>
   )

@@ -13,6 +13,7 @@ import {
   Brain,
   Layout,
 } from "lucide-react"
+import Link from "next/link"
 
 function App() {
   const [activeTab, setActiveTab] = useState("features")
@@ -21,23 +22,26 @@ function App() {
     {
       icon: <Layout className="h-6 w-6 text-primary" />,
       title: "Intuitive Dashboard",
-      description:
-        "Centralized control panel for managing courses, students, and analytics",
+      description: "Centralized control panel for managing courses, students.",
+      href: "/dashboard",
     },
     {
       icon: <BookOpen className="h-6 w-6 text-primary" />,
       title: "Course Management",
       description: "Create and organize courses with rich multimedia content",
+      href: "/dashboard",
     },
     {
       icon: <Users className="h-6 w-6 text-primary" />,
       title: "Student Engagement",
       description: "Foster interaction through discussions and live sessions",
+      href: "/dashboard",
     },
     {
       icon: <BarChart3 className="h-6 w-6 text-primary" />,
       title: "Advanced Analytics",
       description: "Track progress and performance with detailed insights",
+      href: "/dashboard",
     },
   ]
 
@@ -93,22 +97,29 @@ function App() {
           <TabsContent value="features" className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {features.map((feature, index) => (
-                <Card
+                <Link
                   key={index}
-                  className="border-2 hover:border-primary/50 transition-colors"
+                  href={feature.href}
+                  className="block" // Ensures the link covers the entire card
+                  aria-label={`Learn more about ${feature.title}`}
                 >
-                  <CardContent className="pt-6">
-                    <div className="rounded-full bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
-                      {feature.icon}
-                    </div>
-                    <h3 className="text-lg font-semibold mb-2">
-                      {feature.title}
-                    </h3>
-                    <p className="text-muted-foreground">
-                      {feature.description}
-                    </p>
-                  </CardContent>
-                </Card>
+                  <Card
+                    key={index}
+                    className="border-2 hover:border-primary/50 transition-transform transform hover:scale-105 hover:shadow-lg"
+                  >
+                    <CardContent className="pt-6">
+                      <div className="rounded-full bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
+                        {feature.icon}
+                      </div>
+                      <h3 className="text-lg font-semibold mb-2">
+                        {feature.title}
+                      </h3>
+                      <p className="text-muted-foreground">
+                        {feature.description}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </Link>
               ))}
             </div>
           </TabsContent>
