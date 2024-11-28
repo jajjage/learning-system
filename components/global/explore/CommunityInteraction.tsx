@@ -56,7 +56,9 @@ export default function CommunityInteraction() {
                 </div>
               </div>
             </div>
-            <Button className="mt-4">Join Discussion</Button>
+            <Button className="mt-4 font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25">
+              Join Discussion
+            </Button>
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-2">Study Groups</h3>
@@ -65,7 +67,10 @@ export default function CommunityInteraction() {
               <li>JavaScript Pros - 32 members</li>
               <li>Web Design Enthusiasts - 28 members</li>
             </ul>
-            <Button variant="outline" className="mt-2">
+            <Button
+              variant="outline"
+              className="mt-2 bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent"
+            >
               Browse All Groups
             </Button>
           </div>

@@ -1,4 +1,5 @@
 "use client"
+
 import React from "react"
 import { BookOpen, BarChart, Users, Award } from "lucide-react"
 
@@ -34,8 +35,10 @@ export function Features() {
     <div id="features" className="py-16 bg-secondary/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-primary">Key Features</h2>
-          <p className="mt-4 text-lg text-gray-600">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
+            Key Features
+          </h2>
+          <p className="mt-4 text-lg bg-gradient-to-r from-blue-600 to-black bg-clip-text text-transparent">
             Everything you need to succeed in your learning journey.
           </p>
         </div>
@@ -46,7 +49,7 @@ export function Features() {
               className="relative bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow hover:shadow-primary/10"
             >
               <div>
-                <feature.icon className="h-8 w-8 text-primary" />
+                <feature.icon className="h-8 w-8 text-purple-600" />
                 <h3 className="mt-4 text-lg font-medium text-gray-900">
                   {feature.name}
                 </h3>

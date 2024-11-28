@@ -2,6 +2,7 @@
 
 import React from "react"
 import { GraduationCap, Facebook, Twitter, Instagram } from "lucide-react"
+import Link from "next/link"
 
 export function Footer() {
   return (
@@ -10,8 +11,15 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center space-x-2">
-              <GraduationCap className="h-8 w-8 text-indigo-400" />
-              <span className="text-xl font-bold text-white">EduPlatform</span>
+              <Link
+                href="/"
+                className="flex justify-between items-center space-x-2"
+              >
+                <GraduationCap className="h-8 w-8 text-purple-600" />
+                <span className="text-xl bg-gradient-to-r from-purple-600 to-blue-500 font-bold bg-clip-text text-transparent">
+                  LuxePlatform
+                </span>
+              </Link>
             </div>
             <p className="mt-4 text-gray-400">
               Empowering education through technology and innovation.

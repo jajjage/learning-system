@@ -37,17 +37,32 @@ function StudentSampleContent() {
       <div className="flex items-center space-x-2">
         <PlayCircle className="h-5 w-5 text-blue-500" />
         <span>Introduction to Web Development</span>
-        <Button variant="link">Watch Now</Button>
+        <Button
+          variant="link"
+          className="bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent"
+        >
+          Watch Now
+        </Button>
       </div>
       <div className="flex items-center space-x-2">
         <FileText className="h-5 w-5 text-green-500" />
         <span>JavaScript Basics: Variables and Functions</span>
-        <Button variant="link">Read Lesson</Button>
+        <Button
+          variant="link"
+          className="bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent"
+        >
+          Read Lesson
+        </Button>
       </div>
       <div className="flex items-center space-x-2">
         <CheckCircle className="h-5 w-5 text-purple-500" />
         <span>HTML & CSS Quiz</span>
-        <Button variant="link">Take Quiz</Button>
+        <Button
+          variant="link"
+          className="bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent"
+        >
+          Take Quiz
+        </Button>
       </div>
     </div>
   )
@@ -64,7 +79,9 @@ function TeacherSampleContent() {
         <li>Develop interactive quizzes and assignments</li>
         <li>Set up student progress tracking</li>
       </ol>
-      <Button>View Full Guide</Button>
+      <Button className="font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25">
+        View Full Guide
+      </Button>
     </div>
   )
 }

@@ -1,4 +1,4 @@
-"us client"
+"use client"
 import { useState } from "react"
 import {
   Card,
@@ -81,8 +81,10 @@ function CourseModulePreview() {
         This module covers the basics of React, including components, props, and
         state.
       </p>
-      <div className="space-y-2">
-        <Button>Watch Video</Button>
+      <div className="space-x-4">
+        <Button className="font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25">
+          Watch Video
+        </Button>
         <Button variant="outline">Read Lesson</Button>
         <Button variant="outline">Take Quiz</Button>
       </div>
@@ -110,14 +112,16 @@ function ProgressTrackingPreview({
 }
 
 function ContentCreationPreview() {
+  const btStyle =
+    "font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25"
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Create a New Lesson</h3>
       <div className="grid grid-cols-2 gap-4">
-        <Button>Add Video</Button>
-        <Button>Add Quiz</Button>
-        <Button>Add Reading Material</Button>
-        <Button>Add Assignment</Button>
+        <Button className={btStyle}>Add Video</Button>
+        <Button className={btStyle}>Add Quiz</Button>
+        <Button className={btStyle}>Add Reading Material</Button>
+        <Button className={btStyle}>Add Assignment</Button>
       </div>
     </div>
   )

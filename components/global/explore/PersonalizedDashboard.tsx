@@ -31,7 +31,10 @@ export default function PersonalizedDashboard() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-gray-500">Progress: 60%</p>
-                  <Button size="sm" className="mt-2">
+                  <Button
+                    size="sm"
+                    className="mt-2 font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25"
+                  >
                     Continue Learning
                   </Button>
                 </CardContent>
@@ -44,7 +47,10 @@ export default function PersonalizedDashboard() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-gray-500">Progress: 30%</p>
-                  <Button size="sm" className="mt-2">
+                  <Button
+                    size="sm"
+                    className="mt-2 font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25"
+                  >
                     Continue Learning
                   </Button>
                 </CardContent>

@@ -31,7 +31,12 @@ export default function ContentLibrary() {
                   <p className="text-sm text-gray-500 mb-2">
                     50+ ready-to-use lesson plans across various subjects
                   </p>
-                  <Button size="sm">Browse Plans</Button>
+                  <Button
+                    size="sm"
+                    className="font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25"
+                  >
+                    Browse Plans
+                  </Button>
                 </CardContent>
               </Card>
               <Card>
@@ -43,7 +48,12 @@ export default function ContentLibrary() {
                   <p className="text-sm text-gray-500 mb-2">
                     100+ educational videos on key topics
                   </p>
-                  <Button size="sm">View Videos</Button>
+                  <Button
+                    size="sm"
+                    className="font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25"
+                  >
+                    View Videos
+                  </Button>
                 </CardContent>
               </Card>
               <Card>
@@ -57,7 +67,12 @@ export default function ContentLibrary() {
                   <p className="text-sm text-gray-500 mb-2">
                     200+ exercises to engage students
                   </p>
-                  <Button size="sm">Explore Exercises</Button>
+                  <Button
+                    size="sm"
+                    className="font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25"
+                  >
+                    Explore Exercises
+                  </Button>
                 </CardContent>
               </Card>
               <Card>
@@ -69,7 +84,12 @@ export default function ContentLibrary() {
                   <p className="text-sm text-gray-500 mb-2">
                     Quizzes, tests, and rubrics for evaluation
                   </p>
-                  <Button size="sm">Access Tools</Button>
+                  <Button
+                    size="sm"
+                    className="font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25"
+                  >
+                    Access Tools
+                  </Button>
                 </CardContent>
               </Card>
             </div>

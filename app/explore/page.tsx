@@ -25,13 +25,13 @@ export default function ExplorePage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-4xl font-extrabold text-gray-900 text-center mb-10">
+      <h1 className="text-4xl font-extrabold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent text-center mb-10">
         Explore Our Learning Platform
       </h1>
 
       <RoleSelection
         selectedRole={selectedRole}
-        onSelectRole={setSelectedRole}
+        onSetSelectRole={setSelectedRole}
       />
 
       {selectedRole && (

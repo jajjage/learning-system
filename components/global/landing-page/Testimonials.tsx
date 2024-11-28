@@ -31,10 +31,10 @@ export function Testimonials() {
     <div id="testimonials" className="bg-white py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-primary">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
             What Our Users Say
           </h2>
-          <p className="mt-4 text-xl text-gray-600">
+          <p className="mt-4 text-xl bg-gradient-to-r from-blue-600 to-black bg-clip-text text-transparent">
             Trusted by educators and students worldwide
           </p>
 
@@ -43,14 +43,14 @@ export function Testimonials() {
             {stats.map((stat, index) => (
               <div
                 key={index}
-                className="bg-secondary rounded-xl p-6 transform hover:scale-105 transition-transform duration-300"
+                className="bg-gradient-to-r from-purple-500 to-blue-600 rounded-xl p-6 transform hover:scale-105 transition-transform duration-300"
               >
                 <div className="flex flex-col items-center">
-                  <stat.icon className="h-8 w-8 text-primary mb-3" />
-                  <div className="text-2xl font-bold text-primary">
+                  <stat.icon className="h-8 w-8 text-white mb-3" />
+                  <div className="text-2xl font-bold text-white">
                     {stat.value}
                   </div>
-                  <div className="text-primary/80">{stat.label}</div>
+                  <div className="text-white/80">{stat.label}</div>
                 </div>
               </div>
             ))}
@@ -61,7 +61,7 @@ export function Testimonials() {
           {testimonials.map((testimonial, index) => (
             <div
               key={index}
-              className="bg-secondary/30 rounded-lg p-8 shadow-sm hover:shadow-md transition-shadow hover:shadow-primary/10"
+              className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-lg p-8 shadow-sm hover:shadow-md transition-shadow hover:shadow-primary/10"
             >
               <p className="text-gray-600 italic mb-6">{testimonial.content}</p>
               <div className="flex items-center">
@@ -71,7 +71,7 @@ export function Testimonials() {
                   alt={testimonial.author}
                 />
                 <div className="ml-4">
-                  <div className="text-sm font-medium text-primary">
+                  <div className="text-sm font-medium text-black">
                     {testimonial.author}
                   </div>
                   <div className="text-sm text-gray-500">

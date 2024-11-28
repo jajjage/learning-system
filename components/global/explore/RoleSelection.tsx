@@ -1,35 +1,44 @@
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 import { GraduationCap, Users } from "lucide-react"
 
 type RoleSelectionProps = {
   selectedRole: "student" | "teacher" | null
-  onSelectRole: (role: "student" | "teacher") => void
+  onSetSelectRole: (role: "student" | "teacher") => void
 }
 
 export default function RoleSelection({
   selectedRole,
-  onSelectRole,
+  onSetSelectRole,
 }: RoleSelectionProps) {
   return (
     <div className="flex flex-col items-center mb-12">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">
+      <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-blue-400 bg-clip-text text-transparent mb-6">
         I want to explore as a:
       </h2>
       <div className="flex space-x-4">
         <Button
-          variant={selectedRole === "student" ? "default" : "outline"}
+          variant="outline"
           size="lg"
-          onClick={() => onSelectRole("student")}
-          className="flex items-center"
+          onClick={() => onSetSelectRole("student")}
+          className={cn(
+            "flex items-center",
+            selectedRole === "student" &&
+              "bg-gradient-to-r from-purple-500 to-blue-400",
+          )}
         >
           <GraduationCap className="mr-2 h-5 w-5" />
           Student
         </Button>
         <Button
-          variant={selectedRole === "teacher" ? "default" : "outline"}
+          variant="outline"
           size="lg"
-          onClick={() => onSelectRole("teacher")}
-          className="flex items-center"
+          onClick={() => onSetSelectRole("teacher")}
+          className={cn(
+            "flex items-center",
+            selectedRole === "teacher" &&
+              "bg-gradient-to-r from-purple-500 to-blue-400",
+          )}
         >
           <Users className="mr-2 h-5 w-5" />
           Teacher

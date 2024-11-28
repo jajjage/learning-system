@@ -45,8 +45,11 @@ export default function SharedFeatures() {
                 <AvatarFallback>JP</AvatarFallback>
               </Avatar>
               <div>
-                <Input placeholder="John Doe" className="mb-2" />
-                <Button>Update Profile</Button>
+                <Input placeholder="John" className="mb-2" />
+                <Input placeholder="Doe" className="mb-2" />
+                <Button className="font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25">
+                  Update Profile
+                </Button>
               </div>
             </div>
           </TabsContent>

@@ -55,21 +55,38 @@ export default function CourseCreation() {
           <div>
             <Label>Add Content</Label>
             <div className="grid grid-cols-2 gap-2">
-              <Button type="button" variant="outline">
+              <Button
+                type="button"
+                className="font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25"
+              >
                 Add Video
               </Button>
-              <Button type="button" variant="outline">
+              <Button
+                type="button"
+                className="font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25"
+              >
                 Add Quiz
               </Button>
-              <Button type="button" variant="outline">
+              <Button
+                type="button"
+                className="font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25"
+              >
                 Add Assignment
               </Button>
-              <Button type="button" variant="outline">
+              <Button
+                type="button"
+                className="font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25"
+              >
                 Add Resources
               </Button>
             </div>
           </div>
-          <Button type="submit">Create Sample Course</Button>
+          <Button
+            type="submit"
+            className="font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25"
+          >
+            Create Sample Course
+          </Button>
         </form>
       </CardContent>
     </Card>
