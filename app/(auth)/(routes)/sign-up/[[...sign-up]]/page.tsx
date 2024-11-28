@@ -1,11 +1,9 @@
-import { CustomSignUp } from "../_components/CustomSignUp";
-
+import { CustomSignUp } from "../_components/CustomSignUp"
 
 export default function SignUpPage() {
   return (
-    <div>
+    <main className="flex flex-grow items-center justify-center">
       <CustomSignUp />
-    </div>
+    </main>
   )
 }
-

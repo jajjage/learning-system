@@ -7,7 +7,6 @@ import { Testimonials } from "@/components/global/landing-page/Testimonials"
 function App() {
   return (
     <div className="min-h-screen bg-white">
-      <Header />
       <main>
         <Hero />
         <Features />

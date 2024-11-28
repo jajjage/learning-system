@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import "./globals.css"
 import { ClerkProvider } from "@clerk/nextjs"
 import { Toaster } from "react-hot-toast"
-import { Footer } from "@/components/global/landing-page/Footer"
+import { Header } from "@/components/global/landing-page/Header"
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,8 +19,8 @@ export default function RootLayout({
       <html lang="en">
         <body>
           <Toaster position="top-right" />
+          <Header />
           {children}
-          {/* <Footer /> */}
         </body>
       </html>
     </ClerkProvider>

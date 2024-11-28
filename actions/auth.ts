@@ -1,7 +1,7 @@
-"use server";
+"use server"
 
-import { prisma } from "@/utils/prisma";
-import { currentUser } from "@clerk/nextjs/server";
+import { prisma } from "@/utils/prisma"
+import { currentUser } from "@clerk/nextjs/server"
 
 type UserData = {
   clerkId: string
@@ -15,7 +15,7 @@ export const onAuthenticatedUser = async () => {
   try {
     const clerk = await currentUser()
     if (!clerk) return { status: "nm fjkgnqmo23" }
-  
+
     const user = await prisma.user.findUnique({
       where: {
         clerkId: clerk.id,
@@ -30,7 +30,7 @@ export const onAuthenticatedUser = async () => {
       return {
         status: 200,
         id: user.id,
-        username: `${user.firstname} ${user.lastname}`,
+        username: `${user.firstName} ${user.lastName}`,
       }
     return {
       status: 404,
@@ -42,28 +42,24 @@ export const onAuthenticatedUser = async () => {
   }
 }
 
-export const onSignUpUser = async (data: {
-  email: string;
-}) => {
+export const onSignInUser = async (data: { email: string }) => {
   try {
     const dbUser = await prisma.user.findUnique({
       where: { email: data.email },
     })
 
-    
-  if(dbUser){
-    return {
-      status: 200,
-      message: "Already have an account",
-      id: dbUser.id,
-    }
-  } else {
+    if (dbUser) {
+      return {
+        status: 200,
+        message: "Sign in Succesful!",
+        id: dbUser.id,
+      }
+    } else {
       return {
         status: 400,
-        message: "User could not be created! Try again",
+        message: "User with this detail not found",
       }
     }
-    
   } catch (error) {
     return {
       status: 400,
@@ -72,7 +68,7 @@ export const onSignUpUser = async (data: {
   }
 }
 
-export async function onSignInUser(userData: UserData) {
+export async function onSignUpUser(userData: UserData) {
   try {
     // Check if the user already exists in the database
     let dbUser = await prisma.user.findUnique({
@@ -80,8 +76,13 @@ export async function onSignInUser(userData: UserData) {
     })
 
     let isNewUser = false
-
-    if (!dbUser) {
+    if (dbUser) {
+      return {
+        status: 400,
+        message: "Already have an account",
+        id: dbUser.id,
+      }
+    } else {
       // If the user doesn't exist, create a new user
       dbUser = await prisma.user.create({
         data: {
@@ -93,23 +94,18 @@ export async function onSignInUser(userData: UserData) {
         },
       })
       isNewUser = true
-    } else {
-      // If the user exists, update their information
-      dbUser = await prisma.user.update({
-        where: { clerkId: userData.clerkId },
-        data: {
-          email: userData.email,
-          firstName: userData.firstName,
-          lastName: userData.lastName,
-          // Update any other fields you want to keep in sync
-        },
-      })
     }
 
     // Return the user data and whether it's a new user
-    return { status: 200, success: true, user: dbUser, isNewUser, message: "User successfully created"}
+    return {
+      status: 200,
+      success: true,
+      user: dbUser,
+      isNewUser,
+      message: "User successfully created",
+    }
   } catch (error) {
-    console.error('Error processing user:', error)
-    return { success: false, error: 'Failed to process user' }
+    console.error("Error processing user:", error)
+    return { success: false, error: "Failed to process user" }
   }
 }

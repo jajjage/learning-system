@@ -13,12 +13,57 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  TEACHER
+  STUDENT
+}
 model User {
   id        String   @id @default(cuid())
   firstName String
   lastName  String
   email     String   @unique
   clerkId   String   @unique
+  role      Role     @default(STUDENT)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  Course Course[]
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  price       Float?
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isPublished   Boolean  @default(false)
+  teacher     User     @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  teacherId   String
+
+  category Category? @relation(fields: [categoryid], references: [id])
+  categoryid String?
+
+  Attachment Attachment[]
+}
+
+model Category {
+  id      String   @id @default(cuid())
+  name    String   @unique
+  courses Course[]
+}
+
+model Attachment {
+  id          String   @id @default(cuid())
+  name        String
+  url         String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  course     Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId   String
+
+
 }
