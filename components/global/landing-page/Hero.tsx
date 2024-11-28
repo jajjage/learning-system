@@ -4,25 +4,25 @@ import Link from "next/link"
 
 export function Hero() {
   return (
-    <div className="relative bg-gradient-to-r from-purple-100 to-blue-800 pt-24 pb-16 overflow-hidden">
+    <div className="relative h-[500px] sm:h-[500px] md:h-[600px] pt-32 pb-16 overflow-hidden">
       {/* Background Image */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0">
         <img
           src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2071&q=80"
           alt="Students learning"
-          className="w-full h-full object-cover opacity-50"
+          className="w-full h-screen object-cover object-center opacity-60"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/95 to-primary/85 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-400 mix-blend-multiply" />
       </div>
 
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center ">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-purple-800 to-white bg-clip-text text-transparent sm:text-5xl md:text-6xl">
+          <h1 className="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-purple-300 to-white bg-clip-text text-transparent sm:text-5xl md:text-6xl">
             <span className="block mb-2 ">Transform Your Learning</span>
             <span className="block ">Journey Today</span>
           </h1>
-          <p className="mt-3 font-semibold max-w-md mx-auto text-base text-secondary sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
+          <p className="mt-3 font-semibold max-w-md mx-auto text-base text-white sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
             Join our interactive platform where students and teachers come
             together to create an engaging learning experience. Start your
             educational journey with us.
@@ -38,11 +38,11 @@ export function Hero() {
               Watch Demo
             </button>
           </div>
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          {/* <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
             <div className="w-1 h-12 rounded-full bg-white/20 relative">
               <div className="w-1 h-4 bg-white rounded-full absolute top-0 animate-scroll" />
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

@@ -20,7 +20,7 @@ export default function RootLayout({
         <body>
           <Toaster position="top-right" />
           {children}
-          <Footer />
+          {/* <Footer /> */}
         </body>
       </html>
     </ClerkProvider>

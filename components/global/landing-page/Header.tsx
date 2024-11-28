@@ -39,12 +39,16 @@ export function Header() {
             </a>
           </nav>
           <div className="flex items-center space-x-4">
-            <button className="font-bold bg-gradient-to-r from-purple-600 to-blue-500 hover:text-purple-600 bg-clip-text text-transparent transition-colors">
-              Sign In
-            </button>
-            <button className="font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25">
-              Get Started
-            </button>
+            <Link href="/sign-in">
+              <button className="font-bold bg-gradient-to-r from-purple-600 to-blue-500 hover:text-purple-500 bg-clip-text text-transparent transition-colors">
+                Sign In
+              </button>
+            </Link>
+            <Link href="/sign-up">
+              <button className="font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25">
+                Get Started
+              </button>
+            </Link>
           </div>
         </div>
       </div>

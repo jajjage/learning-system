@@ -63,7 +63,9 @@ export default function SharedFeatures() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <Button>Search</Button>
+              <Button className="bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
+                Search
+              </Button>
             </div>
             {searchTerm && (
               <div className="mt-4">
