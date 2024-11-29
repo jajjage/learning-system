@@ -3,6 +3,7 @@ import "./globals.css"
 import { ClerkProvider } from "@clerk/nextjs"
 import { Toaster } from "react-hot-toast"
 import { Header } from "@/components/global/landing-page/Header"
+import ToastProvider from "@/components/providers/toaster"
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -18,8 +19,8 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body>
-          <Toaster position="top-right" />
           <Header />
+          <ToastProvider />
           {children}
         </body>
       </html>

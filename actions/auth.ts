@@ -51,6 +51,7 @@ export const onSignInUser = async (data: { email: string }) => {
     if (dbUser) {
       return {
         status: 200,
+        isNewUser: false,
         message: "Sign in Succesful!",
         id: dbUser.id,
       }
@@ -76,13 +77,7 @@ export async function onSignUpUser(userData: UserData) {
     })
 
     let isNewUser = false
-    if (dbUser) {
-      return {
-        status: 400,
-        message: "Already have an account",
-        id: dbUser.id,
-      }
-    } else {
+    if (!dbUser) {
       // If the user doesn't exist, create a new user
       dbUser = await prisma.user.create({
         data: {
@@ -94,6 +89,12 @@ export async function onSignUpUser(userData: UserData) {
         },
       })
       isNewUser = true
+    } else {
+      return {
+        status: 400,
+        message: "Already have an account",
+        id: dbUser.id,
+      }
     }
 
     // Return the user data and whether it's a new user

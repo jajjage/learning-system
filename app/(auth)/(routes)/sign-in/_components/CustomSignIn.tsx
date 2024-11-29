@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from "react"
 import { useForm, Controller } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
-import { useSignIn } from "@clerk/nextjs"
+import { useAuth, useSignIn } from "@clerk/nextjs"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { motion } from "framer-motion"
@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { GoogleAuthButton } from "@/app/(auth)/_components/GoogleSignin"
 import { onSignInUser, onSignUpUser } from "@/actions/auth"
+import { redirectToSignUp } from "@/hooks/useCustomSignIn"
 
 const schema = yup
   .object({
@@ -36,11 +37,21 @@ export function CustomSignIn() {
       password: "",
     },
   })
-
+  const { signOut } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
+  const [redirected, setRedirected] = useState(false)
   const { isLoaded, signIn, setActive } = useSignIn()
   const router = useRouter()
   const searchParams = useSearchParams()
+
+  const handleSignInError = () => {
+    if (redirected) return // Prevent multiple executions
+    setRedirected(true)
+
+    toast.error("Account not found. Redirecting to sign-up...")
+    const redirectUrl = searchParams.get("redirect_url")
+    router.push(`/sign-up${redirectUrl ? `?redirect_url=${redirectUrl}` : ""}`)
+  }
 
   const onSubmit = useCallback(
     async (data: FormData) => {
@@ -62,20 +73,18 @@ export function CustomSignIn() {
           toast.error("Sign in failed. Please try again.")
         }
       } catch (err: any) {
-        toast.error("Account not found. Redirecting to sign-up...")
-        const redirectUrl = searchParams.get("redirect_url")
-        router.push(
-          `/sign-up${redirectUrl ? `?redirect_url=${redirectUrl}` : ""}`,
-        )
-        if (err.errors[0].code === "form_identifier_not_found") {
-          toast.error("Account not found. Redirecting to sign-up...")
-          const redirectUrl = searchParams.get("redirect_url")
-          router.push(
-            `/sign-up${redirectUrl ? `?redirect_url=${redirectUrl}` : ""}`,
-          )
-        } else {
-          toast.error(err.errors[0].message)
-        }
+        await signOut()
+        handleSignInError()
+        // if (err.errors[0].code === "form_identifier_not_found") {
+        //   toast.error("Account not found. Redirecting to sign-up...")
+        //   const redirectUrl = searchParams.get("redirect_url")
+        //   router.push(
+        //     `/sign-up${redirectUrl ? `?redirect_url=${redirectUrl}` : ""}`,
+        //   )
+        // } else {
+        //   await signOut()
+        //   toast.error(err.errors[0].message)
+        // }
       } finally {
         setIsLoading(false)
       }

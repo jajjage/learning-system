@@ -35,6 +35,7 @@ export default function SignInCompletionClient({
     } else {
       if (isNewUser) {
         toast.success("Account created successfully!")
+        router.push(redirectUrl)
       } else {
         toast.success("Welcome back!")
         router.push(redirectUrl)
