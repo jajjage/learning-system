@@ -22,7 +22,7 @@ export default function CTASection({ role }: CTASectionProps) {
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col space-y-4">
-        <Link href="/sign-up">
+        <Link href={`/sign-up?role=${role.toLocaleUpperCase()}`}>
           <Button
             size="lg"
             className="w-full font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25"

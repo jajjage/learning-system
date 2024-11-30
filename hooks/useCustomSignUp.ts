@@ -1,10 +1,11 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { useSignUp } from "@clerk/nextjs"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "react-hot-toast"
-import { onSignInUser, onSignUpUser } from "@/actions/auth"
+import { onSignUpUser } from "@/actions/auth"
+import { Role } from "@prisma/client"
 
 export function useCustomSignUp() {
   const [isLoading, setIsLoading] = useState(false)
@@ -12,6 +13,7 @@ export function useCustomSignUp() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""])
   const { isLoaded, signUp, setActive } = useSignUp()
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   const handleSubmit = async (data: {
     firstName: string
@@ -68,10 +70,15 @@ export function useCustomSignUp() {
 
       await setActive({ session: completeSignUp.createdSessionId })
 
+      const role = searchParams.get("role")
+      const selectedRole = role === "STUDENT" ? Role.STUDENT : Role.TEACHER
+
+      console.log(role)
       const result = await onSignUpUser({
         firstName: signUp.firstName ?? "",
         lastName: signUp.lastName ?? "",
         email: signUp.emailAddress ?? "",
+        role: selectedRole,
         clerkId: completeSignUp.createdUserId ?? "",
       })
 

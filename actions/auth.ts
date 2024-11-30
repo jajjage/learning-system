@@ -2,12 +2,14 @@
 
 import { prisma } from "@/utils/prisma"
 import { currentUser } from "@clerk/nextjs/server"
+import { Role } from "@prisma/client"
 
 type UserData = {
   clerkId: string
   email: string
   firstName: string
   lastName: string
+  role: Role
   // Add any other fields you need
 }
 
@@ -42,10 +44,10 @@ export const onAuthenticatedUser = async () => {
   }
 }
 
-export const onSignInUser = async (data: { email: string }) => {
+export const onSignInUser = async (data: { clerkId: string }) => {
   try {
     const dbUser = await prisma.user.findUnique({
-      where: { email: data.email },
+      where: { clerkId: data.clerkId },
     })
 
     if (dbUser) {
@@ -85,6 +87,7 @@ export async function onSignUpUser(userData: UserData) {
           email: userData.email,
           firstName: userData.firstName,
           lastName: userData.lastName,
+          role: userData.role,
           // Add any other fields you want to store
         },
       })

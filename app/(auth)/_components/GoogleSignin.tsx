@@ -5,6 +5,9 @@ import { useGoogleAuth } from "@/hooks/authentication"
 import { FcGoogle } from "react-icons/fc"
 import { Loader2 } from "lucide-react"
 import { useSearchParams } from "next/navigation"
+import { useEffect } from "react"
+import { Role } from "@prisma/client"
+import { NONAME } from "dns"
 
 type GoogleAuthButtonProps = {
   method: "signup" | "signin"
@@ -13,8 +16,17 @@ type GoogleAuthButtonProps = {
 export const GoogleAuthButton = ({ method }: GoogleAuthButtonProps) => {
   const searchParams = useSearchParams()
   const redirectUrl = searchParams.get("redirect_url") || "/dashboard"
+  const roleUrl = searchParams.get("role") || ""
   localStorage.setItem("redirect_url", redirectUrl)
-  const { signUpWith, signInWith, isLoading } = useGoogleAuth()
+  const { signUpWith, signInWith, isLoading, setRole } = useGoogleAuth()
+
+  useEffect(() => {
+    if (roleUrl) {
+      const selectedRole = roleUrl === "STUDENT" ? Role.STUDENT : Role.TEACHER
+      setRole(selectedRole)
+    }
+  }, [])
+
   return (
     <Button
       {...(method === "signin"

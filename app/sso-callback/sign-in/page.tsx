@@ -1,20 +1,18 @@
-import { currentUser } from "@clerk/nextjs/server"
+import { auth, currentUser } from "@clerk/nextjs/server"
 import SignInCompletionClient from "@/app/(auth)/_components/SignInCompletionClient"
 import { onSignInUser } from "@/actions/auth"
 
 const SignInCompletionPage = async () => {
   try {
-    const user = await currentUser()
+    // Get the userId from auth() -- if null, the user is not signed in
+    const { userId } = await auth()
 
-    if (!user) {
+    if (!userId) {
       throw new Error("No user found")
     }
 
     const userData = {
-      clerkId: user.id,
-      email: user.emailAddresses[0]?.emailAddress ?? "",
-      firstName: user.firstName ?? "",
-      lastName: user.lastName ?? "",
+      clerkId: userId,
       // Add any other fields you want to pass
     }
 
