@@ -81,7 +81,7 @@ const CompleteOAuthCallback = async ({ searchParams }: PageProps) => {
     // Create user in database
     const result = await onSignUpUser({
       firstName: userDetails.firstName,
-      lastName: userDetails.lastName,
+      lastName: userDetails.lastName ?? " ",
       email: userDetails.email,
       role: role as Role,
       clerkId: userDetails.clerkId,

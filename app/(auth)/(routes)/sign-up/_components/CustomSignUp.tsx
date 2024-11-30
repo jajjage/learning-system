@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label"
 
 import { useCustomSignUp } from "@/hooks/useCustomSignUp"
 import { GoogleAuthButton } from "@/app/(auth)/_components/GoogleSignin"
+import Link from "next/link"
 
 const schema = yup
   .object({
@@ -246,6 +247,15 @@ export function CustomSignUp() {
               </div>
 
               <GoogleAuthButton method="signup" />
+              <div className="text-center text-sm">
+                Already have an account?{" "}
+                <Link
+                  href="/sign-in"
+                  className="font-medium text-purple-600 hover:text-purple-500"
+                >
+                  Sign in
+                </Link>
+              </div>
             </div>
           ) : (
             <div className="space-y-4">
