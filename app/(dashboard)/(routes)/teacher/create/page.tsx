@@ -1,9 +1,7 @@
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
 import React from "react"
 
-const CourseCreate = () => {
-  return <div>Create course</div>
+const CreateCourse = () => {
+  return <div>CreateCourse</div>
 }
 
-export default CourseCreate
+export default CreateCourse

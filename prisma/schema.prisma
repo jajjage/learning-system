@@ -26,26 +26,27 @@ model User {
   role      Role     @default(STUDENT)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  Course Course[]
 }
 
 model Course {
   id          String   @id @default(cuid())
   title       String
+  userId      String
   description String?
   price       Float?
   imageUrl    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
   isPublished   Boolean  @default(false)
-  teacher     User     @relation(fields: [teacherId], references: [id], onDelete: Cascade)
-  teacherId   String
+ 
 
   category Category? @relation(fields: [categoryid], references: [id])
   categoryid String?
 
   Attachment Attachment[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([categoryid])
 }
 
 model Category {
@@ -65,5 +66,5 @@ model Attachment {
   course     Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseId   String
 
-
+  @@index([courseId])
 }

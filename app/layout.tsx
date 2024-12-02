@@ -4,6 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs"
 import { Toaster } from "react-hot-toast"
 import { Header } from "@/components/global/landing-page/Header"
 import ToastProvider from "@/components/providers/toaster"
+import { ReactQueryProvider } from "@/react-query/provider"
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -20,7 +21,10 @@ export default function RootLayout({ children, params }: PageProps) {
         <body>
           <Header onPage={"/"} />
           <ToastProvider />
-          {children}
+          {/* <ReduxProvider> */}
+          <ReactQueryProvider>{children}</ReactQueryProvider>
+          {/* </ReduxProvider> */}
+          <Toaster />
         </body>
       </html>
     </ClerkProvider>
