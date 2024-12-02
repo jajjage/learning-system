@@ -38,15 +38,15 @@ model Course {
   isPublished   Boolean  @default(false)
  
 
-  category Category? @relation(fields: [categoryid], references: [id])
-  categoryid String?
+  category Category? @relation(fields: [categoryId], references: [id])
+  categoryId String?
 
   Attachment Attachment[]
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@index([categoryid])
+  @@index([categoryId])
 }
 
 model Category {
