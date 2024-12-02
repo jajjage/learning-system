@@ -1,7 +1,22 @@
 import React from "react"
+import CreateCourse from "../courses/_components/CreateCourse"
+import { auth } from "@clerk/nextjs/server"
 
-const CreateCourse = () => {
-  return <div>CreateCourse</div>
+interface CourseProps {
+  userId: string
 }
 
-export default CreateCourse
+const coursePage = async () => {
+  const { userId } = await auth()
+  if (!userId) {
+    console.log("no user id")
+  }
+
+  return (
+    <div>
+      <CreateCourse userId={userId ?? ""} />
+    </div>
+  )
+}
+
+export default coursePage

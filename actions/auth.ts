@@ -31,7 +31,7 @@ export const onAuthenticatedUser = async () => {
     if (user)
       return {
         status: 200,
-        id: user.id,
+        userId: user.id,
         username: `${user.firstName} ${user.lastName}`,
       }
     return {
