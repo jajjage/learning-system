@@ -1,5 +1,5 @@
 import React from "react"
-import CreateCourse from "../courses/_components/CreateCourse"
+import CreateCourse from "../_components/CreateCourse"
 import { auth } from "@clerk/nextjs/server"
 
 interface CourseProps {
@@ -14,7 +14,7 @@ const coursePage = async () => {
 
   return (
     <div>
-      <CreateCourse userId={userId ?? ""} />
+      <CreateCourse userId={userId || ""} />
     </div>
   )
 }

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/form"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { CourseSchema } from "@/app/(dashboard)/(routes)/teacher/courses/_components/schema"
+import { CourseSchema } from "@/app/(dashboard)/(routes)/teacher/_components/schema"
 import { useCreateCourse } from "@/hooks/course"
 import { z } from "zod"
 import { useRouter } from "next/navigation"

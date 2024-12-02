@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "react-hot-toast"
 import { onCreateCourse } from "@/actions/course"
-import { CourseSchema } from "@/app/(dashboard)/(routes)/teacher/courses/_components/schema"
+import { CourseSchema } from "@/app/(dashboard)/(routes)/teacher/_components/schema"
 import { z } from "zod"
 
 type CreateCourseData = z.infer<typeof CourseSchema>
