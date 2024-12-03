@@ -37,7 +37,7 @@ const CreateCourse = ({ userId }: createCourseProps) => {
     try {
       const data = await createCourse(values)
       if (data.status == 200) {
-        router.push(`/teacher/courses/${data.id}`)
+        router.push(`/teacher/courses/${data.id}/edit`)
       } else {
         router.push("/teacher/courses/")
       }

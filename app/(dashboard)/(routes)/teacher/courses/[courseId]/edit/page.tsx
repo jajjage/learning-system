@@ -3,9 +3,12 @@ import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import TitleForm from "../_components/TitleForm"
 import DescriptionForm from "../_components/DescriptionForm"
-import PriceForm from "../_components/PriceForm"
-import ImageForm from "../_components/ImageForm"
-import CategoryForm from "../_components/CategoryForm"
+// import PriceForm from "../_components/PriceForm"
+// import CategoryForm from "../_components/CategoryForm"
+
+import { prisma } from "@/utils/prisma"
+import { IconBadge } from "@/components/global/IconBadge"
+import { LayoutDashboard } from "lucide-react"
 
 export default async function CourseEditPage({
   params,
@@ -24,38 +27,40 @@ export default async function CourseEditPage({
     redirect("/")
   }
 
-  return (
-    <div className="p-6 max-w-5xl mx-auto">
-      <div className="mb-8 space-y-4">
-        <h1 className="text-3xl font-bold">Edit Your Course</h1>
-        <p className="text-xl text-muted-foreground">
-          Customize your course details below. Each section can be edited
-          independently. Click on the edit button to make changes, and don't
-          forget to save your updates.
-        </p>
-      </div>
+  const requiredFields = [
+    course.title,
+    course.description,
+    course.imageUrl,
+    course.categoryId,
+    course.price,
+  ]
+  const totalFields = requiredFields.length
+  const completedFields = requiredFields.filter(Boolean).length
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="col-span-1">
-          <TitleForm initialTitle={course.title} courseId={course.id} />
+  const completionText = `(${completedFields}/${totalFields})`
+  return (
+    <div className="p-6">
+      <div className="max-w-5xl mx-auto">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Course Setup</h1>
+            <p className="text-sm text-slate-600 mt-2">
+              Complete all fields {completionText}
+            </p>
+          </div>
         </div>
-        <div className="col-span-1 md:col-span-2">
-          <DescriptionForm
-            initialDescription={course.description}
-            courseId={course.id}
-          />
-        </div>
-        <div className="col-span-1">
-          <PriceForm initialPrice={course.price} courseId={course.id} />
-        </div>
-        <div className="col-span-1 md:col-span-2">
-          <ImageForm initialImageUrl={course.imageUrl} courseId={course.id} />
-        </div>
-        <div className="col-span-1">
-          <CategoryForm
-            initialCategoryId={course.categoryId}
-            courseId={course.id}
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
+          <div>
+            <div className="flex items-center gap-x-2">
+              <IconBadge icon={LayoutDashboard} />
+              <h2 className="text-xl">Customize Your Course</h2>
+            </div>
+            <TitleForm initialTitle={course} courseId={course.id} />
+            <DescriptionForm
+              initialData={{ description: course.description ?? "" }}
+              courseId={course.id}
+            />
+          </div>
         </div>
       </div>
     </div>
