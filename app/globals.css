@@ -73,3 +73,5 @@
 .animate-scroll {
   animation: scroll 1.5s ease-in-out infinite;
 }
+
+/* @import "~@uplaodthing/react/styles.css"; */

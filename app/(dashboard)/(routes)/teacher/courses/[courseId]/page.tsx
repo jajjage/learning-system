@@ -1,27 +1,30 @@
 import { getCourse } from "@/actions/course"
 import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
-import TitleForm from "../_components/TitleForm"
-import DescriptionForm from "../_components/DescriptionForm"
+import TitleForm from "./_components/TitleForm"
+import DescriptionForm from "./_components/DescriptionForm"
 // import PriceForm from "../_components/PriceForm"
 // import CategoryForm from "../_components/CategoryForm"
 
-import { prisma } from "@/utils/prisma"
 import { IconBadge } from "@/components/global/IconBadge"
 import { LayoutDashboard } from "lucide-react"
+import ImageForm from "./_components/ImageForm"
 
-export default async function CourseEditPage({
-  params,
-}: {
-  params: { courseId: string }
-}) {
+interface PageProps {
+  params: Promise<{
+    courseId: string
+  }>
+}
+
+export default async function CourseEditPage({ params }: PageProps) {
   const { userId } = await auth()
 
   if (!userId) {
     redirect("/")
   }
 
-  const course = await getCourse(params.courseId)
+  const { courseId } = await params
+  const course = await getCourse(courseId)
 
   if (!course) {
     redirect("/")
@@ -55,11 +58,13 @@ export default async function CourseEditPage({
               <IconBadge icon={LayoutDashboard} />
               <h2 className="text-xl">Customize Your Course</h2>
             </div>
-            <TitleForm initialTitle={course} courseId={course.id} />
-            <DescriptionForm
-              initialData={{ description: course.description ?? "" }}
-              courseId={course.id}
-            />
+            <div className="grid gap-6 mt-16">
+              <div className="flex flex-col gap-6">
+                <TitleForm initialTitle={course} courseId={course.id} />
+                <DescriptionForm initialData={course} courseId={course.id} />
+                <ImageForm initialData={course} courseId={course.id} />
+              </div>
+            </div>
           </div>
         </div>
       </div>

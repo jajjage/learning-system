@@ -3,6 +3,8 @@ import "./globals.css"
 import { ClerkProvider } from "@clerk/nextjs"
 import { Toaster } from "react-hot-toast"
 import { Header } from "@/components/global/landing-page/Header"
+import "@uploadthing/react/styles.css"
+
 import ToastProvider from "@/components/providers/toaster"
 import { ReactQueryProvider } from "@/react-query/provider"
 

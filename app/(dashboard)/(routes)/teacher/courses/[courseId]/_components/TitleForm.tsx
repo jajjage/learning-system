@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Pencil } from "lucide-react"
 import { useTitleMutation } from "@/hooks/course"
 import { useForm } from "react-hook-form"
@@ -25,6 +25,13 @@ interface TitleFormProps {
 
 export default function TitleForm({ initialTitle, courseId }: TitleFormProps) {
   const [isEditing, setIsEditing] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [isEditing])
 
   const { mutate: updateTitle, isPending } = useTitleMutation(courseId)
 
@@ -40,7 +47,7 @@ export default function TitleForm({ initialTitle, courseId }: TitleFormProps) {
   }
 
   return (
-    <div className="mt-6 bg-slate rounded-md border border-zinc-200 p-4">
+    <div className="mt-6 bg-slate-200 rounded-md border border-zinc-200 p-4">
       <div className="p-6">
         <div className="font-medium flex items-center justify-between">
           <h3 className="text-lg">Course Title</h3>
@@ -71,9 +78,11 @@ export default function TitleForm({ initialTitle, courseId }: TitleFormProps) {
                   <FormItem>
                     <FormControl>
                       <Input
-                        disabled={isSubmitting}
-                        placeholder="e.g 'Advanced web development'"
                         {...field}
+                        ref={inputRef} // This will now only pass the ref once, without overwriting
+                        disabled={isSubmitting}
+                        className="bg-slate-50"
+                        placeholder="e.g 'Advanced web development'"
                       />
                     </FormControl>
                     <FormMessage />
