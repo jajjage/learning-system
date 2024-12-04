@@ -1,68 +1,76 @@
 "use server"
-
-import { auth } from "@clerk/nextjs/server"
 import { prisma } from "@/utils/prisma"
+import { auth } from "@clerk/nextjs/server"
 
-export async function createAttachment(
-  courseId: string,
-  url: string,
-  name: string,
-) {
-  const { userId } = await auth()
-
-  if (!userId) {
-    throw new Error("Unauthorized")
-  }
-
+export const uploadAttachment = async (courseId: string, url: string) => {
   try {
+    const { userId } = await auth()
+
+    if (!userId) {
+      throw new Error("Unauthorized")
+    }
+
+    const courseOwner = await prisma.course.findUnique({
+      where: {
+        id: courseId,
+        userId: userId,
+      },
+    })
+
+    if (!courseOwner) {
+      throw new Error("Unauthorized")
+    }
+
     const attachment = await prisma.attachment.create({
       data: {
         url,
-        name,
-        courseId,
+        name: url.split("/").pop() || url,
+        courseId: courseId,
       },
     })
 
     return attachment
   } catch (error) {
-    console.error("Error creating attachment:", error)
-    throw new Error("Failed to create attachment")
+    console.log("[COURSE_ID_ATTACHMENTS]", error)
+    throw new Error("Failed to add attachment")
   }
 }
 
-export async function deleteAttachment(attachmentId: string) {
-  const { userId } = await auth()
-
-  if (!userId) {
-    throw new Error("Unauthorized")
-  }
-
+export const deleteAttachment = async (
+  courseId: string,
+  attachmentId: string,
+) => {
   try {
-    await prisma.attachment.delete({
-      where: { id: attachmentId },
+    const { userId } = await auth()
+
+    if (!userId) {
+      throw new Error("Unauthorized")
+    }
+
+    const courseOwner = await prisma.course.findUnique({
+      where: {
+        id: courseId,
+        userId: userId,
+      },
+      include: {
+        Attachment: true,
+      },
     })
-    return { success: true }
+
+    if (!courseOwner) {
+      throw new Error("Unauthorized")
+    }
+
+    const attachment = await prisma.attachment.delete({
+      where: {
+        id: attachmentId,
+        courseId: courseId,
+      },
+    })
+
+    return attachment
   } catch (error) {
-    console.error("Failed to delete attachment:", error)
+    console.log("[ATTACHMENT_ID_DELETE]", error)
     throw new Error("Failed to delete attachment")
-  }
-}
-
-export async function getAttachments(courseId: string) {
-  const { userId } = await auth()
-
-  if (!userId) {
-    throw new Error("Unauthorized")
-  }
-
-  try {
-    const attachments = await prisma.attachment.findMany({
-      where: { courseId },
-      select: { id: true, name: true, url: true },
-    })
-    return attachments
-  } catch (error) {
-    console.error("Failed to fetch attachments:", error)
-    throw new Error("Failed to fetch attachments")
   }
 }

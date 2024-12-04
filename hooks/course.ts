@@ -143,9 +143,6 @@ export const useImageMutation = (courseId: string) => {
       queryClient.setQueryData(["course", courseId], context.previousCourse)
       toast.error("Failed to update course image")
     },
-    onSuccess: () => {
-      toast.success("Course image updated successfully")
-    },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["course", courseId] })
     },

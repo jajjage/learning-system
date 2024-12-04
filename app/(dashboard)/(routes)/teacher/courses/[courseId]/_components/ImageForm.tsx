@@ -1,14 +1,16 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState } from "react"
 import Image from "next/image"
-import { ImageIcon, Pencil, PlusCircle, Upload, X } from "lucide-react"
+import { ImageIcon, Pencil, PlusCircle } from "lucide-react"
 import { useImageMutation } from "@/hooks/course"
 import { Course } from "@prisma/client"
 import { z } from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { useRouter } from "next/navigation"
 import { FileUpload } from "@/components/global/FileUpload"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import toast from "react-hot-toast"
 
 interface ImageFormProps {
   initialData: Course
@@ -17,74 +19,89 @@ interface ImageFormProps {
 
 const imageSchema = z.object({
   imageUrl: z.string().min(1, {
-    message: "Upload image",
-  }), // Allow null values here
+    message: "Image is required",
+  }),
 })
 
 export default function ImageForm({ initialData, courseId }: ImageFormProps) {
-  // const [imageUrl, setImageUrl] = useState(initialData)
   const [isEditing, setIsEditing] = useState(false)
+  const router = useRouter()
 
   const { mutate: updateImage } = useImageMutation(courseId)
 
-  const onSubmit = (values: z.infer<typeof imageSchema>) => {
-    updateImage(values.imageUrl, {
-      onSuccess: () => {
-        setIsEditing(false)
-      },
-    })
+  const onSubmit = async (values: z.infer<typeof imageSchema>) => {
+    try {
+      updateImage(values.imageUrl, {
+        onSuccess: () => {
+          toast.success("Course image updated")
+          setIsEditing(false)
+          router.refresh()
+        },
+        onError: () => {
+          toast.error("Failed to update course image")
+        },
+      })
+    } catch (error) {
+      console.error("Failed to update course image:", error)
+      toast.error("An unexpected error occurred")
+    }
   }
 
   return (
-    <div className="mt-6 bg-slate-200 rounded-md border border-zinc-200 p-4">
-      <div className="p-6">
-        <div className="font-medium flex items-center justify-between">
-          <h3 className="text-lg">Course Image</h3>
-          <button
-            onClick={() => setIsEditing(!isEditing)}
-            className="text-sm text-blue-600 hover:underline flex items-center"
-          >
+    <Card className="mt-6">
+      <CardHeader>
+        <CardTitle className="flex items-center justify-between">
+          Course Image
+          <Button onClick={() => setIsEditing(!isEditing)} variant="ghost">
             {isEditing && <>Cancel</>}
             {!isEditing && !initialData.imageUrl && (
               <>
-                <PlusCircle className="h-4 w-4 r-2" />
+                <PlusCircle className="h-4 w-4 mr-2" />
                 Add an image
               </>
             )}
             {!isEditing && initialData.imageUrl && (
               <>
                 <Pencil className="h-4 w-4 mr-2" />
-                Edit
+                Change image
               </>
             )}
-          </button>
-        </div>
-        {!isEditing &&
-          (!initialData.imageUrl ? (
-            <div className="flex items-center justify-center h-60 bg-slate-200 rounded-md">
-              <ImageIcon className="h-10 w-10 text-slate-500" />
-            </div>
-          ) : (
-            <div className="relative aspect-video mt-2">
+          </Button>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {!isEditing && (
+          <div className="aspect-video mt-2 relative">
+            {!initialData.imageUrl ? (
+              <div className="flex items-center justify-center h-60 bg-slate-200 rounded-md">
+                <ImageIcon className="h-10 w-10 text-slate-500" />
+              </div>
+            ) : (
               <Image
-                alt="upload"
+                alt="Course image"
                 fill
                 src={initialData.imageUrl}
                 className="object-cover rounded-md"
               />
-            </div>
-          ))}
-        {isEditing && (
-          <FileUpload
-            endpoint="courseImage"
-            onChange={(url) => {
-              if (url) {
-                onSubmit({ imageUrl: url })
-              }
-            }}
-          />
+            )}
+          </div>
         )}
-      </div>
-    </div>
+        {isEditing && (
+          <div>
+            <FileUpload
+              endpoint="courseImage"
+              onChange={(url) => {
+                if (url) {
+                  onSubmit({ imageUrl: url })
+                }
+              }}
+            />
+            <div className="text-xs text-muted-foreground mt-4">
+              16:9 aspect ratio recommended
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   )
 }

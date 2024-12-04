@@ -1,4 +1,5 @@
 "use client"
+
 import { useCategoryMutation } from "@/hooks/course"
 import { Pencil } from "lucide-react"
 import { useForm } from "react-hook-form"
@@ -11,19 +12,21 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form"
-import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
 import { Course } from "@prisma/client"
 import { useState } from "react"
 import { ComboBox } from "@/components/global/ComboBox"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface CategoryFormProps {
   initialData: Course
   courseId: string
   options: { label: string; value: string }[]
 }
+
 const categorySchema = z.object({
-  categoryId: z.string().min(1), // Allow null values here
+  categoryId: z.string().min(1),
 })
 
 export default function CategoryForm({
@@ -49,36 +52,41 @@ export default function CategoryForm({
       onSuccess: () => setIsEditing(false),
     })
   }
+
   const selectedOption = options.find(
     (option) => option.value === initialData.categoryId,
   )
+
   return (
-    <div className="mt-6 bg-slate-200 rounded-md border border-zinc-200 p-4">
-      <div className="p-6">
-        <div className="font-medium flex items-center justify-between">
-          <h3 className="text-lg">Course Description</h3>
-          <button
+    <Card className="mt-6">
+      <CardHeader>
+        <CardTitle className="flex items-center justify-between">
+          Course Category
+          <Button
             onClick={() => setIsEditing(!isEditing)}
-            className="text-sm text-blue-600 hover:underline"
+            variant="ghost"
+            className="flex items-center gap-x-2"
           >
             {isEditing ? (
               <>Cancel</>
             ) : (
               <>
-                <Pencil className="h-4 w-4 mr-2 inline" />
-                Edit
+                <Pencil className="h-4 w-4" />
+                Edit category
               </>
             )}
-          </button>
-        </div>
+          </Button>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
         {!isEditing ? (
           <p
             className={cn(
-              "text-sm mt-2",
-              !initialData.categoryId && "text-slate-400 italic",
+              "text-sm",
+              !initialData.categoryId && "text-slate-500 italic",
             )}
           >
-            {selectedOption?.label || "No category provided"}
+            {selectedOption?.label || "No category selected"}
           </p>
         ) : (
           <Form {...form}>
@@ -95,19 +103,15 @@ export default function CategoryForm({
                   </FormItem>
                 )}
               />
-              <div className="flex justify-cnter gap-x-2 mt-5">
-                <button
-                  type="submit"
-                  disabled={!isValid || isSubmitting}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50"
-                >
+              <div className="flex justify-end gap-x-2 mt-4">
+                <Button type="submit" disabled={!isValid || isSubmitting}>
                   Save
-                </button>
+                </Button>
               </div>
             </form>
           </Form>
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 }

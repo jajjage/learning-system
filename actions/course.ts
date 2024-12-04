@@ -32,6 +32,9 @@ export async function getCourse(courseId: string) {
       where: {
         id: courseId,
       },
+      include: {
+        Attachment: true,
+      },
     })
     return course
   } catch (error) {
