@@ -1,4 +1,4 @@
-import { getCourse } from "@/actions/course"
+import { getCategories, getCourse } from "@/actions/course"
 import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import TitleForm from "./_components/TitleForm"
@@ -9,6 +9,7 @@ import DescriptionForm from "./_components/DescriptionForm"
 import { IconBadge } from "@/components/global/IconBadge"
 import { LayoutDashboard } from "lucide-react"
 import ImageForm from "./_components/ImageForm"
+import CategoryForm from "./_components/CategoryForm"
 
 interface PageProps {
   params: Promise<{
@@ -25,6 +26,7 @@ export default async function CourseEditPage({ params }: PageProps) {
 
   const { courseId } = await params
   const course = await getCourse(courseId)
+  const categories = await getCategories()
 
   if (!course) {
     redirect("/")
@@ -63,6 +65,14 @@ export default async function CourseEditPage({ params }: PageProps) {
                 <TitleForm initialTitle={course} courseId={course.id} />
                 <DescriptionForm initialData={course} courseId={course.id} />
                 <ImageForm initialData={course} courseId={course.id} />
+                <CategoryForm
+                  initialData={course}
+                  courseId={course.id}
+                  options={categories.map((category) => ({
+                    label: category.name,
+                    value: category.id,
+                  }))}
+                />
               </div>
             </div>
           </div>
