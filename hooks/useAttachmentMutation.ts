@@ -2,22 +2,53 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { uploadAttachment, deleteAttachment } from "@/actions/upload-attachment"
 import toast from "react-hot-toast"
 
+interface UploadAttachmentPayload {
+  url: string
+  name: string
+  size: number
+}
+
 export const useUploadAttachmentMutation = (courseId: string) => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (url: string) => uploadAttachment(courseId, url),
-    onMutate: async (url) => {
+    mutationFn: async (payload: UploadAttachmentPayload) => {
+      console.log("useUploadAttachmentMutation called with payload:", payload)
+
+      if (
+        !payload ||
+        typeof payload !== "object" ||
+        !payload.url ||
+        !payload.name ||
+        typeof payload.size !== "number"
+      ) {
+        console.error("Invalid payload:", payload)
+        throw new Error("Invalid payload for attachment upload")
+      }
+
+      return await uploadAttachment(
+        courseId,
+        payload.url,
+        payload.name,
+        payload.size,
+      )
+    },
+    onMutate: async (payload) => {
       await queryClient.cancelQueries({ queryKey: ["course", courseId] })
       const previousCourse = queryClient.getQueryData(["course", courseId])
-      queryClient.setQueryData(["course", courseId], (old: any) => ({
-        ...old,
-        Attachment: { name: url.split("/").pop() || url, url },
-      }))
+      queryClient.setQueryData(["course", courseId], (old: any) => {
+        if (!old) return { Attachment: [{ ...payload }] }
+        return {
+          ...old,
+          Attachment: [...(old.Attachment || []), { ...payload }],
+        }
+      })
       return { previousCourse }
     },
-    onError: (err, newAttachment, context: any) => {
+    onError: (error: any, variables, context: any) => {
+      console.error("Mutation error:", error)
+      console.error("Mutation variables:", variables)
       queryClient.setQueryData(["course", courseId], context.previousCourse)
-      toast.error("Failed to upload attachment here")
+      toast.error(error.message || "Failed to upload attachment")
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["course", courseId] })

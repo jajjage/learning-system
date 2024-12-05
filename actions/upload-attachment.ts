@@ -2,7 +2,12 @@
 import { prisma } from "@/utils/prisma"
 import { auth } from "@clerk/nextjs/server"
 
-export const uploadAttachment = async (courseId: string, url: string) => {
+export const uploadAttachment = async (
+  courseId: string,
+  url: string,
+  name: string,
+  size: number,
+) => {
   try {
     const { userId } = await auth()
 
@@ -24,7 +29,8 @@ export const uploadAttachment = async (courseId: string, url: string) => {
     const attachment = await prisma.attachment.create({
       data: {
         url,
-        name: url.split("/").pop() || url,
+        name,
+        size,
         courseId: courseId,
       },
     })
