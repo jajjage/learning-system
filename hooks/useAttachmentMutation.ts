@@ -39,7 +39,10 @@ export const useUploadAttachmentMutation = (courseId: string) => {
         if (!old) return { Attachment: [{ ...payload }] }
         return {
           ...old,
-          Attachment: [...(old.Attachment || []), { ...payload }],
+          Attachment: [
+            ...(Array.isArray(old?.Attachments) ? old.Attachments : []),
+            { ...payload },
+          ],
         }
       })
       return { previousCourse }
@@ -66,7 +69,10 @@ export const useDeleteAttachmentMutation = (courseId: string) => {
       const previousCourse = queryClient.getQueryData(["course", courseId])
       queryClient.setQueryData(["course", courseId], (old: any) => ({
         ...old,
-        Attachment: { id: attachmentId },
+        Attachment: [
+          ...(Array.isArray(old?.Attachments) ? old.Attachments : []),
+          { id: attachmentId },
+        ],
       }))
       return { previousCourse }
     },
