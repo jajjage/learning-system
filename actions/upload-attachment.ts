@@ -59,7 +59,7 @@ export const deleteAttachment = async (
         userId: userId,
       },
       include: {
-        Attachment: true,
+        attachments: true,
       },
     })
 

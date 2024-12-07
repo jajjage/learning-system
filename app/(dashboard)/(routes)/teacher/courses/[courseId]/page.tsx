@@ -14,6 +14,7 @@ import {
   ListChecksIcon as ListCheck,
 } from "lucide-react"
 import AttachmentForm from "./_components/AttachmentForm"
+import ChapterForm from "./_components/ChapterForm"
 
 interface PageProps {
   params: {
@@ -21,14 +22,20 @@ interface PageProps {
   }
 }
 
-export default async function CourseEditPage({ params }: PageProps) {
+export default async function CourseEditPage(context: {
+  params: { courseId: string }
+}) {
+  const resolvedParams = await context.params
+
   const { userId } = await auth()
 
   if (!userId) {
     return redirect("/")
   }
 
-  const course = await getCourse(params.courseId)
+  console.log("Resolved Params:", resolvedParams)
+  const courseId = resolvedParams.courseId
+  const course = await getCourse(courseId, userId)
   const categories = await getCategories()
 
   if (!course) {
@@ -41,6 +48,7 @@ export default async function CourseEditPage({ params }: PageProps) {
     course.imageUrl,
     course.categoryId,
     course.price,
+    course.chapters.some((chapter) => chapter.isPublished),
   ]
   const totalFields = requiredFields.length
   const completedFields = requiredFields.filter(Boolean).length
@@ -84,7 +92,7 @@ export default async function CourseEditPage({ params }: PageProps) {
                 <IconBadge icon={ListCheck} />
                 <h2 className="text-xl">Course Chapters</h2>
               </div>
-              <div className="mt-4">TODO: Chapters</div>
+              <ChapterForm initialData={course} courseId={course.id} />
             </div>
             <div>
               <div className="flex items-center gap-x-2">

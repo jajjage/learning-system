@@ -12,8 +12,6 @@ export const useUploadAttachmentMutation = (courseId: string) => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (payload: UploadAttachmentPayload) => {
-      console.log("useUploadAttachmentMutation called with payload:", payload)
-
       if (
         !payload ||
         typeof payload !== "object" ||
@@ -39,8 +37,8 @@ export const useUploadAttachmentMutation = (courseId: string) => {
         if (!old) return { Attachment: [{ ...payload }] }
         return {
           ...old,
-          Attachment: [
-            ...(Array.isArray(old?.Attachments) ? old.Attachments : []),
+          attachments: [
+            ...(Array.isArray(old?.attachments) ? old.attachments : []),
             { ...payload },
           ],
         }
@@ -69,8 +67,8 @@ export const useDeleteAttachmentMutation = (courseId: string) => {
       const previousCourse = queryClient.getQueryData(["course", courseId])
       queryClient.setQueryData(["course", courseId], (old: any) => ({
         ...old,
-        Attachment: [
-          ...(Array.isArray(old?.Attachments) ? old.Attachments : []),
+        attachments: [
+          ...(Array.isArray(old?.attachments) ? old.attachments : []),
           { id: attachmentId },
         ],
       }))

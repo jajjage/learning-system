@@ -26,14 +26,25 @@ export const onCreateCourse = async (userId: string, title: string) => {
   }
 }
 
-export async function getCourse(courseId: string) {
+export async function getCourse(courseId: string, userId: string) {
   try {
     const course = await prisma.course.findUnique({
       where: {
         id: courseId,
+        userId,
       },
       include: {
-        Attachment: true,
+        chapters: {
+          orderBy: {
+            position: "asc",
+          },
+        },
+
+        attachments: {
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
       },
     })
     return course

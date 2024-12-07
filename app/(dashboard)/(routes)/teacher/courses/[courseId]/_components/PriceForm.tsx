@@ -62,7 +62,7 @@ export default function PriceForm({ initialData, courseId }: PriceFormProps) {
   }
 
   return (
-    <Card className="mt-6">
+    <Card className="mt-6 bg-slate-100">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           Course Price

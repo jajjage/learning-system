@@ -29,7 +29,7 @@ import toast from "react-hot-toast"
 import { url } from "inspector"
 
 interface AttachmentFormProps {
-  initialData: Course & { Attachment: Attachment[] }
+  initialData: Course & { attachments: Attachment[] }
   courseId: string
 }
 
@@ -57,7 +57,6 @@ export default function AttachmentForm({
     useDeleteAttachmentMutation(courseId)
 
   const onSubmit = (values: z.infer<typeof attachmentSchema>) => {
-    console.log("Submitting attachment:", values)
     const payload = {
       url: values.url,
       name: values.name,
@@ -131,7 +130,7 @@ export default function AttachmentForm({
   }
 
   return (
-    <Card className="mt-6">
+    <Card className="mt-6 bg-slate-100">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           Course Attachments
@@ -153,12 +152,12 @@ export default function AttachmentForm({
       <CardContent>
         {!isEditing && (
           <ul className="space-y-2">
-            {initialData.Attachment.length === 0 && (
+            {initialData.attachments.length === 0 && (
               <li className="text-sm text-muted-foreground">
                 No attachments yet
               </li>
             )}
-            {initialData.Attachment.map((attachment) => (
+            {initialData.attachments.map((attachment) => (
               <TooltipProvider key={attachment.id}>
                 <Tooltip>
                   <TooltipTrigger asChild>

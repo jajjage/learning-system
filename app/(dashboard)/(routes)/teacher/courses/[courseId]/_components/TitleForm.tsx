@@ -57,7 +57,7 @@ export default function TitleForm({ initialData, courseId }: TitleFormProps) {
   }
 
   return (
-    <Card className="mt-6">
+    <Card className="mt-6 bg-slate-100">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           Course Title
