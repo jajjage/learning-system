@@ -10,6 +10,7 @@ import MuxPlayer from "@mux/mux-player-react"
 import { Button } from "@/components/ui/button"
 import { FileUpload } from "@/components/global/FileUpload"
 import { useUpdateChapterVideoMutation } from "@/hooks/useChapterMutation"
+import toast from "react-hot-toast"
 
 interface ChapterVideoFormProps {
   initialData: Chapter & { muxData?: MuxData | null }
@@ -27,6 +28,7 @@ export const ChapterVideoForm = ({
   chapterId,
 }: ChapterVideoFormProps) => {
   const [isEditing, setIsEditing] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
 
   const toggleEdit = () => setIsEditing((current) => !current)
 
@@ -38,20 +40,26 @@ export const ChapterVideoForm = ({
   )
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    updateChapterVideoMutation.mutate(values, {
-      onSuccess: () => {
-        toggleEdit()
-        router.refresh()
-      },
-    })
+    try {
+      setIsUploading(true)
+      await updateChapterVideoMutation.mutateAsync(values)
+      toast.success("Video uploaded successfully")
+      toggleEdit()
+      router.refresh()
+    } catch (error) {
+      console.error("Upload error:", error)
+      toast.error("Something went wrong during the upload. Please try again.")
+    } finally {
+      setIsUploading(false)
+    }
   }
 
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
         Chapter video
-        <Button onClick={toggleEdit} variant="ghost">
-          {isEditing && <>Cancel</>}
+        <Button onClick={toggleEdit} variant="ghost" disabled={isUploading}>
+          {isEditing && "Cancel"}
           {!isEditing && !initialData.videoUrl && (
             <>
               <PlusCircle className="h-4 w-4 mr-2" />
@@ -79,7 +87,7 @@ export const ChapterVideoForm = ({
       {isEditing && (
         <div>
           <FileUpload
-            endpoint={"courseAttachment"}
+            endpoint={`courseAttachment`}
             onChange={(url) => {
               if (url) {
                 onSubmit({ videoUrl: url })
@@ -87,14 +95,21 @@ export const ChapterVideoForm = ({
             }}
           />
           <div className="text-xs text-muted-foreground mt-4">
-            Upload this chapter&apos;s video
+            Upload this chapter's video. Please be patient, as video processing
+            may take several minutes.
           </div>
         </div>
       )}
       {initialData.videoUrl && !isEditing && (
         <div className="text-xs text-muted-foreground mt-2">
-          Videos can take a few minutes to process. Refresh the page if video
-          does not appear.
+          Videos can take a few minutes to process. Refresh the page if the
+          video does not appear.
+        </div>
+      )}
+      {isUploading && (
+        <div className="text-sm text-muted-foreground mt-2">
+          Uploading and processing video... This may take several minutes.
+          Please do not close this page.
         </div>
       )}
     </div>

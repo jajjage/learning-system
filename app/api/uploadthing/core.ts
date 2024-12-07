@@ -24,7 +24,7 @@ export const ourFileRouter = {
   courseAttachment: f({
     pdf: { maxFileSize: "16MB" },
     image: { maxFileSize: "4MB" },
-    video: { maxFileSize: "64MB" },
+    video: { maxFileSize: "512MB" },
     audio: { maxFileSize: "16MB" },
     text: { maxFileSize: "1MB" },
   })

@@ -26,6 +26,7 @@ export const useCreateChapterMutation = (courseId: string) => {
   const queryClient = useQueryClient()
 
   return useMutation({
+    mutationKey: ["course"],
     mutationFn: async (title: string) => {
       if (!title) {
         throw new Error("Title is required")
