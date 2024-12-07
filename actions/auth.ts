@@ -24,6 +24,7 @@ export const onAuthenticatedUser = async () => {
       },
       select: {
         id: true,
+        clerkId: true,
         firstName: true,
         lastName: true,
       },
@@ -31,7 +32,7 @@ export const onAuthenticatedUser = async () => {
     if (user)
       return {
         status: 200,
-        userId: user.id,
+        userId: user.clerkId,
         username: `${user.firstName} ${user.lastName}`,
       }
     return {

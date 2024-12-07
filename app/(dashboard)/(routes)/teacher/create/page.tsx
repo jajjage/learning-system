@@ -1,13 +1,14 @@
 import React from "react"
 import CreateCourse from "../_components/CreateCourse"
 import { auth } from "@clerk/nextjs/server"
+import { onAuthenticatedUser } from "@/actions/auth"
 
 interface CourseProps {
   userId: string
 }
 
 const coursePage = async () => {
-  const { userId } = await auth()
+  const { userId } = await onAuthenticatedUser()
   if (!userId) {
     console.log("no user id")
   }

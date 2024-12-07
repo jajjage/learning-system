@@ -2,6 +2,7 @@
 
 import { prisma } from "@/utils/prisma"
 import { auth } from "@clerk/nextjs/server"
+import { Chapter } from "@prisma/client"
 
 import { revalidatePath } from "next/cache"
 
@@ -116,10 +117,93 @@ export async function chapterList(chapterId: string, courseId: string) {
       throw new Error("Course not found")
     }
 
-    revalidatePath(`/teacher/courses/${courseId}/chapters/${chapterId}`)
     return chapters
   } catch (error) {
     console.error("[CREATE_CHAPTER]", error)
     throw error // Throw the original error for better debugging
+  }
+}
+
+export async function updateChapter(
+  courseId: string,
+  chapterId: string,
+  data: Partial<Chapter>,
+) {
+  try {
+    const { userId } = await auth()
+
+    if (!userId) {
+      throw new Error("Unauthorized")
+    }
+    console.log(data)
+    const chapter = await prisma.chapter.update({
+      where: {
+        id: chapterId,
+        courseId: courseId,
+      },
+      data,
+    })
+
+    revalidatePath(`/teacher/courses/${courseId}/chapters/${chapterId}`)
+    return chapter
+  } catch (error) {
+    console.error("[UPDATE_CHAPTER]", error)
+    throw new Error("Failed to update chapter")
+  }
+}
+
+export async function updateChapterAccess(
+  courseId: string,
+  chapterId: string,
+  isFree: boolean,
+) {
+  try {
+    const { userId } = await auth()
+
+    if (!userId) {
+      throw new Error("Unauthorized")
+    }
+
+    const chapter = await prisma.chapter.update({
+      where: {
+        id: chapterId,
+        courseId: courseId,
+      },
+      data: { isFree },
+    })
+
+    revalidatePath(`/teacher/courses/${courseId}/chapters/${chapterId}`)
+    return chapter
+  } catch (error) {
+    console.error("[UPDATE_CHAPTER_ACCESS]", error)
+    throw new Error("Failed to update chapter access")
+  }
+}
+
+export async function updateChapterVideo(
+  courseId: string,
+  chapterId: string,
+  videoUrl: string,
+) {
+  try {
+    const { userId } = await auth()
+
+    if (!userId) {
+      throw new Error("Unauthorized")
+    }
+
+    const chapter = await prisma.chapter.update({
+      where: {
+        id: chapterId,
+        courseId: courseId,
+      },
+      data: { videoUrl },
+    })
+
+    revalidatePath(`/teacher/courses/${courseId}/chapters/${chapterId}`)
+    return chapter
+  } catch (error) {
+    console.error("[UPDATE_CHAPTER_VIDEO]", error)
+    throw new Error("Failed to update chapter video")
   }
 }

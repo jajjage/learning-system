@@ -1,5 +1,4 @@
 import { getCategories, getCourse } from "@/actions/course"
-import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import TitleForm from "./_components/TitleForm"
 import DescriptionForm from "./_components/DescriptionForm"
@@ -15,6 +14,9 @@ import {
 } from "lucide-react"
 import AttachmentForm from "./_components/AttachmentForm"
 import ChapterForm from "./_components/ChapterForm"
+import { onAuthenticatedUser } from "@/actions/auth"
+import { QueryClient } from "@tanstack/react-query"
+import toast from "react-hot-toast"
 
 interface PageProps {
   params: {
@@ -25,20 +27,24 @@ interface PageProps {
 export default async function CourseEditPage(context: {
   params: { courseId: string }
 }) {
-  const resolvedParams = await context.params
-
-  const { userId } = await auth()
+  const { userId } = await onAuthenticatedUser()
+  const client = new QueryClient()
+  console.log(userId)
 
   if (!userId) {
     return redirect("/")
   }
 
-  console.log("Resolved Params:", resolvedParams)
-  const courseId = resolvedParams.courseId
-  const course = await getCourse(courseId, userId)
+  const resolvedParams = await context.params
+  const course = await client.fetchQuery({
+    queryKey: ["course"],
+    queryFn: () => getCourse(resolvedParams.courseId, userId),
+  })
+
   const categories = await getCategories()
 
   if (!course) {
+    toast.error("here")
     return redirect("/")
   }
 
