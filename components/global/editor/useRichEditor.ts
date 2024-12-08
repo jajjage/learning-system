@@ -1,6 +1,5 @@
 import { useEditor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
-import Placeholder from "@tiptap/extension-placeholder"
 import Link from "@tiptap/extension-link"
 import Image from "@tiptap/extension-image"
 import Underline from "@tiptap/extension-underline"
@@ -28,9 +27,9 @@ export function useRichEditor({ content, onUpdate }: UseRichEditorOptions) {
           keepAttributes: false,
         },
       }),
-      Placeholder.configure({
-        placeholder: 'Start typing or use "/" for commands...',
-      }),
+      // Placeholder.configure({
+      //   placeholder: 'Start typing or use "/" for commands...',
+      // }),
       Link.configure({
         openOnClick: false,
       }),
