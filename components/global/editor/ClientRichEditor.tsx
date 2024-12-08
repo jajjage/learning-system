@@ -4,20 +4,18 @@ import { useEffect, useRef } from "react"
 import { EditorContent } from "@tiptap/react"
 import { useRichEditor } from "./useRichEditor"
 import Toolbar from "./Toolbar"
-import VideoPlayer from "./VideoPlayer"
+// import SlashCommands from './SlashCommands'
 
 interface ClientRichEditorProps {
   content: string
   onChange: (content: string) => void
   disabled?: boolean
-  videoUrl?: string
 }
 
 export default function ClientRichEditor({
   content,
   onChange,
   disabled = false,
-  videoUrl,
 }: ClientRichEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null)
   const editor = useRichEditor({
@@ -41,12 +39,12 @@ export default function ClientRichEditor({
     <div className="w-full border border-gray-200 rounded-lg shadow-sm">
       <Toolbar editor={editor} disabled={disabled} />
       <div className="relative">
-        {videoUrl && <VideoPlayer url={videoUrl} />}
         <EditorContent
           editor={editor}
           className="prose max-w-none p-4"
           ref={editorRef}
         />
+        {/* <SlashCommands editor={editor} /> */}
       </div>
     </div>
   )

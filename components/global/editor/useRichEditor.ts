@@ -5,6 +5,8 @@ import Link from "@tiptap/extension-link"
 import Image from "@tiptap/extension-image"
 import Underline from "@tiptap/extension-underline"
 import TextAlign from "@tiptap/extension-text-align"
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight"
+import { common, createLowlight } from "lowlight"
 import { VideoEmbed } from "./VideoEmbed"
 
 interface UseRichEditorOptions {
@@ -13,9 +15,19 @@ interface UseRichEditorOptions {
 }
 
 export function useRichEditor({ content, onUpdate }: UseRichEditorOptions) {
+  const lowlight = createLowlight(common)
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        bulletList: {
+          keepMarks: true,
+          keepAttributes: false,
+        },
+        orderedList: {
+          keepMarks: true,
+          keepAttributes: false,
+        },
+      }),
       Placeholder.configure({
         placeholder: 'Start typing or use "/" for commands...',
       }),
@@ -26,6 +38,9 @@ export function useRichEditor({ content, onUpdate }: UseRichEditorOptions) {
       Underline,
       TextAlign.configure({
         types: ["heading", "paragraph"],
+      }),
+      CodeBlockLowlight.configure({
+        lowlight,
       }),
       VideoEmbed,
     ],

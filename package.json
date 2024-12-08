@@ -45,6 +45,7 @@
     "clsx": "^2.1.1",
     "cmdk": "1.0.0",
     "heroicons": "^2.2.0",
+    "lowlight": "^3.2.0",
     "lucide-react": "^0.460.0",
     "motion": "^11.11.17",
     "next": "15.0.3",

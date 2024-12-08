@@ -1,16 +1,14 @@
 import React from "react"
 import CreateCourse from "../_components/CreateCourse"
-import { auth } from "@clerk/nextjs/server"
 import { onAuthenticatedUser } from "@/actions/auth"
-
-interface CourseProps {
-  userId: string
-}
+import { toast } from "react-hot-toast"
+import { redirect } from "next/navigation"
 
 const coursePage = async () => {
   const { userId } = await onAuthenticatedUser()
   if (!userId) {
-    console.log("no user id")
+    toast.error("we must be user")
+    redirect("/")
   }
 
   return (

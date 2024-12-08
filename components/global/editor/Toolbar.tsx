@@ -63,7 +63,7 @@ export default function Toolbar({ editor, disabled = false }: ToolbarProps) {
         pressed={editor.isActive("code")}
         onPressedChange={() => editor.chain().focus().toggleCode().run()}
         disabled={disabled}
-        aria-label="Toggle code"
+        aria-label="Toggle inline code"
       >
         <Code className="w-4 h-4" />
       </Toggle>
@@ -79,38 +79,10 @@ export default function Toolbar({ editor, disabled = false }: ToolbarProps) {
         disabled={disabled}
         aria-label="Insert link"
       >
-        <Link className="w-4 h-4" />
+        <Toggle>
+          <Link className="w-4 h-4" />
+        </Toggle>
       </Button>
-      <Toggle
-        pressed={editor.isActive({ textAlign: "left" })}
-        onPressedChange={() =>
-          editor.chain().focus().setTextAlign("left").run()
-        }
-        disabled={disabled}
-        aria-label="Align left"
-      >
-        <AlignLeft className="w-4 h-4" />
-      </Toggle>
-      <Toggle
-        pressed={editor.isActive({ textAlign: "center" })}
-        onPressedChange={() =>
-          editor.chain().focus().setTextAlign("center").run()
-        }
-        disabled={disabled}
-        aria-label="Align center"
-      >
-        <AlignCenter className="w-4 h-4" />
-      </Toggle>
-      <Toggle
-        pressed={editor.isActive({ textAlign: "right" })}
-        onPressedChange={() =>
-          editor.chain().focus().setTextAlign("right").run()
-        }
-        disabled={disabled}
-        aria-label="Align right"
-      >
-        <AlignRight className="w-4 h-4" />
-      </Toggle>
       <Toggle
         pressed={editor.isActive("bulletList")}
         onPressedChange={() => editor.chain().focus().toggleBulletList().run()}
@@ -126,6 +98,14 @@ export default function Toolbar({ editor, disabled = false }: ToolbarProps) {
         aria-label="Toggle ordered list"
       >
         <ListOrdered className="w-4 h-4" />
+      </Toggle>
+      <Toggle
+        pressed={editor.isActive("codeBlock")}
+        onPressedChange={() => editor.chain().focus().toggleCodeBlock().run()}
+        disabled={disabled}
+        aria-label="Toggle code block"
+      >
+        <Code className="w-4 h-4" />
       </Toggle>
     </div>
   )

@@ -7,6 +7,7 @@ import CategoryForm from "./_components/CategoryForm"
 import ImageForm from "./_components/ImageForm"
 import { IconBadge } from "@/components/global/IconBadge"
 import {
+  ArrowLeft,
   CircleDollarSign,
   File,
   LayoutDashboard,
@@ -16,7 +17,8 @@ import AttachmentForm from "./_components/AttachmentForm"
 import ChapterForm from "./_components/ChapterForm"
 import { onAuthenticatedUser } from "@/actions/auth"
 import { QueryClient } from "@tanstack/react-query"
-import toast from "react-hot-toast"
+import { toast } from "react-hot-toast"
+import Link from "next/link"
 
 interface PageProps {
   params: {
@@ -29,7 +31,6 @@ export default async function CourseEditPage(context: {
 }) {
   const { userId } = await onAuthenticatedUser()
   const client = new QueryClient()
-  console.log(userId)
 
   if (!userId) {
     return redirect("/")
@@ -66,6 +67,15 @@ export default async function CourseEditPage(context: {
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between">
           <div>
+            <div className="w-full">
+              <Link
+                href={`/teacher/courses`}
+                className="flex items-center text-sm hover:opacity-75 transsion mb-6"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Courses
+              </Link>
+            </div>
             <h1 className="text-2xl font-bold tracking-tight">Course Setup</h1>
             <p className="text-sm text-slate-600 mt-2">
               Complete all fields {completionText}
