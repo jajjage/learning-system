@@ -3,7 +3,7 @@ import { ourFileRouter } from "@/app/api/uploadthing/core"
 import toast from "react-hot-toast"
 
 interface FileUploadProps {
-  onChange: (url?: string) => void
+  onChange: (url?: string, name?: string, size?: number) => void
   endpoint: keyof typeof ourFileRouter
 }
 
@@ -12,7 +12,7 @@ export const FileUpload = ({ onChange, endpoint }: FileUploadProps) => {
     <UploadDropzone
       endpoint={endpoint}
       onClientUploadComplete={(res) => {
-        onChange(res?.[0].url)
+        onChange(res?.[0].url, res?.[0].name, res?.[0].size)
       }}
       onUploadError={(error: Error) => {
         if (error.name === "HeadersTimeoutError") {
@@ -26,6 +26,7 @@ export const FileUpload = ({ onChange, endpoint }: FileUploadProps) => {
       // onUploadBegin={() => {
       //   toast.loading("Upload starting...")
       // }}
+
       config={{
         mode: "auto",
         appendOnPaste: true,

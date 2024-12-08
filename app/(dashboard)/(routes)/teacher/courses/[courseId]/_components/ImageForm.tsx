@@ -33,7 +33,6 @@ export default function ImageForm({ initialData, courseId }: ImageFormProps) {
     try {
       updateImage(values as Partial<Course>, {
         onSuccess: () => {
-          toast.success("Course image updated")
           setIsEditing(false)
           router.refresh()
         },

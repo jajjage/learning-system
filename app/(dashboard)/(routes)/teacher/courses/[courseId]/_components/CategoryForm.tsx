@@ -48,7 +48,6 @@ export default function CategoryForm({
   const { isSubmitting, isValid } = form.formState
 
   const onSubmit = async (values: z.infer<typeof categorySchema>) => {
-    const category = values.categoryId ?? ""
     updateCategory(values as Partial<Course>, {
       onSuccess: () => setIsEditing(false),
     })
