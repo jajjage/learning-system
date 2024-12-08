@@ -2,14 +2,15 @@
 
 import * as z from "zod"
 import { Pencil, PlusCircle, Video } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Chapter, MuxData } from "@prisma/client"
-
+import MuxPlayer from "@mux/mux-player-react"
 import { Button } from "@/components/ui/button"
 import { FileUpload } from "@/components/global/FileUpload"
-import { useUpdateChapterVideoMutation } from "@/hooks/useChapterMutation"
+import { useUpdateChapterMutation } from "@/hooks/useChapterMutation"
 import toast from "react-hot-toast"
+import { checkAssetStatus } from "@/actions/chapter"
 
 interface ChapterVideoFormProps {
   initialData: Chapter & { muxData?: MuxData | null }
@@ -28,21 +29,51 @@ export const ChapterVideoForm = ({
 }: ChapterVideoFormProps) => {
   const [isEditing, setIsEditing] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
+  const [isVideoProcessing, setIsVideoProcessing] = useState(false)
+  const [videoReady, setVideoReady] = useState(
+    !!initialData.muxData?.playBackId,
+  )
 
   const toggleEdit = () => setIsEditing((current) => !current)
-
   const router = useRouter()
 
-  const updateChapterVideoMutation = useUpdateChapterVideoMutation(
+  const updateChapterVideoMutation = useUpdateChapterMutation(
     courseId,
     chapterId,
   )
 
+  // Check video processing status
+  useEffect(() => {
+    if (initialData.videoUrl && !videoReady) {
+      const checkVideoStatus = async () => {
+        try {
+          const data = await checkAssetStatus(
+            initialData.muxData?.assetId || "",
+          )
+
+          if (data?.status === "ready") {
+            setVideoReady(true)
+            setIsVideoProcessing(false)
+          } else if (data?.status === "preparing") {
+            setIsVideoProcessing(true)
+          }
+        } catch (error) {
+          console.error("Error checking video status:", error)
+        }
+      }
+
+      const interval = setInterval(checkVideoStatus, 5000)
+      return () => clearInterval(interval)
+    }
+  }, [initialData.videoUrl, videoReady])
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setIsUploading(true)
-      await updateChapterVideoMutation.mutateAsync(values)
-      toast.success("Video uploaded successfully")
+      setIsVideoProcessing(true)
+      setVideoReady(false)
+
+      await updateChapterVideoMutation.mutateAsync(values as Partial<Chapter>)
       toggleEdit()
       router.refresh()
     } catch (error) {
@@ -73,26 +104,31 @@ export const ChapterVideoForm = ({
           )}
         </Button>
       </div>
+
       {!isEditing && !initialData.videoUrl && (
         <div className="flex items-center justify-center h-60 bg-slate-200 rounded-md mt-4">
           <Video className="h-10 w-10 text-slate-500" />
         </div>
       )}
+
       {!isEditing && initialData.videoUrl && (
         <div className="relative aspect-video mt-4">
-          <video
-            className="w-full h-full rounded-md"
-            controls
-            src={initialData.videoUrl}
-          >
-            Your browser does not support the video tag.
-          </video>
+          {videoReady ? (
+            <MuxPlayer playbackId={initialData?.muxData?.playBackId || ""} />
+          ) : (
+            <div className="flex items-center justify-center h-full bg-slate-200 rounded-md">
+              <div className="text-sm text-slate-500">
+                Video is processing... This may take a few minutes.
+              </div>
+            </div>
+          )}
         </div>
       )}
+
       {isEditing && (
         <div className="mt-4">
           <FileUpload
-            endpoint="courseAttachment"
+            endpoint="chapterVideo"
             onChange={(url) => {
               if (url) {
                 onSubmit({ videoUrl: url })
@@ -105,16 +141,11 @@ export const ChapterVideoForm = ({
           </div>
         </div>
       )}
-      {initialData.videoUrl && !isEditing && (
-        <div className="text-xs text-muted-foreground mt-2">
-          Videos can take a few minutes to process. Refresh the page if the
-          video does not appear.
-        </div>
-      )}
-      {isUploading && (
+
+      {isVideoProcessing && (
         <div className="text-sm text-muted-foreground mt-2">
-          Uploading and processing video... This may take several minutes.
-          Please do not close this page.
+          Video is currently processing... This may take several minutes. You
+          can safely leave this page and come back later.
         </div>
       )}
     </div>

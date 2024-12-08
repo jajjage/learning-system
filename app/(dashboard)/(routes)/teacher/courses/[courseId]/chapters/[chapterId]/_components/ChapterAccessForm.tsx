@@ -18,7 +18,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { Checkbox } from "@/components/ui/checkbox"
-import { useUpdateChapterAccessMutation } from "@/hooks/useChapterMutation"
+import { useUpdateChapterMutation } from "@/hooks/useChapterMutation"
 
 interface ChapterAccessFormProps {
   initialData: Chapter
@@ -50,13 +50,13 @@ export const ChapterAccessForm = ({
 
   const { isSubmitting, isValid } = form.formState
 
-  const updateChapterAccessMutation = useUpdateChapterAccessMutation(
+  const updateChapterAccessMutation = useUpdateChapterMutation(
     courseId,
     chapterId,
   )
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    updateChapterAccessMutation.mutate(values, {
+    updateChapterAccessMutation.mutate(values as Partial<Chapter>, {
       onSuccess: () => {
         toggleEdit()
         router.refresh()

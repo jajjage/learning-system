@@ -23,10 +23,23 @@ export const ourFileRouter = {
 
   courseAttachment: f({
     pdf: { maxFileSize: "16MB" },
-    image: { maxFileSize: "4MB" },
-    video: { maxFileSize: "512MB" },
     audio: { maxFileSize: "16MB" },
     text: { maxFileSize: "1MB" },
+  })
+    .middleware(async () => {
+      const { userId } = await auth()
+      console.log("Middleware - userId:", userId)
+      if (!userId) throw new Error("Unauthorized")
+      return { userId }
+    })
+    .onUploadComplete(async ({ metadata, file }) => {
+      console.log("Upload complete - userId:", metadata.userId)
+      console.log("Upload complete - file:", file)
+      return { uploadedBy: metadata.userId }
+    }),
+
+  chapterVideo: f({
+    video: { maxFileSize: "512MB" },
   })
     .middleware(async () => {
       const { userId } = await auth()
