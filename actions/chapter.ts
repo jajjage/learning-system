@@ -135,7 +135,7 @@ export async function updateChapter(
     if (!userId) {
       throw new Error("Unauthorized")
     }
-    console.log(data)
+
     const chapter = await prisma.chapter.update({
       where: {
         id: chapterId,

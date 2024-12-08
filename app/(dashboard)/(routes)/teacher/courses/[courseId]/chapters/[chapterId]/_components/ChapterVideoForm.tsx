@@ -5,7 +5,6 @@ import { Pencil, PlusCircle, Video } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Chapter, MuxData } from "@prisma/client"
-import MuxPlayer from "@mux/mux-player-react"
 
 import { Button } from "@/components/ui/button"
 import { FileUpload } from "@/components/global/FileUpload"
@@ -74,20 +73,26 @@ export const ChapterVideoForm = ({
           )}
         </Button>
       </div>
-      {!isEditing &&
-        (!initialData.videoUrl ? (
-          <div className="flex items-center justify-center h-60 bg-slate-200 rounded-md">
-            <Video className="h-10 w-10 text-slate-500" />
-          </div>
-        ) : (
-          <div className="relative aspect-video mt-2">
-            <MuxPlayer playbackId={initialData.muxData?.playBackId || ""} />
-          </div>
-        ))}
+      {!isEditing && !initialData.videoUrl && (
+        <div className="flex items-center justify-center h-60 bg-slate-200 rounded-md mt-4">
+          <Video className="h-10 w-10 text-slate-500" />
+        </div>
+      )}
+      {!isEditing && initialData.videoUrl && (
+        <div className="relative aspect-video mt-4">
+          <video
+            className="w-full h-full rounded-md"
+            controls
+            src={initialData.videoUrl}
+          >
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      )}
       {isEditing && (
-        <div>
+        <div className="mt-4">
           <FileUpload
-            endpoint={`courseAttachment`}
+            endpoint="courseAttachment"
             onChange={(url) => {
               if (url) {
                 onSubmit({ videoUrl: url })

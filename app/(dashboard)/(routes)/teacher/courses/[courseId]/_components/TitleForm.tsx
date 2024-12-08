@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { Pencil } from "lucide-react"
-import { useTitleMutation } from "@/hooks/course"
+import { useUpdateCourseMutation } from "@/hooks/course"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { CourseSchema } from "../../../_components/schema"
@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Course } from "@prisma/client"
 
 interface TitleFormProps {
   initialData: {
@@ -37,7 +38,7 @@ export default function TitleForm({ initialData, courseId }: TitleFormProps) {
     }
   }, [isEditing])
 
-  const { mutate: updateTitle, isPending } = useTitleMutation(courseId)
+  const { mutate: updateTitle, isPending } = useUpdateCourseMutation(courseId)
 
   const form = useForm<z.infer<typeof CourseSchema>>({
     resolver: zodResolver(CourseSchema),
@@ -47,7 +48,7 @@ export default function TitleForm({ initialData, courseId }: TitleFormProps) {
 
   const onSubmit = async (values: z.infer<typeof CourseSchema>) => {
     try {
-      updateTitle(values.title, {
+      updateTitle(values as Partial<Course>, {
         onSuccess: () => setIsEditing(false),
       })
       router.refresh()

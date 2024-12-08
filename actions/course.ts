@@ -1,6 +1,8 @@
 "use server"
 
 import { prisma } from "@/utils/prisma"
+import { auth } from "@clerk/nextjs/server"
+import { Course } from "@prisma/client"
 import { revalidatePath } from "next/cache"
 
 export const onCreateCourse = async (userId: string, title: string) => {
@@ -54,85 +56,27 @@ export async function getCourse(courseId: string, userId: string) {
   }
 }
 
-export const updateCourseTitle = async (courseId: string, title: string) => {
+export const updateCourse = async (courseId: string, data: Partial<Course>) => {
   try {
-    await prisma.course.update({
-      where: { id: courseId },
-      data: { title },
-    })
-    revalidatePath(`/courses/${courseId}`)
-    return { success: true }
-  } catch (error) {
-    console.error("Failed to update course title:", error)
-    return { success: false }
-  }
-}
+    const { userId } = await auth()
 
-export async function updateCourseDescription(
-  courseId: string,
-  description: string,
-) {
-  try {
-    await prisma.course.update({
-      where: { id: courseId },
-      data: { description },
-    })
-    revalidatePath(`/courses/${courseId}`)
-    return { success: true }
-  } catch (error) {
-    console.error("Failed to update course description:", error)
-    return { success: false }
-  }
-}
+    if (!userId) {
+      throw new Error("Unauthorized")
+    }
 
-export async function updateCoursePrice(
-  courseId: string,
-  price: number | null,
-) {
-  try {
-    await prisma.course.update({
-      where: { id: courseId },
-      data: { price },
+    const course = await prisma.course.update({
+      where: {
+        id: courseId,
+        userId: userId,
+      },
+      data,
     })
-    revalidatePath(`/courses/${courseId}`)
-    return { success: true }
-  } catch (error) {
-    console.error("Failed to update course price:", error)
-    return { success: false }
-  }
-}
 
-export async function updateCourseImage(
-  courseId: string,
-  imageUrl: string | null,
-) {
-  try {
-    await prisma.course.update({
-      where: { id: courseId },
-      data: { imageUrl },
-    })
-    revalidatePath(`/courses/${courseId}`)
-    return { success: true }
+    revalidatePath(`/teacher/courses/${courseId}`)
+    return course
   } catch (error) {
-    console.error("Failed to update course image:", error)
-    return { success: false }
-  }
-}
-
-export async function updateCourseCategory(
-  courseId: string,
-  categoryId: string | null,
-) {
-  try {
-    await prisma.course.update({
-      where: { id: courseId },
-      data: { categoryId },
-    })
-    revalidatePath(`/courses/${courseId}`)
-    return { success: true }
-  } catch (error) {
-    console.error("Failed to update course category:", error)
-    return { success: false }
+    console.error("[UPDATE_CHAPTER]", error)
+    throw new Error("Failed to update chapter")
   }
 }
 

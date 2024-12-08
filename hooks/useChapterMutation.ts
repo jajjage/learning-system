@@ -73,6 +73,7 @@ export const useUpdateChapterMutation = (
 ) => {
   const queryClient = useQueryClient()
   return useMutation({
+    mutationKey: ["chapter"],
     mutationFn: async (data: Partial<Chapter>) => {
       return await updateChapter(courseId, chapterId, data)
     },

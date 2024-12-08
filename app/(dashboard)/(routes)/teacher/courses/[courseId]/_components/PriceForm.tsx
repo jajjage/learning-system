@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Course } from "@prisma/client"
 import { cn } from "@/lib/utils"
-import { usePriceMutation } from "@/hooks/course"
+import { useUpdateCourseMutation } from "@/hooks/course"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -47,12 +47,12 @@ export default function PriceForm({ initialData, courseId }: PriceFormProps) {
     }
   }, [isEditing])
 
-  const { mutate: updateCoursePrice } = usePriceMutation(courseId)
+  const { mutate: updateCoursePrice } = useUpdateCourseMutation(courseId)
   const { isSubmitting, isValid } = form.formState
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      updateCoursePrice(values.price, {
+      updateCoursePrice(values as Partial<Course>, {
         onSuccess: () => setIsEditing(false),
       })
       router.refresh()

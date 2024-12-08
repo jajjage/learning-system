@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { Pencil } from "lucide-react"
-import { useDescriptionMutation } from "@/hooks/course"
+import { useUpdateCourseMutation } from "@/hooks/course"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -44,7 +44,7 @@ export default function DescriptionForm({
   }, [isEditing])
 
   const { mutate: updateDescription, isPending } =
-    useDescriptionMutation(courseId)
+    useUpdateCourseMutation(courseId)
 
   const form = useForm<z.infer<typeof descriptionSchema>>({
     resolver: zodResolver(descriptionSchema),
@@ -55,8 +55,7 @@ export default function DescriptionForm({
   const { isSubmitting, isValid } = form.formState
 
   const onSubmit = async (values: z.infer<typeof descriptionSchema>) => {
-    const description = values.description ?? ""
-    updateDescription(description, {
+    updateDescription(values as Partial<Course>, {
       onSuccess: () => setIsEditing(false),
     })
   }

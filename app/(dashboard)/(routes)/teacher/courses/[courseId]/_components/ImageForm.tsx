@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Image from "next/image"
 import { ImageIcon, Pencil, PlusCircle } from "lucide-react"
-import { useImageMutation } from "@/hooks/course"
+import { useUpdateCourseMutation } from "@/hooks/course"
 import { Course } from "@prisma/client"
 import { z } from "zod"
 import { useRouter } from "next/navigation"
@@ -27,11 +27,11 @@ export default function ImageForm({ initialData, courseId }: ImageFormProps) {
   const [isEditing, setIsEditing] = useState(false)
   const router = useRouter()
 
-  const { mutate: updateImage } = useImageMutation(courseId)
+  const { mutate: updateImage } = useUpdateCourseMutation(courseId)
 
   const onSubmit = async (values: z.infer<typeof imageSchema>) => {
     try {
-      updateImage(values.imageUrl, {
+      updateImage(values as Partial<Course>, {
         onSuccess: () => {
           toast.success("Course image updated")
           setIsEditing(false)

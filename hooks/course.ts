@@ -1,15 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import {
-  updateCourseTitle,
-  updateCourseDescription,
-  updateCoursePrice,
-  updateCourseImage,
-  updateCourseCategory,
-} from "@/actions/course"
+import { updateCourse } from "@/actions/course"
 import { toast } from "react-hot-toast"
 import { onCreateCourse } from "@/actions/course"
 import { CourseSchema } from "@/app/(dashboard)/(routes)/teacher/_components/schema"
 import { z } from "zod"
+import { Course } from "@prisma/client"
 
 type CreateCourseData = z.infer<typeof CourseSchema>
 
@@ -46,16 +41,19 @@ export const useCreateCourse = (userId: string) => {
   }
 }
 
-export const useTitleMutation = (courseId: string) => {
+export const useUpdateCourseMutation = (courseId: string) => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (title: string) => updateCourseTitle(courseId, title),
-    onMutate: async (newTitle) => {
+    mutationKey: ["course"],
+    mutationFn: async (data: Partial<Course>) => {
+      return await updateCourse(courseId, data)
+    },
+    onMutate: async (data) => {
       await queryClient.cancelQueries({ queryKey: ["course", courseId] })
       const previousCourse = queryClient.getQueryData(["course", courseId])
       queryClient.setQueryData(["course", courseId], (old: any) => ({
         ...old,
-        title: newTitle,
+        data: data,
       }))
       return { previousCourse }
     },
@@ -64,111 +62,7 @@ export const useTitleMutation = (courseId: string) => {
       toast.error("Failed to update course title")
     },
     onSuccess: () => {
-      toast.success("Course title updated successfully")
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["course", courseId] })
-    },
-  })
-}
-
-export const useDescriptionMutation = (courseId: string) => {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: (description: string) =>
-      updateCourseDescription(courseId, description),
-    onMutate: async (newDescription) => {
-      await queryClient.cancelQueries({ queryKey: ["course", courseId] })
-      const previousCourse = queryClient.getQueryData(["course", courseId])
-      queryClient.setQueryData(["course", courseId], (old: any) => ({
-        ...old,
-        description: newDescription,
-      }))
-      return { previousCourse }
-    },
-    onError: (err, newDescription, context: any) => {
-      queryClient.setQueryData(["course", courseId], context.previousCourse)
-      toast.error("Failed to update course description")
-    },
-    onSuccess: () => {
-      toast.success("Course description updated successfully")
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["course", courseId] })
-    },
-  })
-}
-
-export const usePriceMutation = (courseId: string) => {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: (price: number | null) => updateCoursePrice(courseId, price),
-    onMutate: async (newPrice) => {
-      await queryClient.cancelQueries({ queryKey: ["course", courseId] })
-      const previousCourse = queryClient.getQueryData(["course", courseId])
-      queryClient.setQueryData(["course", courseId], (old: any) => ({
-        ...old,
-        price: newPrice,
-      }))
-      return { previousCourse }
-    },
-    onError: (err, newPrice, context: any) => {
-      queryClient.setQueryData(["course", courseId], context.previousCourse)
-      toast.error("Failed to update course price")
-    },
-    onSuccess: () => {
-      toast.success("Course price updated successfully")
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["course", courseId] })
-    },
-  })
-}
-
-export const useImageMutation = (courseId: string) => {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: (imageUrl: string | null) =>
-      updateCourseImage(courseId, imageUrl),
-    onMutate: async (newImageUrl) => {
-      await queryClient.cancelQueries({ queryKey: ["course", courseId] })
-      const previousCourse = queryClient.getQueryData(["course", courseId])
-      queryClient.setQueryData(["course", courseId], (old: any) => ({
-        ...old,
-        imageUrl: newImageUrl,
-      }))
-      return { previousCourse }
-    },
-    onError: (err, newImageUrl, context: any) => {
-      queryClient.setQueryData(["course", courseId], context.previousCourse)
-      toast.error("Failed to update course image")
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["course", courseId] })
-    },
-  })
-}
-
-export const useCategoryMutation = (courseId: string) => {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: (categoryId: string | null) =>
-      updateCourseCategory(courseId, categoryId),
-    onMutate: async (newCategoryId) => {
-      await queryClient.cancelQueries({ queryKey: ["course", courseId] })
-      const previousCourse = queryClient.getQueryData(["course", courseId])
-      queryClient.setQueryData(["course", courseId], (old: any) => ({
-        ...old,
-        categoryId: newCategoryId,
-      }))
-      return { previousCourse }
-    },
-    onError: (err, newCategoryId, context: any) => {
-      queryClient.setQueryData(["course", courseId], context.previousCourse)
-      toast.error("Failed to update course category")
-    },
-    onSuccess: () => {
-      toast.success("Course category updated successfully")
+      toast.success("Course updated successfully")
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["course", courseId] })

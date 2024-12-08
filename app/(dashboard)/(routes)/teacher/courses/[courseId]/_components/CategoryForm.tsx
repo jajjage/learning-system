@@ -1,6 +1,6 @@
 "use client"
 
-import { useCategoryMutation } from "@/hooks/course"
+import { useUpdateCourseMutation } from "@/hooks/course"
 import { Pencil } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -36,7 +36,8 @@ export default function CategoryForm({
 }: CategoryFormProps) {
   const [isEditing, setIsEditing] = useState(false)
 
-  const { mutate: updateCategory, isPending } = useCategoryMutation(courseId)
+  const { mutate: updateCategory, isPending } =
+    useUpdateCourseMutation(courseId)
 
   const form = useForm<z.infer<typeof categorySchema>>({
     resolver: zodResolver(categorySchema),
@@ -48,7 +49,7 @@ export default function CategoryForm({
 
   const onSubmit = async (values: z.infer<typeof categorySchema>) => {
     const category = values.categoryId ?? ""
-    updateCategory(category, {
+    updateCategory(values as Partial<Course>, {
       onSuccess: () => setIsEditing(false),
     })
   }

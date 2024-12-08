@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/form"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { Textarea } from "@/components/ui/textarea"
+import RichEditor from "@/components/global/editor/RichEditor"
 import { useUpdateChapterMutation } from "@/hooks/useChapterMutation"
 
 interface ChapterDescriptionFormProps {
@@ -77,14 +77,15 @@ export const ChapterDescriptionForm = ({
         </Button>
       </div>
       {!isEditing && (
-        <p
+        <div
           className={cn(
             "text-sm mt-2",
             !initialData.description && "text-slate-500 italic",
           )}
-        >
-          {initialData.description || "No description"}
-        </p>
+          dangerouslySetInnerHTML={{
+            __html: initialData.description || "No description",
+          }}
+        />
       )}
       {isEditing && (
         <Form {...form}>
@@ -98,10 +99,10 @@ export const ChapterDescriptionForm = ({
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Textarea
+                    <RichEditor
+                      content={field.value}
+                      onChange={field.onChange}
                       disabled={isSubmitting}
-                      placeholder="e.g. 'In this chapter we will...'"
-                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
