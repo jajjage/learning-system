@@ -216,3 +216,34 @@ export const checkAssetStatus = async (assetId: string) => {
     throw error
   }
 }
+
+export async function updateChapterPublishStatus(
+  chapterId: string,
+  isPublished: boolean,
+) {
+  try {
+    const { userId } = await auth()
+
+    if (!userId) {
+      throw new Error("Unauthorized")
+    }
+
+    const chapter = await prisma.chapter.update({
+      where: {
+        id: chapterId,
+        course: {
+          userId,
+        },
+      },
+      data: {
+        isPublished,
+      },
+    })
+
+    revalidatePath(`/teacher/courses/${chapter.courseId}/chapters/${chapterId}`)
+    return { isPublished: chapter.isPublished }
+  } catch (error) {
+    console.error("[UPDATE_CHAPTER_PUBLISH_STATUS]", error)
+    throw new Error("Failed to update chapter publish status")
+  }
+}

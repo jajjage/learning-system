@@ -1,7 +1,7 @@
 "use client"
 
 import * as z from "zod"
-import { Pencil, PlusCircle, Video } from "lucide-react"
+import { Loader2, LoaderCircle, Pencil, PlusCircle, Video } from "lucide-react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Chapter, MuxData } from "@prisma/client"

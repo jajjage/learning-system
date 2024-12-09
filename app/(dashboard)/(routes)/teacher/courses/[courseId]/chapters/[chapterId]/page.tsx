@@ -1,6 +1,5 @@
 import { IconBadge } from "@/components/global/IconBadge"
-import { chapterList } from "@/actions/chapter"
-import { auth } from "@clerk/nextjs/server"
+import { chapterList, updateChapterPublishStatus } from "@/actions/chapter"
 import { ArrowLeft, LayoutDashboard, ListChecks, Video } from "lucide-react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
@@ -14,6 +13,7 @@ import {
   QueryClient,
 } from "@tanstack/react-query"
 import { onAuthenticatedUser } from "@/actions/auth"
+import { PublishBanner } from "@/components/global/PublishBanner"
 
 const ChapterIdPage = async (context: {
   params: { courseId: string; chapterId: string }
@@ -42,9 +42,20 @@ const ChapterIdPage = async (context: {
   const completedFields = requiredFields.filter(Boolean).length
 
   const completionText = `(${completedFields}/${totalFields})`
+  const isComplete = requiredFields.every(Boolean)
+  console.log(isComplete)
 
   return (
     <HydrationBoundary state={dehydrate(client)}>
+      {isComplete && (
+        <PublishBanner
+          initialIsPublished={chapter.isPublished}
+          entityId={chapter.id}
+          entityTitle="chapter"
+          entityType="chapter"
+          onPublishToggle={updateChapterPublishStatus}
+        />
+      )}
       <div className="p-6">
         <div className="flex items-center justify-between">
           <div className="w-full">

@@ -5,8 +5,13 @@ import { onCreateCourse } from "@/actions/course"
 import { CourseSchema } from "@/app/(dashboard)/(routes)/teacher/_components/schema"
 import { z } from "zod"
 import { Course } from "@prisma/client"
+import { useRouter } from "next/navigation"
 
 type CreateCourseData = z.infer<typeof CourseSchema>
+interface UpdateCoursePublishParams {
+  courseId: string
+  isPublished: boolean
+}
 
 export const useCreateCourse = (userId: string) => {
   const queryClient = useQueryClient()
@@ -69,3 +74,30 @@ export const useUpdateCourseMutation = (courseId: string) => {
     },
   })
 }
+
+// export const useUpdateCoursePublish = () => {
+//   const queryClient = useQueryClient()
+
+//   return useMutation({
+//     mutationKey: ["course"],
+//     mutationFn: async ({
+//       courseId,
+//       isPublished,
+//     }: UpdateCoursePublishParams) => {
+//       return await updateCourseStatus(courseId, isPublished)
+//     },
+//     onMutate: async (data) => {
+//       await queryClient.cancelQueries({ queryKey: ["course", data.courseId] })
+//       const previousCourse = queryClient.getQueryData(["course", data.courseId])
+//       queryClient.setQueryData(["course", data.courseId], (old: any) => ({
+//         ...old,
+//         data: data,
+//       }))
+//       return { previousCourse }
+//     },
+//     onError: (error) => {
+//       toast.error("Something went wrong")
+//       console.error(error)
+//     },
+//   })
+// }

@@ -93,3 +93,32 @@ export async function getCategories() {
     return []
   }
 }
+
+export async function updateCoursePublishStatus(
+  courseId: string,
+  isPublished: boolean,
+): Promise<Course> {
+  try {
+    const { userId } = await auth()
+
+    if (!userId) {
+      throw new Error("Unauthorized")
+    }
+
+    const course = await prisma.course.update({
+      where: {
+        id: courseId,
+        userId,
+      },
+      data: {
+        isPublished,
+      },
+    })
+
+    revalidatePath(`/teacher/courses/${courseId}`)
+    return course
+  } catch (error) {
+    console.error("[UPDATE_COURSE_PUBLISH_STATUS]", error)
+    throw new Error("Failed to update course publish status")
+  }
+}
