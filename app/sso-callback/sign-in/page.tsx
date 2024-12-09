@@ -1,25 +1,25 @@
 import { auth, currentUser } from "@clerk/nextjs/server"
 import SignInCompletionClient from "@/app/(auth)/_components/SignInCompletionClient"
-import { onSignInUser } from "@/actions/auth"
+import { onAuthenticatedUser, onSignInUser } from "@/actions/auth"
+import { User } from "lucide-react"
 
 const SignInCompletionPage = async () => {
+  // Get the userId from auth() -- if null, the user is not signed in
+  const { user } = await onAuthenticatedUser()
+
+  if (!user?.id) {
+    throw new Error("No user found")
+  }
   try {
-    // Get the userId from auth() -- if null, the user is not signed in
-    const { userId } = await auth()
-
-    if (!userId) {
-      throw new Error("No user found")
-    }
-
-    const userData = {
-      clerkId: userId,
-      // Add any other fields you want to pass
-    }
-
-    const result = await onSignInUser(userData)
+    const result = await onSignInUser({ email: user.email })
 
     if (result.status === 200) {
-      return <SignInCompletionClient isNewUser={result.isNewUser ?? false} />
+      return (
+        <SignInCompletionClient
+          isNewUser={result.isNewUser ?? false}
+          role={user.role}
+        />
+      )
     } else {
       throw new Error(result?.message || "Failed to process user data")
     }
@@ -29,6 +29,7 @@ const SignInCompletionPage = async () => {
       <SignInCompletionClient
         error="An error occurred. Please try again."
         isNewUser={false}
+        role={user.role}
       />
     )
   }

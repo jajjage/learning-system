@@ -69,8 +69,10 @@ export function CustomSignUp() {
   }, [otp, handleVerify])
 
   const handleOtpInputChange = (index: number, value: string) => {
-    handleOtpChange(index, value)
-    if (value && index < 5) {
+    const sanitizedValue = value.replace(/[^0-9]/g, "") // Allow only digits
+    handleOtpChange(index, sanitizedValue)
+
+    if (sanitizedValue && index < otp.length - 1) {
       otpInputRefs.current[index + 1]?.focus()
     }
   }
@@ -277,6 +279,8 @@ export function CustomSignUp() {
                       otpInputRefs.current[index] = el
                     }}
                     className="w-12 h-12 text-center text-2xl"
+                    aria-label={`OTP digit ${index + 1}`}
+                    aria-invalid={digit === ""}
                   />
                 ))}
               </div>

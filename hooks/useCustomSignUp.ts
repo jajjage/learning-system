@@ -71,7 +71,8 @@ export function useCustomSignUp() {
       await setActive({ session: completeSignUp.createdSessionId })
 
       const role = searchParams.get("role")
-      const selectedRole = role === "STUDENT" ? Role.STUDENT : Role.TEACHER
+      const selectedRole =
+        role === "STUDENT" || role === "TEACHER" ? role : Role.STUDENT
 
       console.log(role)
       const result = await onSignUpUser({
@@ -81,10 +82,14 @@ export function useCustomSignUp() {
         role: selectedRole,
         clerkId: completeSignUp.createdUserId ?? "",
       })
-
-      if (result.success) {
-        toast.success(`${result.message}`)
-        router.push("/dashboard")
+      if (result.success && result.status === 200) {
+        if (result.user?.role === "TEACHER") {
+          toast.success(`User created as ${result.user?.role} successfully`)
+          router.push("/teacher/courses")
+        } else {
+          toast.success(`User created as ${result.user?.role} successfully`)
+          router.push("/dashboard")
+        }
       } else {
         toast.error(
           "Failed to create user in database. Please contact support.",
@@ -95,7 +100,8 @@ export function useCustomSignUp() {
         router.push("/dashboard") // or to a page explaining the situation
       } else if (err.errors?.[0]?.code === "form_code_incorrect") {
         toast.error("Incorrect verification code. Please try again.")
-        setOtp(["", "", "", "", "", ""])
+        setOtp(["", "", "", "", "", ""]) // Reset OTP input
+        return // Prevent further processing
       } else {
         toast.error(
           err.errors?.[0]?.message || "An error occurred during verification.",

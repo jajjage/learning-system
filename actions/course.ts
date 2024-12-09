@@ -1,5 +1,6 @@
 "use server"
 
+import { CourseWithCount } from "@/types/course"
 import { prisma } from "@/utils/prisma"
 import { auth } from "@clerk/nextjs/server"
 import { Course } from "@prisma/client"
@@ -49,6 +50,27 @@ export async function getCourse(courseId: string, userId: string) {
         },
       },
     })
+    return course
+  } catch (error) {
+    console.error("Failed to fetch course:", error)
+    return null
+  }
+}
+export async function getCourses(userId: string) {
+  try {
+    const course = (await prisma.course.findMany({
+      where: {
+        userId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        _count: {
+          select: { chapters: true },
+        },
+      },
+    })) as CourseWithCount[]
     return course
   } catch (error) {
     console.error("Failed to fetch course:", error)

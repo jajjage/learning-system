@@ -1,7 +1,7 @@
 "use server"
 
 import { prisma } from "@/utils/prisma"
-import { currentUser } from "@clerk/nextjs/server"
+import { auth, currentUser, EmailAddress } from "@clerk/nextjs/server"
 import { Role } from "@prisma/client"
 
 type UserData = {
@@ -15,24 +15,28 @@ type UserData = {
 
 export const onAuthenticatedUser = async () => {
   try {
-    const clerk = await currentUser()
-    if (!clerk) return { status: "nm fjkgnqmo23" }
+    const { userId } = await auth()
+    if (!userId) return { status: "nm fjkgnqmo23" }
 
     const user = await prisma.user.findUnique({
       where: {
-        clerkId: clerk.id,
+        clerkId: userId,
       },
       select: {
         id: true,
         clerkId: true,
         firstName: true,
         lastName: true,
+        email: true,
+        role: true,
       },
     })
     if (user)
       return {
         status: 200,
+        user: user,
         userId: user.clerkId,
+        isNewUser: false,
         username: `${user.firstName} ${user.lastName}`,
       }
     return {
@@ -45,18 +49,19 @@ export const onAuthenticatedUser = async () => {
   }
 }
 
-export const onSignInUser = async (data: { clerkId: string }) => {
+export const onSignInUser = async (data: { email: string }) => {
   try {
     const dbUser = await prisma.user.findUnique({
-      where: { clerkId: data.clerkId },
+      where: { email: data.email },
     })
 
     if (dbUser) {
       return {
         status: 200,
         isNewUser: false,
-        message: "Sign in Succesful!",
-        id: dbUser.id,
+        role: dbUser.role,
+        message: "Welcome back!",
+        userId: dbUser.clerkId,
       }
     } else {
       return {
@@ -106,8 +111,8 @@ export async function onSignUpUser(userData: UserData) {
       status: 200,
       success: true,
       user: dbUser,
+      role: dbUser.role,
       isNewUser,
-      message: "User successfully created",
     }
   } catch (error) {
     console.error("Error processing user:", error)

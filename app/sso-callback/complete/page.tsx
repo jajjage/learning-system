@@ -89,7 +89,12 @@ const CompleteOAuthCallback = async ({ searchParams }: PageProps) => {
 
     // Handle successful creation
     if (result.status === 200) {
-      return <SignInCompletionClient isNewUser={result.isNewUser ?? false} />
+      return (
+        <SignInCompletionClient
+          isNewUser={result.isNewUser ?? false}
+          role={result.role as unknown as "TEACHER" | "STUDENT"}
+        />
+      )
     }
 
     // Handle unsuccessful creation

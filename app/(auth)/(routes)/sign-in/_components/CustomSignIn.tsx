@@ -13,8 +13,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { GoogleAuthButton } from "@/app/(auth)/_components/GoogleSignin"
-import { onSignInUser, onSignUpUser } from "@/actions/auth"
-import { redirectToSignUp } from "@/hooks/useCustomSignIn"
+import { onAuthenticatedUser, onSignInUser } from "@/actions/auth"
 
 const schema = yup
   .object({
@@ -57,7 +56,9 @@ export function CustomSignIn() {
     async (data: FormData) => {
       if (!isLoaded) return
       setIsLoading(true)
-      const user = await onSignInUser(data)
+
+      const user = await onSignInUser({ email: data.email })
+      console.log(user)
       try {
         const result = await signIn.create({
           identifier: data.email,
@@ -66,25 +67,26 @@ export function CustomSignIn() {
 
         if (result.status === "complete" && user.status === 200) {
           await setActive({ session: result.createdSessionId })
-          toast.success(`${user.message}`)
-          const redirectUrl = searchParams.get("redirect_url") || "/dashboard"
-          router.push(redirectUrl)
+          if (user.role === "TEACHER") {
+            const redirectUrl = searchParams.get("redirect_url") || "/dashboard"
+            if (redirectUrl !== "/dashboard") {
+              toast.success(`${user.message}`)
+              router.push(redirectUrl)
+            } else {
+              toast.success(`${user.message}`)
+              router.push("/teacher/courses")
+            }
+          } else {
+            toast.success(`${user.message}`)
+            const redirectUrl = searchParams.get("redirect_url") || "/dashboard"
+            router.push(redirectUrl)
+          }
         } else {
           toast.error("Sign in failed. Please try again.")
         }
       } catch (err: any) {
         await signOut()
         handleSignInError()
-        // if (err.errors[0].code === "form_identifier_not_found") {
-        //   toast.error("Account not found. Redirecting to sign-up...")
-        //   const redirectUrl = searchParams.get("redirect_url")
-        //   router.push(
-        //     `/sign-up${redirectUrl ? `?redirect_url=${redirectUrl}` : ""}`,
-        //   )
-        // } else {
-        //   await signOut()
-        //   toast.error(err.errors[0].message)
-        // }
       } finally {
         setIsLoading(false)
       }

@@ -8,11 +8,13 @@ import { Spinner } from "@/components/ui/spinner"
 interface SignInCompletionClientProps {
   isNewUser: boolean
   error?: string
+  role: "TEACHER" | "STUDENT"
 }
 
 export default function SignInCompletionClient({
   isNewUser,
   error,
+  role,
 }: SignInCompletionClientProps) {
   const router = useRouter()
   const [redirectUrl, setRedirectUrl] = useState("/dashboard") // Default value
@@ -27,18 +29,34 @@ export default function SignInCompletionClient({
       storedRedirectUrl.split("/").filter(Boolean).pop() || "dashboard",
     )
   }, [])
-
+  console.log(isNewUser)
+  console.log(redirectUrl)
+  console.log(role)
   useEffect(() => {
     if (error) {
       toast.error(error)
       router.push("/sign-in")
     } else {
       if (isNewUser) {
-        toast.success("Account created successfully!")
-        router.push(redirectUrl)
+        if (role === "TEACHER") {
+          toast.success("Account created successfully!")
+          router.push(
+            `${redirectUrl !== "/dashboard" ? redirectUrl : "/teacher/courses"}`,
+          )
+        } else {
+          toast.success("Account created successfully!")
+          router.push(`${redirectUrl}`)
+        }
       } else {
-        toast.success("Welcome back!")
-        router.push(redirectUrl)
+        if (role === "TEACHER") {
+          toast.success("Welcome back!")
+          router.push(
+            `${redirectUrl !== "/dashboard" ? redirectUrl : "/teacher/courses"}`,
+          )
+        } else {
+          toast.success("Welcome back! here")
+          router.push(`${redirectUrl}`)
+        }
       }
     }
   }, [isNewUser, error, router, redirectUrl])
