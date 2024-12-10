@@ -144,3 +144,46 @@ export async function updateCoursePublishStatus(
     throw new Error("Failed to update course publish status")
   }
 }
+
+export async function deleteCourse(courseId: string) {
+  try {
+    const { userId } = await auth()
+
+    if (!userId) {
+      throw new Error("Unauthorized")
+    }
+
+    const course = await prisma.course.findUnique({
+      where: {
+        id: courseId,
+        userId: userId,
+      },
+      include: {
+        chapters: true,
+      },
+    })
+
+    if (!course) {
+      throw new Error("Course not found")
+    }
+
+    // Delete all chapters associated with the course
+    await prisma.chapter.deleteMany({
+      where: {
+        courseId: courseId,
+      },
+    })
+
+    // Delete the course
+    await prisma.course.delete({
+      where: {
+        id: courseId,
+      },
+    })
+
+    revalidatePath("/teacher/courses")
+  } catch (error) {
+    console.error("[DELETE_COURSE]", error)
+    throw new Error("Failed to delete course")
+  }
+}

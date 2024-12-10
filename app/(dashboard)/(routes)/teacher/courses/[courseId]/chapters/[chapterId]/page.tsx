@@ -1,5 +1,9 @@
 import { IconBadge } from "@/components/global/IconBadge"
-import { chapterList, updateChapterPublishStatus } from "@/actions/chapter"
+import {
+  chapterList,
+  deleteChapter,
+  updateChapterPublishStatus,
+} from "@/actions/chapter"
 import { ArrowLeft, LayoutDashboard, ListChecks, Video } from "lucide-react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
@@ -14,16 +18,18 @@ import {
 } from "@tanstack/react-query"
 import { onAuthenticatedUser } from "@/actions/auth"
 import { PublishBanner } from "@/components/global/PublishBanner"
+import DeleteButton from "@/components/global/CourseDelete"
 
 const ChapterIdPage = async (context: {
   params: { courseId: string; chapterId: string }
 }) => {
   const { userId } = await onAuthenticatedUser()
   const client = new QueryClient()
-
+  console.log(userId)
   if (!userId) {
     return redirect("/")
   }
+
   const resolvedParams = await context.params
   const { courseId, chapterId } = resolvedParams
 
@@ -31,7 +37,7 @@ const ChapterIdPage = async (context: {
     queryKey: ["chapter"],
     queryFn: () => chapterList(chapterId, courseId),
   })
-
+  console.log(chapter)
   if (!chapter) {
     return redirect("/")
   }
@@ -43,7 +49,6 @@ const ChapterIdPage = async (context: {
 
   const completionText = `(${completedFields}/${totalFields})`
   const isComplete = requiredFields.every(Boolean)
-  console.log(isComplete)
 
   return (
     <HydrationBoundary state={dehydrate(client)}>
@@ -75,6 +80,12 @@ const ChapterIdPage = async (context: {
               </div>
             </div>
           </div>
+          <DeleteButton
+            entityId={chapter.id}
+            entityType="chapter"
+            courseId={courseId}
+            onDelete={deleteChapter}
+          />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
           <div className="space-y-4">

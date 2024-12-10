@@ -16,6 +16,7 @@ import {
   File,
   LayoutDashboard,
   ListChecksIcon as ListCheck,
+  ListChecks,
 } from "lucide-react"
 import AttachmentForm from "./_components/AttachmentForm"
 import ChapterForm from "./_components/ChapterForm"
@@ -26,6 +27,9 @@ import Link from "next/link"
 import { PublishBanner } from "@/components/global/PublishBanner"
 import { useUpdateCourseMutation } from "@/hooks/course"
 import { Course } from "@prisma/client"
+import CourseDelete from "@/components/global/CourseDelete"
+import DeleteButton from "@/components/global/CourseDelete"
+import { deleteCourse } from "@/actions/course"
 
 interface PageProps {
   params: {
@@ -76,78 +80,73 @@ export default async function CourseEditPage(context: {
         <PublishBanner
           initialIsPublished={course.isPublished}
           entityId={course.id}
-          entityTitle="course"
+          entityTitle={course.title}
           entityType="course"
           onPublishToggle={updateCoursePublishStatus}
         />
       )}
       <div className="p-6">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="w-full">
-                <Link
-                  href={`/teacher/courses`}
-                  className="flex items-center text-sm hover:opacity-75 transsion mb-6"
-                >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Courses
-                </Link>
-              </div>
-              <h1 className="text-2xl font-bold tracking-tight">
-                Course Setup
-              </h1>
-              <p className="text-sm text-slate-600 mt-2">
-                Complete all fields {completionText}
-              </p>
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-y-2">
+            <div className="w-full">
+              <Link
+                href={`/teacher/courses`}
+                className="flex items-center text-sm hover:opacity-75 transsion mb-6"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Courses
+              </Link>
             </div>
+            <h1 className="text-2xl font-medium">Course setup</h1>
+            <span className="text-sm text-slate-700">
+              Complete all fields {completionText}
+            </span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
+          <DeleteButton
+            entityId={course.id}
+            entityType="course"
+            onDelete={deleteCourse}
+          />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
+          <div>
+            <div className="flex items-center gap-x-2">
+              <IconBadge icon={LayoutDashboard} />
+              <h2 className="text-xl">Customize your course</h2>
+            </div>
+            <TitleForm initialData={course} courseId={course.id} />
+            <DescriptionForm initialData={course} courseId={course.id} />
+            <ImageForm initialData={course} courseId={course.id} />
+            <CategoryForm
+              initialData={course}
+              courseId={course.id}
+              options={categories.map((category) => ({
+                label: category.name,
+                value: category.id,
+              }))}
+            />
+          </div>
+          <div className="space-y-6">
             <div>
               <div className="flex items-center gap-x-2">
-                <IconBadge icon={LayoutDashboard} />
-                <h2 className="text-xl">Customize Your Course</h2>
+                <IconBadge icon={ListChecks} />
+                <h2 className="text-xl">Course chapters</h2>
               </div>
-              <div className="space-y-4 mt-8">
-                <TitleForm initialData={course} courseId={course.id} />
-                <DescriptionForm initialData={course} courseId={course.id} />
-                <ImageForm initialData={course} courseId={course.id} />
-                <CategoryForm
-                  initialData={course}
-                  courseId={course.id}
-                  options={categories.map((category) => ({
-                    label: category.name,
-                    value: category.id,
-                  }))}
-                />
-              </div>
+              <ChapterForm initialData={course} courseId={course.id} />
             </div>
-            <div className="space-y-6">
-              <div>
-                <div className="flex items-center gap-x-2">
-                  <IconBadge icon={ListCheck} />
-                  <h2 className="text-xl">Course Chapters</h2>
-                </div>
-                <ChapterForm initialData={course} courseId={course.id} />
+            <div>
+              <div className="flex items-center gap-x-2">
+                <IconBadge icon={CircleDollarSign} />
+                <h2 className="text-xl">Sell your course</h2>
               </div>
-              <div>
-                <div className="flex items-center gap-x-2">
-                  <IconBadge icon={CircleDollarSign} />
-                  <h2 className="text-xl">Sell Your Course</h2>
-                </div>
-                <div className="mt-4">
-                  <PriceForm initialData={course} courseId={course.id} />
-                </div>
+              <PriceForm initialData={course} courseId={course.id} />
+            </div>
+            <div>
+              <div className="flex items-center gap-x-2">
+                <IconBadge icon={CircleDollarSign} />
+                <h2 className="text-xl">Resources & Attachments</h2>
               </div>
-              <div>
-                <div className="flex items-center gap-x-2">
-                  <IconBadge icon={File} />
-                  <h2 className="text-xl">Upload Attachment</h2>
-                </div>
-                <div className="mt-4">
-                  <AttachmentForm initialData={course} courseId={course.id} />
-                </div>
-              </div>
+              <AttachmentForm initialData={course} courseId={course.id} />
             </div>
           </div>
         </div>

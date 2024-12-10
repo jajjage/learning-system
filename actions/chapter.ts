@@ -247,3 +247,74 @@ export async function updateChapterPublishStatus(
     throw new Error("Failed to update chapter publish status")
   }
 }
+
+export async function deleteChapter(chapterId: string, courseId: string) {
+  try {
+    const { userId } = await auth()
+
+    if (!userId) {
+      throw new Error("Unauthorized")
+    }
+
+    const chapter = await prisma.chapter.findUnique({
+      where: {
+        id: chapterId,
+      },
+      include: {
+        course: true,
+        muxData: true,
+      },
+    })
+
+    if (!chapter) {
+      throw new Error("Chapter not found")
+    }
+
+    if (chapter.course.userId !== userId) {
+      throw new Error("Unauthorized")
+    }
+
+    if (chapter.videoUrl) {
+      const existingMuxData = await prisma.muxData.findFirst({
+        where: { chapterId: chapterId },
+      })
+
+      if (existingMuxData) {
+        try {
+          await client.video.assets.delete(existingMuxData.assetId)
+          await prisma.muxData.delete({
+            where: { id: existingMuxData.id }, // Use the correct identifier
+          })
+        } catch (error) {
+          console.error("Error during asset deletion:", error)
+          throw new Error("Failed to delete existing video asset.")
+        }
+      }
+    }
+    await prisma.chapter.delete({
+      where: {
+        id: chapterId,
+      },
+    })
+    const publishedChaptersInCourse = await prisma.chapter.findMany({
+      where: {
+        courseId: courseId,
+        isPublished: true,
+      },
+    })
+
+    if (!publishedChaptersInCourse.length) {
+      await prisma.course.update({
+        where: {
+          id: chapter.course.id,
+        },
+        data: {
+          isPublished: false,
+        },
+      })
+    }
+  } catch (error) {
+    console.error("[DELETE_CHAPTER]", error)
+    throw new Error("Failed to delete chapter")
+  }
+}

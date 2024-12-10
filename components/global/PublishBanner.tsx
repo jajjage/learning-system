@@ -63,11 +63,11 @@ export const PublishBanner = ({
         )}
       </div>
       <div className="flex items-center gap-x-2">
-        {isPublished && entityType === "course" && (
+        {/* {isPublished && entityType === "course" && (
           <Button size="sm" variant="outline" asChild>
             <Link href={`/courses/${entityId}`}>View {entityType}</Link>
           </Button>
-        )}
+        )} */}
         <Button
           size="sm"
           variant={isPublished ? "outline" : "default"}

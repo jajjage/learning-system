@@ -2,6 +2,7 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next"
 import { UploadThingError } from "uploadthing/server"
 import { auth } from "@clerk/nextjs/server"
+import { onAuthenticatedUser } from "@/actions/auth"
 
 const f = createUploadthing()
 
@@ -10,7 +11,7 @@ export const ourFileRouter = {
     image: { maxFileSize: "4MB", maxFileCount: 1 },
   })
     .middleware(async () => {
-      const { userId } = await auth()
+      const { userId } = await onAuthenticatedUser()
       console.log("Middleware - userId:", userId)
       if (!userId) throw new UploadThingError("Unauthorized")
       return { userId }
@@ -27,7 +28,7 @@ export const ourFileRouter = {
     text: { maxFileSize: "1MB" },
   })
     .middleware(async () => {
-      const { userId } = await auth()
+      const { userId } = await onAuthenticatedUser()
       console.log("Middleware - userId:", userId)
       if (!userId) throw new Error("Unauthorized")
       return { userId }
@@ -42,7 +43,7 @@ export const ourFileRouter = {
     video: { maxFileSize: "512MB" },
   })
     .middleware(async () => {
-      const { userId } = await auth()
+      const { userId } = await onAuthenticatedUser()
       console.log("Middleware - userId:", userId)
       if (!userId) throw new Error("Unauthorized")
       return { userId }
