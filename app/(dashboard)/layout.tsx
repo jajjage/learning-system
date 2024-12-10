@@ -1,7 +1,14 @@
 import React from "react"
-import { Toaster } from "react-hot-toast"
-import Sidebar from "./_components/sidebar/Sidebar"
-import Navbar from "./_components/sidebar/Navbar"
+// import { Toaster } from "react-hot-toast"
+// import Sidebar from "./_components/sidebar/Sidebar"
+import { MainNav } from "./_components/sidebar/MainNav"
+
+import {
+  SidebarProvider,
+  SidebarTrigger,
+  SidebarInset,
+} from "@/components/ui/sidebar"
+import { MainSidebar } from "./_components/sidebar/main-sidebar"
 
 const UserLayout = ({
   children,
@@ -9,15 +16,17 @@ const UserLayout = ({
   children: React.ReactNode
 }>) => {
   return (
-    <div className="h-full">
-      <div className="h-[80px] md:pl-56 fixed inset-y-0 w-full z-50">
-        <Navbar />
-      </div>
-      <div className="hidden md:flex h-full w-56 flex-col fixed inset-y-0 z-50">
-        <Sidebar />
-      </div>
-      <main className="md:pl-56 pt-[80px] h-full">{children}</main>
-    </div>
+    <>
+      <SidebarProvider>
+        <div className="w-screen flex h-screen">
+          <MainSidebar />
+          <SidebarInset className="flex flex-col flex-grow">
+            <MainNav />
+            <main className="flex-1 overflow-auto p-6">{children}</main>
+          </SidebarInset>
+        </div>
+      </SidebarProvider>
+    </>
   )
 }
 

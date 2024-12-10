@@ -1,9 +1,14 @@
-import { Courses } from "@/icons"
-import { BarChart2, Compass, Layout, List } from "lucide-react"
+import {
+  LayoutDashboard,
+  Compass,
+  Search,
+  BookOpen,
+  BarChart2,
+} from "lucide-react"
 
-export const guestRoute = [
+export const guestRoutes = [
   {
-    icon: Layout,
+    icon: LayoutDashboard,
     label: "Dashboard",
     href: "/dashboard",
   },
@@ -13,15 +18,15 @@ export const guestRoute = [
     href: "/search",
   },
   {
-    icon: Layout,
+    icon: Search,
     label: "Search",
     href: "/item",
   },
 ]
 
-export const teacherRoute = [
+export const teacherRoutes = [
   {
-    icon: List,
+    icon: BookOpen,
     label: "Courses",
     href: "/teacher/courses",
   },
@@ -31,7 +36,7 @@ export const teacherRoute = [
     href: "/teacher/analytics",
   },
   {
-    icon: Layout,
+    icon: Search,
     label: "Search",
     href: "/item",
   },

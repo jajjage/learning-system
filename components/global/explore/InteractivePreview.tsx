@@ -1,4 +1,5 @@
 "use client"
+
 import { useState } from "react"
 import {
   Card,
@@ -40,20 +41,24 @@ export default function InteractivePreview({ role }: InteractivePreviewProps) {
   const content = previewContent[role]
 
   return (
-    <Card className="mb-12">
-      <CardHeader>
-        <CardTitle>Interactive Preview</CardTitle>
-        <CardDescription>Try out some of our key features</CardDescription>
+    <Card className="mb-12 overflow-hidden border-0 shadow-lg">
+      <CardHeader className="bg-gradient-to-r from-[#1a73e8] to-[#4285f4] text-white">
+        <CardTitle className="text-2xl">Interactive Preview</CardTitle>
+        <CardDescription className="text-white/80">
+          Try out some of our key features
+        </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-6">
         <Tabs
           defaultValue={content[0].title.toLowerCase().replace(/\s+/g, "-")}
+          className="w-full"
         >
-          <TabsList>
+          <TabsList className="w-full mb-6">
             {content.map((item) => (
               <TabsTrigger
                 key={item.title}
                 value={item.title.toLowerCase().replace(/\s+/g, "-")}
+                className="flex-1 py-2 text-sm font-medium transition-all duration-200 hover:text-[#1a73e8]"
               >
                 {item.title}
               </TabsTrigger>
@@ -76,17 +81,29 @@ export default function InteractivePreview({ role }: InteractivePreviewProps) {
 function CourseModulePreview() {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Introduction to React</h3>
-      <p>
+      <h3 className="text-xl font-semibold text-[#202124]">
+        Introduction to React
+      </h3>
+      <p className="text-[#202124]/80">
         This module covers the basics of React, including components, props, and
         state.
       </p>
-      <div className="space-x-4">
-        <Button className="font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25">
+      <div className="flex flex-wrap gap-4">
+        <Button className="bg-gradient-to-r from-[#1a73e8] to-[#4285f4] text-white shadow-md hover:shadow-lg transition-all duration-200">
           Watch Video
         </Button>
-        <Button variant="outline">Read Lesson</Button>
-        <Button variant="outline">Take Quiz</Button>
+        <Button
+          variant="outline"
+          className="border-[#1a73e8] text-[#1a73e8] hover:bg-[#1a73e8] hover:text-white transition-all duration-200"
+        >
+          Read Lesson
+        </Button>
+        <Button
+          variant="outline"
+          className="border-[#1a73e8] text-[#1a73e8] hover:bg-[#1a73e8] hover:text-white transition-all duration-200"
+        >
+          Take Quiz
+        </Button>
       </div>
     </div>
   )
@@ -101,10 +118,17 @@ function ProgressTrackingPreview({
 }) {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Your Progress</h3>
-      <Progress value={progress} className="w-full" />
-      <p>Current progress: {progress}%</p>
-      <Button onClick={() => setProgress(Math.min(100, progress + 10))}>
+      <h3 className="text-xl font-semibold text-[#202124]">Your Progress</h3>
+      <Progress
+        value={progress}
+        className="w-full h-2 bg-[#f1f3f4]"
+        // indicatorClassName="bg-gradient-to-r from-[#1a73e8] to-[#4285f4]"
+      />
+      <p className="text-[#202124]/80">Current progress: {progress}%</p>
+      <Button
+        onClick={() => setProgress(Math.min(100, progress + 10))}
+        className="bg-gradient-to-r from-[#1a73e8] to-[#4285f4] text-white shadow-md hover:shadow-lg transition-all duration-200"
+      >
         Complete Lesson
       </Button>
     </div>
@@ -112,16 +136,24 @@ function ProgressTrackingPreview({
 }
 
 function ContentCreationPreview() {
-  const btStyle =
-    "font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25"
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Create a New Lesson</h3>
+      <h3 className="text-xl font-semibold text-[#202124]">
+        Create a New Lesson
+      </h3>
       <div className="grid grid-cols-2 gap-4">
-        <Button className={btStyle}>Add Video</Button>
-        <Button className={btStyle}>Add Quiz</Button>
-        <Button className={btStyle}>Add Reading Material</Button>
-        <Button className={btStyle}>Add Assignment</Button>
+        <Button className="bg-gradient-to-r from-[#1a73e8] to-[#4285f4] text-white shadow-md hover:shadow-lg transition-all duration-200">
+          Add Video
+        </Button>
+        <Button className="bg-gradient-to-r from-[#1a73e8] to-[#4285f4] text-white shadow-md hover:shadow-lg transition-all duration-200">
+          Add Quiz
+        </Button>
+        <Button className="bg-gradient-to-r from-[#1a73e8] to-[#4285f4] text-white shadow-md hover:shadow-lg transition-all duration-200">
+          Add Reading Material
+        </Button>
+        <Button className="bg-gradient-to-r from-[#1a73e8] to-[#4285f4] text-white shadow-md hover:shadow-lg transition-all duration-200">
+          Add Assignment
+        </Button>
       </div>
     </div>
   )
@@ -130,23 +162,31 @@ function ContentCreationPreview() {
 function StudentAnalyticsPreview() {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Student Engagement Overview</h3>
-      <div className="grid grid-cols-2 gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Course Completion Rate</CardTitle>
+      <h3 className="text-xl font-semibold text-[#202124]">
+        Student Engagement Overview
+      </h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-[#1a73e8] to-[#4285f4] text-white">
+            <CardTitle className="text-lg">Course Completion Rate</CardTitle>
           </CardHeader>
-          <CardContent>
-            <Progress value={75} className="w-full" />
-            <p className="text-center mt-2">75%</p>
+          <CardContent className="p-4">
+            <Progress
+              value={75}
+              className="w-full h-2 bg-[#f1f3f4]"
+              // className="bg-gradient-to-r from-[#1a73e8] to-[#4285f4]"
+            />
+            <p className="text-center mt-2 text-[#202124]">75%</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Average Quiz Score</CardTitle>
+        <Card className="overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-[#1a73e8] to-[#4285f4] text-white">
+            <CardTitle className="text-lg">Average Quiz Score</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-bold text-center">85%</div>
+          <CardContent className="p-4">
+            <div className="text-4xl font-bold text-center text-[#1a73e8]">
+              85%
+            </div>
           </CardContent>
         </Card>
       </div>

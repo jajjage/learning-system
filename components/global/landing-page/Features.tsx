@@ -1,6 +1,5 @@
 "use client"
 
-import React from "react"
 import { BookOpen, BarChart, Users, Award } from "lucide-react"
 
 const features = [
@@ -32,31 +31,30 @@ const features = [
 
 export function Features() {
   return (
-    <div id="features" className="py-16 bg-secondary/30">
+    <div id="features" className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
+          <h2 className="text-4xl font-bold text-[#202124] mb-4">
             Key Features
           </h2>
-          <p className="mt-4 text-lg bg-gradient-to-r from-blue-600 to-black bg-clip-text text-transparent">
+          <p className="mt-4 text-xl text-[#202124]/70 max-w-3xl mx-auto">
             Everything you need to succeed in your learning journey.
           </p>
         </div>
-        <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {features.map((feature) => (
+        <div className="mt-20 grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4">
+          {features.map((feature, index) => (
             <div
               key={feature.name}
-              className="relative bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow hover:shadow-primary/10"
+              className="relative bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 group"
             >
-              <div>
-                <feature.icon className="h-8 w-8 text-purple-600" />
-                <h3 className="mt-4 text-lg font-medium text-gray-900">
-                  {feature.name}
-                </h3>
-                <p className="mt-2 text-base text-gray-500">
-                  {feature.description}
-                </p>
-              </div>
+              <div className="absolute inset-0 bg-gradient-to-br from-[#e8f0fe] to-white rounded-2xl transform scale-[0.98] group-hover:scale-100 transition-transform duration-300 -z-10"></div>
+              <feature.icon className="h-12 w-12 text-[#1a73e8] mb-6 transform group-hover:scale-110 transition-transform duration-300" />
+              <h3 className="text-xl font-semibold text-[#202124] mb-3">
+                {feature.name}
+              </h3>
+              <p className="text-[#202124]/70 group-hover:text-[#202124] transition-colors duration-300">
+                {feature.description}
+              </p>
             </div>
           ))}
         </div>

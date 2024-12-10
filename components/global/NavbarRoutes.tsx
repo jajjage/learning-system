@@ -1,30 +1,32 @@
 "use client"
 
 import { UserButton } from "@clerk/nextjs"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { LogIn } from "lucide-react"
+import { LogOut } from "lucide-react"
 import Link from "next/link"
 
 const NavbarRoutes = () => {
   const pathname = usePathname()
-  const router = useRouter()
 
   const isTeacherPage = pathname?.startsWith("/teacher")
   const isPlayerPage = pathname?.includes("/chapter")
 
   return (
-    <div className="flex gap-x-2 ml-auto">
+    <div className="flex items-center gap-x-2 ml-auto">
       {isTeacherPage || isPlayerPage ? (
         <Link href="/dashboard">
-          <Button className="font-semibold bg-gradient-to-r from-purple-600 to-blue-500 text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25">
-            <LogIn className="h-4 w-4 mr-2" />
+          <Button
+            variant="ghost"
+            className="text-[#1a73e8] hover:bg-[#e8f0fe] hover:text-[#1a73e8]"
+          >
+            <LogOut className="h-4 w-4 mr-2" />
             Exit
           </Button>
         </Link>
       ) : (
         <Link href="/teacher/courses">
-          <Button className="font-semibold bg-gradient-to-r from-purple-600 to-blue-500 text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25">
+          <Button className="bg-[#1a73e8] text-white hover:bg-[#4285f4] transition-colors">
             Teacher mode
           </Button>
         </Link>

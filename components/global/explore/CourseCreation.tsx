@@ -23,26 +23,31 @@ export default function CourseCreation() {
   }
 
   return (
-    <Card className="mb-12">
-      <CardHeader>
-        <CardTitle>Course Creation Tools</CardTitle>
-        <CardDescription>
+    <Card className="mb-12 overflow-hidden border-0 shadow-lg">
+      <CardHeader className="bg-gradient-to-r from-[#1a73e8] to-[#4285f4] text-white">
+        <CardTitle className="text-2xl">Course Creation Tools</CardTitle>
+        <CardDescription className="text-white/80">
           Experience our intuitive course creation process
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="courseTitle">Course Title</Label>
+            <Label htmlFor="courseTitle" className="text-[#202124]">
+              Course Title
+            </Label>
             <Input
               id="courseTitle"
               value={courseTitle}
               onChange={(e) => setCourseTitle(e.target.value)}
               placeholder="e.g., Introduction to Python"
+              className="mt-1"
             />
           </div>
           <div>
-            <Label htmlFor="courseDescription">Course Description</Label>
+            <Label htmlFor="courseDescription" className="text-[#202124]">
+              Course Description
+            </Label>
             <Textarea
               id="courseDescription"
               value={courseDescription}
@@ -50,32 +55,33 @@ export default function CourseCreation() {
                 setCourseDescription(e.target.value)
               }
               placeholder="Briefly describe your course"
+              className="mt-1"
             />
           </div>
           <div>
-            <Label>Add Content</Label>
-            <div className="grid grid-cols-2 gap-2">
+            <Label className="text-[#202124]">Add Content</Label>
+            <div className="grid grid-cols-2 gap-2 mt-1">
               <Button
                 type="button"
-                className="font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25"
+                className="bg-gradient-to-r from-[#1a73e8] to-[#4285f4] text-white shadow-md hover:shadow-lg transition-all duration-200"
               >
                 Add Video
               </Button>
               <Button
                 type="button"
-                className="font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25"
+                className="bg-gradient-to-r from-[#1a73e8] to-[#4285f4] text-white shadow-md hover:shadow-lg transition-all duration-200"
               >
                 Add Quiz
               </Button>
               <Button
                 type="button"
-                className="font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25"
+                className="bg-gradient-to-r from-[#1a73e8] to-[#4285f4] text-white shadow-md hover:shadow-lg transition-all duration-200"
               >
                 Add Assignment
               </Button>
               <Button
                 type="button"
-                className="font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25"
+                className="bg-gradient-to-r from-[#1a73e8] to-[#4285f4] text-white shadow-md hover:shadow-lg transition-all duration-200"
               >
                 Add Resources
               </Button>
@@ -83,7 +89,7 @@ export default function CourseCreation() {
           </div>
           <Button
             type="submit"
-            className="font-semibold bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25"
+            className="w-full bg-gradient-to-r from-[#1a73e8] to-[#4285f4] text-white shadow-md hover:shadow-lg transition-all duration-200"
           >
             Create Sample Course
           </Button>

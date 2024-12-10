@@ -1,21 +1,21 @@
 "use client"
 
 import { usePathname } from "next/navigation"
-import { guestRoute, teacherRoute } from "./constant"
+import { guestRoutes, teacherRoutes } from "./constant"
 import SidebarItem from "./SidebarItem"
 
 const SidebarRoutes = () => {
   const pathname = usePathname()
 
-  const teacher = pathname.includes("/teacher")
+  const isTeacher = pathname.includes("/teacher")
 
-  const routes = teacher ? teacherRoute : guestRoute
+  const routes = isTeacher ? teacherRoutes : guestRoutes
 
   return (
     <div className="flex flex-col w-full">
       {routes.map((route) => (
         <SidebarItem
-          key={route.label}
+          key={route.href}
           icon={route.icon}
           label={route.label}
           href={route.href}

@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { LucideIcon } from "lucide-react"
-import { usePathname, useRouter } from "next/navigation"
+import { type LucideIcon } from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 interface SidebarItemProps {
   icon: LucideIcon
@@ -10,42 +10,24 @@ interface SidebarItemProps {
 }
 
 const SidebarItem = ({ icon: Icon, label, href }: SidebarItemProps) => {
-  const pathName = usePathname()
-  const route = useRouter()
+  const pathname = usePathname()
 
   const isActive =
-    (pathName === "/dashboard" && href === "/dashboard") ||
-    pathName === href ||
-    pathName?.startsWith(`${href}/`)
-
-  const onClick = () => {
-    route.push(href)
-  }
+    (pathname === "/dashboard" && href === "/dashboard") ||
+    pathname === href ||
+    pathname?.startsWith(`${href}/`)
 
   return (
-    <button
-      onClick={onClick}
-      type="button"
+    <Link
+      href={href}
       className={cn(
-        "flex items-center gap-x-2 text-purple-500 text-sm font-[500] pl-6 transition-all hover:text-purple-600 hover:bg-purple-300/10",
-        isActive &&
-          "text-purple-700 bg-gradient-to-r from-purple-300/45 to-blue-300/40 px-2 py-2 rounded-sm transition-colors hover:text-purple-900/100",
+        "flex items-center gap-x-2 text-[#202124] text-sm font-medium pl-6 py-4 hover:bg-[#f1f3f4] transition-colors",
+        isActive && "bg-[#e8f0fe] text-[#1a73e8]",
       )}
     >
-      <div className="flex items-center gap-x-2 py-4">
-        <Icon
-          size={22}
-          className={cn("text-purple-500", isActive && "text-purple-700")}
-        />
-        {label}
-      </div>
-      <div
-        className={cn(
-          "ml-auto opacity-0 border-2 border-blue-700 h-full transition-all",
-          isActive && "opacity-100",
-        )}
-      />
-    </button>
+      <Icon size={20} className={cn(isActive && "text-[#1a73e8]")} />
+      {label}
+    </Link>
   )
 }
 

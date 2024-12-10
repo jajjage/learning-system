@@ -15,21 +15,24 @@ export default function KeyFeatures({ role }: KeyFeaturesProps) {
   const features = role === "student" ? studentFeatures : teacherFeatures
 
   return (
-    <Card className="mb-12">
-      <CardHeader>
-        <CardTitle>
+    <Card className="mb-12 overflow-hidden border-0 shadow-lg">
+      <CardHeader className="bg-gradient-to-r from-[#1a73e8] to-[#4285f4] text-white">
+        <CardTitle className="text-2xl">
           Key Features for {role === "student" ? "Students" : "Teachers"}
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-white/80">
           Discover what makes our platform unique
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-6">
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {features.map((feature, index) => (
-            <li key={index} className="flex items-start space-x-2">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
-              <span>{feature}</span>
+            <li
+              key={index}
+              className="flex items-start space-x-2 p-3 bg-[#f1f3f4] rounded-lg transition-all duration-200 hover:shadow-md"
+            >
+              <CheckCircle className="h-5 w-5 text-[#1a73e8] mt-0.5 flex-shrink-0" />
+              <span className="text-[#202124]">{feature}</span>
             </li>
           ))}
         </ul>

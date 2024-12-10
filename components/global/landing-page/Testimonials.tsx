@@ -1,4 +1,5 @@
-import React from "react"
+"use client"
+
 import { Users, BookOpen, Star } from "lucide-react"
 
 const testimonials = [
@@ -28,55 +29,59 @@ const stats = [
 
 export function Testimonials() {
   return (
-    <div id="testimonials" className="bg-white py-16">
+    <div
+      id="testimonials"
+      className="bg-gradient-to-b from-white to-[#e8f0fe] py-24"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
+          <h2 className="text-4xl font-bold text-[#202124] mb-4">
             What Our Users Say
           </h2>
-          <p className="mt-4 text-xl bg-gradient-to-r from-blue-600 to-black bg-clip-text text-transparent">
+          <p className="mt-4 text-xl text-[#202124]/70 max-w-3xl mx-auto">
             Trusted by educators and students worldwide
           </p>
 
-          {/* Stats Section */}
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
             {stats.map((stat, index) => (
               <div
                 key={index}
-                className="bg-gradient-to-r from-purple-500 to-blue-600 rounded-xl p-6 transform hover:scale-105 transition-transform duration-300"
+                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:scale-105"
               >
                 <div className="flex flex-col items-center">
-                  <stat.icon className="h-8 w-8 text-white mb-3" />
-                  <div className="text-2xl font-bold text-white">
+                  <div className="bg-[#e8f0fe] p-4 rounded-full mb-6">
+                    <stat.icon className="h-8 w-8 text-[#1a73e8]" />
+                  </div>
+                  <div className="text-3xl font-bold text-[#202124] mb-2">
                     {stat.value}
                   </div>
-                  <div className="text-white/80">{stat.label}</div>
+                  <div className="text-[#202124]/70">{stat.label}</div>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-20">
           {testimonials.map((testimonial, index) => (
             <div
               key={index}
-              className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-lg p-8 shadow-sm hover:shadow-md transition-shadow hover:shadow-primary/10"
+              className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
             >
-              <p className="text-gray-600 italic mb-6">{testimonial.content}</p>
+              <p className="text-[#202124] text-lg italic mb-6">
+                {testimonial.content}
+              </p>
               <div className="flex items-center">
                 <img
-                  className="h-12 w-12 rounded-full"
+                  className="h-12 w-12 rounded-full border-2 border-[#1a73e8]"
                   src={testimonial.image}
                   alt={testimonial.author}
                 />
                 <div className="ml-4">
-                  <div className="text-sm font-medium text-black">
+                  <div className="text-lg font-semibold text-[#202124]">
                     {testimonial.author}
                   </div>
-                  <div className="text-sm text-gray-500">
-                    {testimonial.role}
-                  </div>
+                  <div className="text-[#202124]/70">{testimonial.role}</div>
                 </div>
               </div>
             </div>
