@@ -1,14 +1,28 @@
 "use client"
 
 import { usePathname } from "next/navigation"
+import { useUser } from "@clerk/nextjs"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { useSidebar } from "@/components/ui/sidebar"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Role } from "@prisma/client"
 
-export function MainNav() {
+interface MainNavProps {
+  userDB:
+    | {
+        role: Role
+        firstName: string
+        email: string
+        lastName: string
+      }
+    | undefined
+}
+export function MainNav({ userDB }: MainNavProps) {
   const pathname = usePathname()
   const { open } = useSidebar()
+  const { isLoaded, user } = useUser()
   const role = pathname.startsWith("/teacher") ? "teacher" : "student"
 
   return (
@@ -19,19 +33,25 @@ export function MainNav() {
       </div>
       {!open && (
         <Button variant="ghost" className="hidden sm:flex items-center gap-2">
-          <Avatar className="h-8 w-8">
-            <AvatarImage
-              src={
-                role === "student"
-                  ? "https://github.com/shadcn.png"
-                  : "https://github.com/vercel.png"
-              }
-            />
-            <AvatarFallback>{role === "student" ? "JD" : "TS"}</AvatarFallback>
-          </Avatar>
-          <span className="text-sm font-medium">
-            {role === "student" ? "John Doe" : "Teacher Smith"}
-          </span>
+          {isLoaded ? (
+            <>
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={user?.imageUrl} />
+                <AvatarFallback>
+                  {user?.firstName?.[0]}
+                  {user?.lastName?.[0]}
+                </AvatarFallback>
+              </Avatar>
+              <span className="text-sm font-medium">
+                {user?.fullName || "User"}
+              </span>
+            </>
+          ) : (
+            <>
+              <Skeleton className="h-8 w-8 rounded-full" />
+              <Skeleton className="h-5 w-20" />
+            </>
+          )}
         </Button>
       )}
     </header>

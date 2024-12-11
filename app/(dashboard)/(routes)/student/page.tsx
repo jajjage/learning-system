@@ -1,3 +1,6 @@
+import { onAuthenticatedUser } from "@/actions/auth"
+import { redirect } from "next/navigation"
+
 import {
   Card,
   CardContent,
@@ -5,8 +8,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { Role } from "@prisma/client"
+import { AuthorizedAccess } from "@/components/global/AuthorizedAccess"
 
-export default function StudentDashboard() {
+export default async function StudentDashboard() {
+  const { user } = await onAuthenticatedUser()
+
+  if (!user || user.role !== Role.STUDENT) {
+    return <AuthorizedAccess />
+  }
+
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">Student Dashboard</h1>

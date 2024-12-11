@@ -1,27 +1,25 @@
 import React from "react"
-// import { Toaster } from "react-hot-toast"
-// import Sidebar from "./_components/sidebar/Sidebar"
 import { MainNav } from "./_components/sidebar/MainNav"
 
-import {
-  SidebarProvider,
-  SidebarTrigger,
-  SidebarInset,
-} from "@/components/ui/sidebar"
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { MainSidebar } from "./_components/sidebar/main-sidebar"
+import { onAuthenticatedUser } from "@/actions/auth"
+import { auth, clerkClient } from "@clerk/nextjs/server"
 
-const UserLayout = ({
+const UserLayout = async ({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) => {
+  const { user } = await onAuthenticatedUser()
+
   return (
     <>
       <SidebarProvider>
         <div className="w-screen flex h-screen">
-          <MainSidebar />
+          <MainSidebar userDB={user} />
           <SidebarInset className="flex flex-col flex-grow">
-            <MainNav />
+            <MainNav userDB={user} />
             <main className="flex-1 overflow-auto p-6">{children}</main>
           </SidebarInset>
         </div>
