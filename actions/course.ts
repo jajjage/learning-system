@@ -166,7 +166,23 @@ export async function deleteCourse(courseId: string) {
     if (!course) {
       throw new Error("Course not found")
     }
+    // if (course.chapters.) {
+    //   const existingMuxData = await prisma.muxData.findFirst({
+    //     where: { chapterId: chapterId },
+    //   })
 
+    //   if (existingMuxData) {
+    //     try {
+    //       await client.video.assets.delete(existingMuxData.assetId)
+    //       await prisma.muxData.delete({
+    //         where: { id: existingMuxData.id }, // Use the correct identifier
+    //       })
+    //     } catch (error) {
+    //       console.error("Error during asset deletion:", error)
+    //       throw new Error("Failed to delete existing video asset.")
+    //     }
+    //   }
+    // }
     // Delete all chapters associated with the course
     await prisma.chapter.deleteMany({
       where: {

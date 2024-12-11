@@ -12,7 +12,7 @@ export default function ExploreLayout({
   const pathname = usePathname()
   return (
     <div className="min-h-screen flex flex-col">
-      <Header onPage={pathname} /> {/* Navbar */}
+      <Header /> {/* Navbar */}
       <main className="flex-grow flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-100">
         {children} {/* Your sign-up form */}
       </main>
