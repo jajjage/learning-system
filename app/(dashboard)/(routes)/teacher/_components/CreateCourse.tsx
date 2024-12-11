@@ -19,10 +19,11 @@ import { z } from "zod"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
 
-interface createCourseProps {
+interface CreateCourseProps {
   userId: string
 }
-const CreateCourse = ({ userId }: createCourseProps) => {
+
+const CreateCourse = ({ userId }: CreateCourseProps) => {
   const router = useRouter()
   const { createCourse, isPending: isLoading } = useCreateCourse(userId)
 
@@ -36,21 +37,23 @@ const CreateCourse = ({ userId }: createCourseProps) => {
   const onSubmit = async (values: z.infer<typeof CourseSchema>) => {
     try {
       const data = await createCourse(values)
-      if (data.status == 200) {
+      if (data.status === 200) {
         router.push(`/teacher/courses/${data.id}`)
+        toast.success("Course created successfully!")
       } else {
         router.push("/teacher/courses/")
+        toast.error("Failed to create course. Please try again.")
       }
     } catch (error) {
-      toast.error("something went wrong")
+      toast.error("Something went wrong. Please try again.")
     }
   }
 
   return (
-    <div className="max-w-5xl mx-auto flex md:items-center md:justify-center h-full p-6">
+    <div className="max-w-5xl mx-auto flex md:items-center md:justify-center min-h-[calc(100vh-4rem)] p-6">
       <div className="w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-4">Create a new course</h1>
-        <p className="text-gray-600 mb-6">
+        <h1 className="text-3xl font-bold mb-6">Create a new course</h1>
+        <p className="text-gray-600 mb-8">
           Get started by giving your course a name. You can change this later.
         </p>
         <Form {...form}>

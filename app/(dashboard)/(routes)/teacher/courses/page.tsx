@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { CourseCard } from "../_components/CourseCard"
-import { getCourses } from "@/actions/course"
+import { getCategories, getCourses, getCourseSearch } from "@/actions/course"
 import { onAuthenticatedUser } from "@/actions/auth"
 import { QueryClient } from "@tanstack/react-query"
 import { redirect } from "next/navigation"
+import { Suspense } from "react"
+import { CourseList } from "../_components/CourseList"
 
 export default async function CoursesPage() {
   const { user } = await onAuthenticatedUser()
@@ -14,26 +15,31 @@ export default async function CoursesPage() {
     return redirect("/")
   }
 
-  const userCourses = await client.fetchQuery({
-    queryKey: ["course"],
-    queryFn: () => getCourses(user.clerkId),
+  const categoriesPromise = await client.fetchQuery({
+    queryKey: ["categories"],
+    queryFn: () => getCategories(),
+  })
+  const coursesPromise = await client.fetchQuery({
+    queryKey: ["categories"],
+    queryFn: () => getCourseSearch(),
   })
 
+  const [courses, categories] = await Promise.all([
+    coursesPromise,
+    categoriesPromise,
+  ])
+
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Your Courses</h1>
-        <Link href="/teacher/create">
-          <Button className="bg-gradient-to-r from-purple-600 to-blue-500  text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow-md hover:shadow-primary/25">
-            Create New Course
-          </Button>
-        </Link>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-4xl font-bold text-primary">Courses</h1>
+        <Button asChild>
+          <Link href="/teacher/create">Create Course</Link>
+        </Button>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {userCourses?.map((course) => (
-          <CourseCard key={course.id} course={course} />
-        ))}
-      </div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <CourseList initialCourses={courses} initialCategories={categories} />
+      </Suspense>
     </div>
   )
 }

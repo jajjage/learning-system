@@ -203,3 +203,27 @@ export async function deleteCourse(courseId: string) {
     throw new Error("Failed to delete course")
   }
 }
+
+export async function getCourseSearch() {
+  try {
+    const { userId } = await auth()
+
+    if (!userId) {
+      throw new Error("Unauthorized")
+    }
+
+    // TODO: Replace this with actual database query
+    const courses: Course[] = await prisma.course.findMany({
+      where: {
+        userId: userId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    })
+    return courses
+  } catch (error) {
+    console.error("[SEARCH_COURSE]", error)
+    throw new Error("Failed to search course")
+  }
+}
