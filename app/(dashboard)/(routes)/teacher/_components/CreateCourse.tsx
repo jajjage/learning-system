@@ -39,7 +39,6 @@ const CreateCourse = ({ userId }: CreateCourseProps) => {
       const data = await createCourse(values)
       if (data.status === 200) {
         router.push(`/teacher/courses/${data.id}`)
-        toast.success("Course created successfully!")
       } else {
         router.push("/teacher/courses/")
         toast.error("Failed to create course. Please try again.")

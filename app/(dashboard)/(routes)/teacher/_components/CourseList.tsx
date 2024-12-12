@@ -8,6 +8,7 @@ import { CategoryFilter } from "./CategoryFilter"
 import { Category, Course } from "@prisma/client"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { CourseWithCount } from "@/types/course"
 
 interface CourseListProps {
   initialCourses: Course[]
@@ -20,12 +21,14 @@ export function CourseList({
 }: CourseListProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [courses, setCourses] = useState<Course[]>(initialCourses)
+  const [courses, setCourses] = useState<Course[] | CourseWithCount[]>(
+    initialCourses,
+  )
   const [loading, setLoading] = useState(false)
 
   const categoryId = searchParams.get("categoryId") || ""
   const searchQuery = searchParams.get("search") || ""
-
+  console.log("Courses fetched:", courses)
   useEffect(() => {
     const filterCourses = () => {
       setLoading(true)
@@ -94,9 +97,18 @@ export function CourseList({
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {courses.map((course) => (
-              <CourseCard key={course.id} course={course} />
-            ))}
+            {courses.map((course) => {
+              if (!("_count" in course)) {
+                console.error("Invalid course data:", course)
+                return null
+              }
+              return (
+                <CourseCard
+                  key={course.id}
+                  course={course as CourseWithCount}
+                />
+              )
+            })}
           </div>
         )}
 

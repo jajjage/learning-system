@@ -52,6 +52,17 @@ export function CustomSignIn() {
     router.push(`/sign-up${redirectUrl ? `?redirect_url=${redirectUrl}` : ""}`)
   }
 
+  // Store the redirect URL in localStorage
+  useEffect(() => {
+    // Ensure localStorage is only accessed on the client side
+    const redirectUrl = searchParams.get("redirect_url")
+
+    if (redirectUrl) {
+      // Store the redirect URL in localStorage
+      localStorage.setItem("redirectUrl", redirectUrl)
+    }
+  }, [searchParams]) // Re-run the effect when searchParams change
+
   const onSubmit = useCallback(
     async (data: FormData) => {
       if (!isLoaded) return
@@ -68,18 +79,23 @@ export function CustomSignIn() {
         if (result.status === "complete" && user.status === 200) {
           await setActive({ session: result.createdSessionId })
           if (user.role === "TEACHER") {
-            const redirectUrl = searchParams.get("redirect_url") || "/dashboard"
-            if (redirectUrl !== "/dashboard") {
+            const redirectUrl = searchParams.get("redirect_url") || "/"
+            if (redirectUrl !== "/") {
               toast.success(`${user.message}`)
               router.push(redirectUrl)
             } else {
               toast.success(`${user.message}`)
-              router.push("/teacher/courses")
+              router.push("/teacher")
             }
           } else {
-            toast.success(`${user.message}`)
-            const redirectUrl = searchParams.get("redirect_url") || "/dashboard"
-            router.push(redirectUrl)
+            const redirectUrl = searchParams.get("redirect_url") || "/"
+            if (redirectUrl !== "/") {
+              toast.success(`${user.message}`)
+              router.push(redirectUrl)
+            } else {
+              toast.success(`${user.message}`)
+              router.push("/student")
+            }
           }
         } else {
           toast.error("Sign in failed. Please try again.")

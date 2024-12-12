@@ -56,9 +56,14 @@ export async function getCourse(courseId: string, userId: string) {
     return null
   }
 }
-export async function getCourses(userId: string) {
+export async function getCourses(): Promise<CourseWithCount[] | null> {
   try {
-    const course = (await prisma.course.findMany({
+    const { userId } = await auth()
+
+    if (!userId) {
+      throw new Error("Unauthorized")
+    }
+    const courses = await prisma.course.findMany({
       where: {
         userId,
       },
@@ -70,8 +75,8 @@ export async function getCourses(userId: string) {
           select: { chapters: true },
         },
       },
-    })) as CourseWithCount[]
-    return course
+    }) // Ensure the result matches the expected `CourseWithCount[]` type
+    return courses as CourseWithCount[]
   } catch (error) {
     console.error("Failed to fetch course:", error)
     return null
@@ -201,29 +206,5 @@ export async function deleteCourse(courseId: string) {
   } catch (error) {
     console.error("[DELETE_COURSE]", error)
     throw new Error("Failed to delete course")
-  }
-}
-
-export async function getCourseSearch() {
-  try {
-    const { userId } = await auth()
-
-    if (!userId) {
-      throw new Error("Unauthorized")
-    }
-
-    // TODO: Replace this with actual database query
-    const courses: Course[] = await prisma.course.findMany({
-      where: {
-        userId: userId,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    })
-    return courses
-  } catch (error) {
-    console.error("[SEARCH_COURSE]", error)
-    throw new Error("Failed to search course")
   }
 }

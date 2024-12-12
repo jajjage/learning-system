@@ -21,9 +21,9 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body>
+          <ToastProvider />
           {/* Conditionally render Header */}
           {!isStudentRoute && !isTeacherRoute && <Header />}
-          <ToastProvider />
           <ReactQueryProvider>{children}</ReactQueryProvider>
           <Toaster />
         </body>

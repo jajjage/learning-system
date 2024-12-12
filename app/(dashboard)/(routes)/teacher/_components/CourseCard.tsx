@@ -7,12 +7,15 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Users } from "lucide-react"
-import { Course } from "@prisma/client"
 import Image from "next/image"
+import Link from "next/link"
+import { Course } from "@prisma/client"
+import { CourseWithCount } from "@/types/course"
+
+// Extend the Course type to include chapter count
 
 interface CourseCardProps {
-  course: Course
+  course: CourseWithCount
 }
 
 export function CourseCard({ course }: CourseCardProps) {
@@ -32,18 +35,25 @@ export function CourseCard({ course }: CourseCardProps) {
       </CardHeader>
       <CardContent className="flex-grow p-4">
         <Badge variant="secondary" className="mb-2">
-          {course.categoryId}
+          {course.categoryId || "Uncategorized"}
         </Badge>
-        <CardTitle className="text-xl mb-2 line-clamp-2">
-          {course.title}
-        </CardTitle>
+        <Link
+          href={`/teacher/courses/${course.id}`}
+          className="text-xl mb-2 line-clamp-2 hover:underline font-bold"
+        >
+          <CardTitle>{course.title}</CardTitle>
+        </Link>
         <CardDescription className="text-sm text-muted-foreground mb-4 line-clamp-3">
-          {course.description}
+          {course.description || "No description available."}
         </CardDescription>
+        <p className="text-sm font-medium text-muted-foreground">
+          {course._count.chapters}{" "}
+          {course._count.chapters === 1 ? "Chapter" : "Chapters"}
+        </p>
       </CardContent>
       <CardFooter className="px-4 py-3 bg-secondary/50 text-secondary-foreground">
         <span className="text-sm font-medium truncate">
-          Instructor: {course.title}
+          Instructor: {course.userId}
         </span>
       </CardFooter>
     </Card>
