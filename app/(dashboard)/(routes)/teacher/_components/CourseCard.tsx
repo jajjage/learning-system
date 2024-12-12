@@ -23,9 +23,10 @@ export function CourseCard({ course }: CourseCardProps) {
           <Image
             src={course.imageUrl || "/placeholder-course.jpg"}
             alt={course.title}
-            layout="fill"
-            objectFit="cover"
+            fill
+            style={{ objectFit: "cover" }}
             className="rounded-t-lg"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           />
         </div>
       </CardHeader>
@@ -39,10 +40,6 @@ export function CourseCard({ course }: CourseCardProps) {
         <CardDescription className="text-sm text-muted-foreground mb-4 line-clamp-3">
           {course.description}
         </CardDescription>
-        <div className="flex items-center text-sm text-muted-foreground">
-          <Users className="w-4 h-4 mr-1" />
-          {/* <span>{course.enrollmentCount || 0} students</span> */}
-        </div>
       </CardContent>
       <CardFooter className="px-4 py-3 bg-secondary/50 text-secondary-foreground">
         <span className="text-sm font-medium truncate">

@@ -31,12 +31,6 @@ export default async function CoursesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-4xl font-bold text-primary">Courses</h1>
-        <Button asChild>
-          <Link href="/teacher/create">Create Course</Link>
-        </Button>
-      </div>
       <Suspense fallback={<div>Loading...</div>}>
         <CourseList initialCourses={courses} initialCategories={categories} />
       </Suspense>

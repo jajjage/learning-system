@@ -16,11 +16,13 @@ const UserLayout = async ({
   return (
     <>
       <SidebarProvider>
-        <div className="w-screen flex h-screen">
+        <div className="w-full flex h-screen">
           <MainSidebar userDB={user} />
-          <SidebarInset className="flex flex-col flex-grow">
+          <SidebarInset className="flex flex-col flex-grow overflow-hidden">
             <MainNav userDB={user} />
-            <main className="flex-1 overflow-auto p-6">{children}</main>
+            <main className="flex-1 p-4 sm:p-6 overflow-y-auto">
+              {children}
+            </main>
           </SidebarInset>
         </div>
       </SidebarProvider>

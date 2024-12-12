@@ -6,6 +6,8 @@ import { CourseCard } from "./CourseCard"
 import { SearchBar } from "./SearchBar"
 import { CategoryFilter } from "./CategoryFilter"
 import { Category, Course } from "@prisma/client"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 interface CourseListProps {
   initialCourses: Course[]
@@ -65,10 +67,13 @@ export function CourseList({
 
   return (
     <div className="space-y-6">
+      <div className="flex justify-between items-center space-x-4">
+        <SearchBar onSearch={handleSearch} initialQuery={searchQuery} />
+        <Button asChild>
+          <Link href="/teacher/create">Create Course</Link>
+        </Button>
+      </div>
       <div className="space-y-4">
-        <div className="max-w-md">
-          <SearchBar onSearch={handleSearch} initialQuery={searchQuery} />
-        </div>
         <CategoryFilter
           categories={initialCategories}
           selectedCategory={categoryId}
