@@ -58,18 +58,16 @@ export function MainSidebar({ userDB }: MainSidebarProps) {
 
   const menuItems = {
     [Role.STUDENT]: [
-      { icon: Home, label: "Home", href: "/dashboard" },
-      { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
-      { icon: BookOpen, label: "Courses", href: "/dashboard/courses" },
-      { icon: Calendar, label: "Schedule", href: "/dashboard/schedule" },
+      { icon: LayoutDashboard, label: "Dashboard", href: "/student" },
+      { icon: BookOpen, label: "Courses", href: "/student/courses" },
+      { icon: Calendar, label: "Schedule", href: "/student/schedule" },
       {
         icon: ClipboardList,
         label: "Assignments",
-        href: "/dashboard/assignments",
+        href: "/student/assignments",
       },
     ],
     [Role.TEACHER]: [
-      { icon: Home, label: "Home", href: "/teacher" },
       { icon: LayoutDashboard, label: "Dashboard", href: "/teacher" },
       { icon: Users, label: "Students", href: "/teacher/students" },
       { icon: BookOpen, label: "Courses", href: "/teacher/courses" },

@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useCallback, useEffect } from "react"
-import { useSignUp } from "@clerk/nextjs"
+import { useState, useCallback } from "react"
+import { useSignUp, useSession } from "@clerk/nextjs"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { onSignUpUser } from "@/actions/auth"
@@ -9,6 +9,7 @@ import { Role } from "@prisma/client"
 
 export function useCustomSignUp() {
   const [isLoading, setIsLoading] = useState(false)
+  const [isRole, setIsRole] = useState<Role>("TEACHER")
   const [verifying, setVerifying] = useState(false)
   const [otp, setOtp] = useState(["", "", "", "", "", ""])
   const { isLoaded, signUp, setActive } = useSignUp()
@@ -25,7 +26,7 @@ export function useCustomSignUp() {
     setIsLoading(true)
 
     try {
-      await signUp.create({
+      const result = await signUp.create({
         firstName: data.firstName,
         lastName: data.lastName,
         emailAddress: data.email,
@@ -35,24 +36,29 @@ export function useCustomSignUp() {
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" })
       setVerifying(true)
     } catch (err: any) {
-      if (err.errors[0].code === "form_identifier_exists") {
+      console.error("Clerk sign-up error:", err)
+      if (err.errors?.[0]?.code === "form_identifier_exists") {
         toast.error(
           "An account with this email already exists. Redirecting to sign-in...",
         )
         router.push("/sign-in")
       } else {
-        toast.error(err.errors[0].message)
+        toast.error(
+          err.errors?.[0]?.message || "An error occurred during sign up.",
+        )
       }
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleOtpChange = (index: number, value: string) => {
-    const newOtp = [...otp]
-    newOtp[index] = value
-    setOtp(newOtp)
-  }
+  const handleOtpChange = useCallback((index: number, value: string) => {
+    setOtp((prev) => {
+      const newOtp = [...prev]
+      newOtp[index] = value
+      return newOtp
+    })
+  }, [])
 
   const handleVerify = useCallback(async () => {
     if (!isLoaded) return
@@ -64,7 +70,6 @@ export function useCustomSignUp() {
       })
 
       if (completeSignUp.status !== "complete") {
-        console.log(JSON.stringify(completeSignUp, null, 2))
         throw new Error("Unable to complete sign up")
       }
 
@@ -73,8 +78,7 @@ export function useCustomSignUp() {
       const role = searchParams.get("role")
       const selectedRole =
         role === "STUDENT" || role === "TEACHER" ? role : Role.STUDENT
-
-      console.log(role)
+      setIsRole(selectedRole)
       const result = await onSignUpUser({
         firstName: signUp.firstName ?? "",
         lastName: signUp.lastName ?? "",
@@ -82,35 +86,30 @@ export function useCustomSignUp() {
         role: selectedRole,
         clerkId: completeSignUp.createdUserId ?? "",
       })
+
       if (result.success && result.status === 200) {
-        if (result.user?.role === "TEACHER") {
-          toast.success(`User created as ${result.user?.role} successfully`)
-          router.push("/teacher/courses")
-        } else {
-          toast.success(`User created as ${result.user?.role} successfully`)
-          router.push("/dashboard")
-        }
+        toast.success(`user created successfully`)
+        router.push(
+          result.user?.role === "TEACHER" ? "/teacher/courses" : "/student",
+        )
       } else {
         toast.error(
           "Failed to create user in database. Please contact support.",
         )
       }
     } catch (err: any) {
-      if (err.errors?.[0]?.code === "session_exists") {
-        router.push("/dashboard") // or to a page explaining the situation
-      } else if (err.errors?.[0]?.code === "form_code_incorrect") {
+      if (err.errors?.[0]?.code === "form_code_incorrect") {
         toast.error("Incorrect verification code. Please try again.")
-        setOtp(["", "", "", "", "", ""]) // Reset OTP input
-        return // Prevent further processing
+        setOtp(["", "", "", "", "", ""])
       } else {
-        toast.error(
-          err.errors?.[0]?.message || "An error occurred during verification.",
-        )
+        // toast.error(
+        //   err.errors?.[0]?.message || "An error occurred during verification.",
+        // )
       }
     } finally {
       setIsLoading(false)
     }
-  }, [isLoaded, signUp, otp, setActive, router])
+  }, [isLoaded, signUp, otp, setActive, router, searchParams])
 
   return {
     isLoading,

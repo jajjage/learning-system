@@ -1,18 +1,16 @@
 "use client"
-
-import React, { useRef, useEffect } from "react"
-import { useForm, Controller } from "react-hook-form"
-import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import { motion } from "framer-motion"
 import { User, Mail, Lock, ArrowRight, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-
 import { useCustomSignUp } from "@/hooks/useCustomSignUp"
 import { GoogleAuthButton } from "@/app/(auth)/_components/GoogleSignin"
 import Link from "next/link"
+import OtpVerification from "@/components/global/OtpVerification"
+import FormField from "@/components/global/FormField"
+import { useEffect, useRef } from "react"
+import { useForm } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
 
 const schema = yup
   .object({
@@ -69,7 +67,7 @@ export function CustomSignUp() {
   }, [otp, handleVerify])
 
   const handleOtpInputChange = (index: number, value: string) => {
-    const sanitizedValue = value.replace(/[^0-9]/g, "") // Allow only digits
+    const sanitizedValue = value.replace(/[^0-9]/g, "")
     handleOtpChange(index, sanitizedValue)
 
     if (sanitizedValue && index < otp.length - 1) {
@@ -105,121 +103,35 @@ export function CustomSignUp() {
           {!verifying ? (
             <div className="space-y-6">
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <User className="text-gray-400" size={20} />
-                    <Label
-                      htmlFor="firstName"
-                      className="text-sm font-medium text-gray-700"
-                    >
-                      First Name
-                    </Label>
-                  </div>
-                  <Controller
-                    name="firstName"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        id="firstName"
-                        type="text"
-                        className={`transition-all duration-300 ${errors.firstName ? "ring-2 ring-red-500" : ""}`}
-                      />
-                    )}
-                  />
-                  {errors.firstName && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.firstName.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <User className="text-gray-400" size={20} />
-                    <Label
-                      htmlFor="lastName"
-                      className="text-sm font-medium text-gray-700"
-                    >
-                      Last Name
-                    </Label>
-                  </div>
-                  <Controller
-                    name="lastName"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        id="lastName"
-                        type="text"
-                        className={`transition-all duration-300 ${errors.lastName ? "ring-2 ring-red-500" : ""}`}
-                      />
-                    )}
-                  />
-                  {errors.lastName && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.lastName.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Mail className="text-gray-400" size={20} />
-                    <Label
-                      htmlFor="email"
-                      className="text-sm font-medium text-gray-700"
-                    >
-                      Email address
-                    </Label>
-                  </div>
-                  <Controller
-                    name="email"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        id="email"
-                        type="email"
-                        className={`transition-all duration-300 ${errors.email ? "ring-2 ring-red-500" : ""}`}
-                      />
-                    )}
-                  />
-                  {errors.email && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.email.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Lock className="text-gray-400" size={20} />
-                    <Label
-                      htmlFor="password"
-                      className="text-sm font-medium text-gray-700"
-                    >
-                      Password
-                    </Label>
-                  </div>
-                  <Controller
-                    name="password"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        id="password"
-                        type="password"
-                        className={`transition-all duration-300 ${errors.password ? "ring-2 ring-red-500" : ""}`}
-                      />
-                    )}
-                  />
-                  {errors.password && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.password.message}
-                    </p>
-                  )}
-                </div>
+                <FormField
+                  name="firstName"
+                  label="First Name"
+                  icon={User}
+                  control={control}
+                  errors={errors}
+                />
+                <FormField
+                  name="lastName"
+                  label="Last Name"
+                  icon={User}
+                  control={control}
+                  errors={errors}
+                />
+                <FormField
+                  name="email"
+                  label="Email address"
+                  icon={Mail}
+                  control={control}
+                  errors={errors}
+                />
+                <FormField
+                  name="password"
+                  label="Password"
+                  icon={Lock}
+                  control={control}
+                  errors={errors}
+                  type="password"
+                />
 
                 <Button
                   type="submit"
@@ -260,45 +172,14 @@ export function CustomSignUp() {
               </div>
             </div>
           ) : (
-            <div className="space-y-4">
-              <p className="text-center text-gray-700">
-                Enter the verification code sent to your email
-              </p>
-              <div className="flex justify-center space-x-2">
-                {otp.map((digit, index) => (
-                  <Input
-                    key={index}
-                    type="text"
-                    maxLength={1}
-                    value={digit}
-                    onChange={(e) =>
-                      handleOtpInputChange(index, e.target.value)
-                    }
-                    onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                    ref={(el) => {
-                      otpInputRefs.current[index] = el
-                    }}
-                    className="w-12 h-12 text-center text-2xl"
-                    aria-label={`OTP digit ${index + 1}`}
-                    aria-invalid={digit === ""}
-                  />
-                ))}
-              </div>
-              {isLoading && (
-                <div className="flex justify-center">
-                  <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
-                </div>
-              )}
-              <div className="mt-4 flex justify-center">
-                <Button
-                  variant="outline"
-                  onClick={() => setVerifying(false)}
-                  className="w-full max-w-[200px]"
-                >
-                  Back to Sign Up
-                </Button>
-              </div>
-            </div>
+            <OtpVerification
+              otp={otp}
+              isLoading={isLoading}
+              handleOtpInputChange={handleOtpInputChange}
+              handleOtpKeyDown={handleOtpKeyDown}
+              otpInputRefs={otpInputRefs}
+              setVerifying={setVerifying}
+            />
           )}
         </div>
       </motion.div>
