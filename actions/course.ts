@@ -56,7 +56,7 @@ export async function getCourse(courseId: string, userId: string) {
     return null
   }
 }
-export async function getCourses(): Promise<CourseWithCount[] | null> {
+export async function teacherCourses(): Promise<CourseWithCount[] | null> {
   try {
     const { userId } = await auth()
 
@@ -66,6 +66,33 @@ export async function getCourses(): Promise<CourseWithCount[] | null> {
     const courses = await prisma.course.findMany({
       where: {
         userId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        _count: {
+          select: { chapters: true },
+        },
+      },
+    }) // Ensure the result matches the expected `CourseWithCount[]` type
+    return courses as CourseWithCount[]
+  } catch (error) {
+    console.error("Failed to fetch course:", error)
+    return null
+  }
+}
+
+export async function allCourses(): Promise<CourseWithCount[] | null> {
+  try {
+    const { userId } = await auth()
+
+    if (!userId) {
+      throw new Error("Unauthorized")
+    }
+    const courses = await prisma.course.findMany({
+      where: {
+        isPublished: true,
       },
       orderBy: {
         createdAt: "desc",
@@ -171,24 +198,8 @@ export async function deleteCourse(courseId: string) {
     if (!course) {
       throw new Error("Course not found")
     }
-    // if (course.chapters.) {
-    //   const existingMuxData = await prisma.muxData.findFirst({
-    //     where: { chapterId: chapterId },
-    //   })
+    //TODO: delete the course mux data if have one
 
-    //   if (existingMuxData) {
-    //     try {
-    //       await client.video.assets.delete(existingMuxData.assetId)
-    //       await prisma.muxData.delete({
-    //         where: { id: existingMuxData.id }, // Use the correct identifier
-    //       })
-    //     } catch (error) {
-    //       console.error("Error during asset deletion:", error)
-    //       throw new Error("Failed to delete existing video asset.")
-    //     }
-    //   }
-    // }
-    // Delete all chapters associated with the course
     await prisma.chapter.deleteMany({
       where: {
         courseId: courseId,

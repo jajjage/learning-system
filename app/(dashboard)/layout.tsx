@@ -4,7 +4,6 @@ import { MainNav } from "./_components/sidebar/MainNav"
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { MainSidebar } from "./_components/sidebar/main-sidebar"
 import { onAuthenticatedUser } from "@/actions/auth"
-import { auth, clerkClient } from "@clerk/nextjs/server"
 
 const UserLayout = async ({
   children,

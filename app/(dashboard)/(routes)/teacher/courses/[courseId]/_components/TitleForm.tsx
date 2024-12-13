@@ -5,7 +5,7 @@ import { Pencil } from "lucide-react"
 import { useUpdateCourseMutation } from "@/hooks/course"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { CourseSchema } from "../../../_components/schema"
+
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
   Form,
@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Course } from "@prisma/client"
+import { CourseSchema } from "@/app/(dashboard)/_components/dashboard/schema"
 
 interface TitleFormProps {
   initialData: {

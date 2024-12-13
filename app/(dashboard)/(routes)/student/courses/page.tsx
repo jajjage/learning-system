@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { getCategories, getCourses } from "@/actions/course"
+import { getCategories, allCourses } from "@/actions/course"
 import { onAuthenticatedUser } from "@/actions/auth"
 import { QueryClient } from "@tanstack/react-query"
 import { redirect } from "next/navigation"
@@ -8,7 +8,7 @@ import { Suspense } from "react"
 
 import { AuthorizedAccess } from "@/components/global/AuthorizedAccess"
 import { Role } from "@prisma/client"
-import { CourseList } from "../../teacher/_components/CourseList"
+import { CourseList } from "@/app/(dashboard)/_components/dashboard/CourseList"
 
 export default async function CoursesPage() {
   const { user } = await onAuthenticatedUser()
@@ -27,8 +27,8 @@ export default async function CoursesPage() {
     queryFn: () => getCategories(),
   })
   const coursesPromise = await client.fetchQuery({
-    queryKey: ["courses"],
-    queryFn: () => getCourses(),
+    queryKey: ["courses", "student"],
+    queryFn: () => allCourses(),
   })
 
   const [courses, categories] = await Promise.all([
@@ -42,6 +42,7 @@ export default async function CoursesPage() {
         <CourseList
           initialCourses={courses ?? []}
           initialCategories={categories}
+          role={user.role}
         />
       </Suspense>
     </div>

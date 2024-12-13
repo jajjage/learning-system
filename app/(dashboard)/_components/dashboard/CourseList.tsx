@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { CourseCard } from "./CourseCard"
 import { SearchBar } from "./SearchBar"
 import { CategoryFilter } from "./CategoryFilter"
-import { Category, Course } from "@prisma/client"
+import { Category, Course, Role } from "@prisma/client"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { CourseWithCount } from "@/types/course"
@@ -13,11 +13,13 @@ import { CourseWithCount } from "@/types/course"
 interface CourseListProps {
   initialCourses: Course[]
   initialCategories: Category[]
+  role: Role
 }
 
 export function CourseList({
   initialCourses,
   initialCategories,
+  role,
 }: CourseListProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -55,7 +57,7 @@ export function CourseList({
     } else {
       params.delete("search")
     }
-    router.push(`/teacher/courses?${params.toString()}`)
+    router.push(`/${role.toLocaleLowerCase()}/courses?${params.toString()}`)
   }
 
   const handleCategorySelect = (categoryId: string | null) => {
@@ -65,16 +67,20 @@ export function CourseList({
     } else {
       params.delete("categoryId")
     }
-    router.push(`/teacher/courses?${params.toString()}`)
+    router.push(`/${role.toLocaleLowerCase()}/courses?${params.toString()}`)
   }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center space-x-4">
         <SearchBar onSearch={handleSearch} initialQuery={searchQuery} />
-        <Button asChild>
-          <Link href="/teacher/create">Create Course</Link>
-        </Button>
+        {role === "TEACHER" ? (
+          <Button asChild>
+            <Link href="/teacher/create">Create Course</Link>
+          </Button>
+        ) : (
+          <div>student</div>
+        )}
       </div>
       <div className="space-y-4">
         <CategoryFilter
