@@ -1,14 +1,10 @@
-"use client"
-
 import { Header } from "@/components/global/landing-page/Header"
-import { usePathname } from "next/navigation"
 
 export default function ExploreLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const pathname = usePathname()
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />

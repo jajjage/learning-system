@@ -19,7 +19,6 @@ interface CourseCardProps {
   role: Role
 }
 export function CourseCard({ course, role }: CourseCardProps) {
-  console.log(course.progress)
   return (
     <Card className="flex flex-col h-full overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <CardHeader className="p-0">
@@ -53,7 +52,7 @@ export function CourseCard({ course, role }: CourseCardProps) {
           href={
             role === "STUDENT"
               ? `/${role.toLowerCase()}/course/details/${course.id}/`
-              : `/${role.toLowerCase()}/courses/edit/${course.id}/`
+              : `/${role.toLowerCase()}/course/edit/${course.id}/`
           }
         >
           <CardTitle className="text-xl mb-2 line-clamp-2 hover:underline">

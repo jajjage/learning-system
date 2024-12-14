@@ -14,6 +14,7 @@ import {
   GraduationCap,
   ClipboardList,
   Calendar,
+  Search,
 } from "lucide-react"
 import { Role } from "@prisma/client"
 
@@ -59,8 +60,9 @@ export function MainSidebar({ userDB }: MainSidebarProps) {
   const menuItems = {
     [Role.STUDENT]: [
       { icon: LayoutDashboard, label: "Dashboard", href: "/student" },
-      { icon: BookOpen, label: "Courses", href: "/student/courses" },
+      { icon: BookOpen, label: "My Courses", href: "/student/courses" },
       { icon: Calendar, label: "Schedule", href: "/student/schedule" },
+      { icon: Search, label: "Browse Courses", href: "/student/browse" },
       {
         icon: ClipboardList,
         label: "Assignments",

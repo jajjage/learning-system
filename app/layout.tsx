@@ -16,6 +16,7 @@ export default function RootLayout({
   const pathname = usePathname() // Get the current route
   const isStudentRoute = pathname.includes("/student") // Check if it's a dashboard route
   const isTeacherRoute = pathname.includes("/teacher")
+  const isCourseRoute = pathname.includes("/course")
 
   return (
     <ClerkProvider>
@@ -23,7 +24,7 @@ export default function RootLayout({
         <body>
           <ToastProvider />
           {/* Conditionally render Header */}
-          {!isStudentRoute && !isTeacherRoute && <Header />}
+          {!isStudentRoute && !isTeacherRoute && !isCourseRoute && <Header />}
           <ReactQueryProvider>{children}</ReactQueryProvider>
           <Toaster />
         </body>
