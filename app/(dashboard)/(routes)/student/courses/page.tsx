@@ -1,5 +1,3 @@
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
 import { getCategories, allCourses } from "@/actions/course"
 import { onAuthenticatedUser } from "@/actions/auth"
 import { QueryClient } from "@tanstack/react-query"

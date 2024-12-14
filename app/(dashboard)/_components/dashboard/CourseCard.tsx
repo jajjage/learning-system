@@ -1,4 +1,4 @@
-import { Star, Book } from "lucide-react"
+import { Star, Book, BarChart } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import {
   Card,
@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { Progress } from "@/components/ui/progress"
 import Image from "next/image"
 import Link from "next/link"
 import { CourseWithCount } from "@/types/course"
@@ -17,8 +18,8 @@ interface CourseCardProps {
   course: CourseWithCount
   role: Role
 }
-
 export function CourseCard({ course, role }: CourseCardProps) {
+  console.log(course.progress)
   return (
     <Card className="flex flex-col h-full overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <CardHeader className="p-0">
@@ -48,48 +49,58 @@ export function CourseCard({ course, role }: CourseCardProps) {
         </div>
       </CardHeader>
       <CardContent className="flex-grow p-4">
-        {role === "STUDENT" ? (
-          <Link
-            href={`/${role.toLocaleLowerCase()}/course/details/${course.id}/`}
-          >
-            <CardTitle className="text-xl mb-2 line-clamp-2 hover:underline">
-              {course.title}
-            </CardTitle>
-          </Link>
-        ) : (
-          <Link
-            href={`/${role.toLocaleLowerCase()}/courses/edit/${course.id}/`}
-          >
-            <CardTitle className="text-xl mb-2 line-clamp-2 hover:underline">
-              {course.title}
-            </CardTitle>
-          </Link>
-        )}
+        <Link
+          href={
+            role === "STUDENT"
+              ? `/${role.toLowerCase()}/course/details/${course.id}/`
+              : `/${role.toLowerCase()}/courses/edit/${course.id}/`
+          }
+        >
+          <CardTitle className="text-xl mb-2 line-clamp-2 hover:underline">
+            {course.title}
+          </CardTitle>
+        </Link>
 
         <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
           {course.description || "No description available."}
         </p>
-        <div className="flex items-center gap-2 mb-4">
-          <div className="flex">
-            {[1, 2, 3, 4].map((i) => (
-              <Star
-                key={i}
-                className="w-4 h-4 fill-yellow-400 text-yellow-400"
-              />
-            ))}
-            <Star className="w-4 h-4 text-gray-300" />
+        <div className="flex flex-col gap-4 mb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex">
+                {[1, 2, 3, 4].map((i) => (
+                  <Star
+                    key={i}
+                    className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                  />
+                ))}
+                <Star className="w-4 h-4 text-gray-300" />
+              </div>
+              <span className="text-sm text-muted-foreground">
+                4.0 (75 Reviews)
+              </span>
+            </div>
+            {role === "STUDENT" && course.progress !== null && (
+              <div className="flex items-center gap-2">
+                <BarChart className="w-4 h-4 text-blue-500" />
+                <span className="text-sm text-black text-muted-foreground">
+                  %
+                  {course.progress === 100
+                    ? `${course.progress} Completed`
+                    : `${course.progress} Complete`}
+                </span>
+              </div>
+            )}
           </div>
-          <span className="text-sm text-muted-foreground">
-            4.0 (75 Reviews)
-          </span>
         </div>
+
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <span className="text-lg font-bold">
-              ${(course.price || 0 * 1.25).toFixed(2)}
+              ${(course.price || 0).toFixed(2)}
             </span>
             <span className="text-sm text-muted-foreground line-through">
-              ${(course.price || 0 * 1.25).toFixed(2)}
+              ${((course.price || 0) * 1.25).toFixed(2)}
             </span>
           </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">

@@ -30,7 +30,7 @@ export function CourseList({
 
   const categoryId = searchParams.get("categoryId") || ""
   const searchQuery = searchParams.get("search") || ""
-  console.log("Courses fetched:", courses)
+
   useEffect(() => {
     const filterCourses = () => {
       setLoading(true)

@@ -1,5 +1,6 @@
 "use server"
 
+import ChaptersList from "@/app/(dashboard)/(routes)/teacher/courses/edit/[courseId]/_components/ChaptersList"
 import { CourseWithCount } from "@/types/course"
 import { prisma } from "@/utils/prisma"
 import { auth } from "@clerk/nextjs/server"
@@ -101,6 +102,7 @@ export async function allCourses(): Promise<CourseWithCount[] | null> {
     if (!userId) {
       throw new Error("Unauthorized")
     }
+
     const courses = await prisma.course.findMany({
       where: {
         isPublished: true,
@@ -123,9 +125,65 @@ export async function allCourses(): Promise<CourseWithCount[] | null> {
             name: true,
           },
         },
+        purchases: {
+          where: {
+            userId: userId,
+          },
+        },
+        chapters: {
+          where: {
+            isPublished: true,
+          },
+          select: {
+            id: true,
+            title: true,
+            position: true,
+            userProgress: {
+              where: {
+                userId: userId,
+                isCompleted: true,
+              },
+            },
+          },
+          orderBy: {
+            position: "asc",
+          },
+        },
       },
     })
-    return courses as CourseWithCount[]
+
+    // Calculate progress only for purchased courses
+    const coursesWithProgress = courses.map((course) => {
+      const hasPurchased = course.purchases.length > 0
+
+      if (!hasPurchased) {
+        return {
+          ...course,
+          progress: null,
+          purchases: undefined, // Optional: remove purchases from returned data
+        }
+      }
+
+      const publishedChapters = course._count.chapters
+      const completedChapters = course.chapters.reduce((acc, chapter) => {
+        if (chapter.userProgress.length > 0) {
+          return acc + 1
+        }
+        return acc
+      }, 0)
+      const progressPercentage =
+        publishedChapters === 0
+          ? 0
+          : (completedChapters / publishedChapters) * 100
+
+      return {
+        ...course,
+        progress: Math.round(progressPercentage),
+        purchases: undefined,
+      }
+    })
+
+    return coursesWithProgress as CourseWithCount[]
   } catch (error) {
     console.error("Failed to fetch course:", error)
     return null

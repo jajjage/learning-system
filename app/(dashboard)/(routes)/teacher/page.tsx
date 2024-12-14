@@ -1,5 +1,4 @@
 import { onAuthenticatedUser } from "@/actions/auth"
-import { redirect } from "next/navigation"
 
 import {
   Card,
