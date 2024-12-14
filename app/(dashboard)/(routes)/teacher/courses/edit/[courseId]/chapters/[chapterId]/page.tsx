@@ -30,11 +30,11 @@ const ChapterIdPage = async (context: {
     return redirect("/")
   }
 
-  const resolvedParams = await context.params
+  const resolvedParams = context.params
   const { courseId, chapterId } = resolvedParams
 
   const chapter = await client.fetchQuery({
-    queryKey: ["chapter"],
+    queryKey: ["chapter", chapterId],
     queryFn: () => chapterList(chapterId, courseId),
   })
   console.log(chapter)

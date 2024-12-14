@@ -9,6 +9,11 @@ import { revalidatePath } from "next/cache"
 
 export const onCreateCourse = async (userId: string, title: string) => {
   try {
+    const { userId } = await auth()
+
+    if (!userId) {
+      throw new Error("Unauthorized")
+    }
     const course = await prisma.course.create({
       data: {
         userId,
@@ -30,12 +35,48 @@ export const onCreateCourse = async (userId: string, title: string) => {
   }
 }
 
-export async function getCourse(courseId: string, userId: string) {
+export async function getCourseEdit(courseId: string, userId: string) {
   try {
+    const { userId } = await auth()
+
+    if (!userId) {
+      throw new Error("Unauthorized")
+    }
     const course = await prisma.course.findUnique({
       where: {
         id: courseId,
         userId,
+      },
+      include: {
+        chapters: {
+          orderBy: {
+            position: "asc",
+          },
+        },
+
+        attachments: {
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+    })
+    return course
+  } catch (error) {
+    console.error("Failed to fetch course:", error)
+    return null
+  }
+}
+export async function getCourseDetail(courseId: string) {
+  try {
+    const { userId } = await auth()
+
+    if (!userId) {
+      throw new Error("Unauthorized")
+    }
+    const course = await prisma.course.findUnique({
+      where: {
+        id: courseId,
       },
       include: {
         chapters: {

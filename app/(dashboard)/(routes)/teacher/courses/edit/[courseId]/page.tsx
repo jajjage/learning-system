@@ -1,6 +1,6 @@
 import {
   getCategories,
-  getCourse,
+  getCourseEdit,
   updateCoursePublishStatus,
 } from "@/actions/course"
 import { redirect } from "next/navigation"
@@ -25,9 +25,6 @@ import { QueryClient } from "@tanstack/react-query"
 import { toast } from "react-hot-toast"
 import Link from "next/link"
 import { PublishBanner } from "@/components/global/PublishBanner"
-import { useUpdateCourseMutation } from "@/hooks/course"
-import { Course } from "@prisma/client"
-import CourseDelete from "@/components/global/CourseDelete"
 import DeleteButton from "@/components/global/CourseDelete"
 import { deleteCourse } from "@/actions/course"
 
@@ -47,10 +44,10 @@ export default async function CourseEditPage(context: {
     return redirect("/")
   }
 
-  const resolvedParams = await context.params
+  const resolvedParams = context.params
   const course = await client.fetchQuery({
-    queryKey: ["course"],
-    queryFn: () => getCourse(resolvedParams.courseId, userId),
+    queryKey: ["course", resolvedParams.courseId],
+    queryFn: () => getCourseEdit(resolvedParams.courseId, userId),
   })
 
   const categories = await getCategories()

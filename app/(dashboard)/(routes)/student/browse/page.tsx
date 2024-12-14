@@ -11,7 +11,7 @@ import { CourseList } from "@/app/(dashboard)/_components/dashboard/CourseList"
 export default async function CoursesPage() {
   const { user } = await onAuthenticatedUser()
   const client = new QueryClient()
-
+  console.log(user)
   if (!user?.clerkId) {
     return redirect("/")
   }

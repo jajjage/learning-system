@@ -248,7 +248,7 @@ export async function updateChapterPublishStatus(
   }
 }
 
-export async function deleteChapter(chapterId: string, courseId: string) {
+export async function deleteChapter(chapterId: string, courseId?: string) {
   try {
     const { userId } = await auth()
 

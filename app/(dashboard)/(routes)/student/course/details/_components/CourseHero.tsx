@@ -20,7 +20,7 @@ export function CourseHero({
         className="absolute inset-0 bg-cover bg-center"
         style={{
           backgroundImage:
-            "linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3)), url('/placeholder.svg?height=300&width=1200')",
+            "linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3)), url('https://images.unsplash.com/photo-1593811167562-9cef47bfc4d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80')",
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}

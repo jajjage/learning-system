@@ -4,10 +4,34 @@ import { CourseHero } from "../_components/CourseHero"
 import { CourseOverview } from "../_components/CourseOverview"
 import { CourseReviews } from "../_components/CourseReviews"
 import { CourseTutor } from "../_components/CourseTutor"
+import { onAuthenticatedUser } from "@/actions/auth"
+import { QueryClient } from "@tanstack/react-query"
+import { redirect } from "next/navigation"
+import { getCourseDetail } from "@/actions/course"
 
-export default function CoursePage() {
+const CoursePage = async (context: { params: { courseId: string } }) => {
+  const { userId } = await onAuthenticatedUser()
+  const client = new QueryClient()
+
+  if (!userId) {
+    return redirect("/")
+  }
+
+  const resolvedParams = await context.params
+  const { courseId } = resolvedParams
+  // const cachedCourse = client.getQueryData(["course", courseId])
+
+  const course = await client.fetchQuery({
+    queryKey: ["course", courseId],
+    queryFn: () => getCourseDetail(courseId),
+  })
+
+  if (!course) {
+    return redirect("/")
+  }
+
   const courseData = {
-    title: "Meditation for Relaxation",
+    title: course.title,
     rating: 4.8,
     reviewCount: 136,
     duration: "12hr Course",
@@ -75,3 +99,5 @@ export default function CoursePage() {
     </div>
   )
 }
+
+export default CoursePage

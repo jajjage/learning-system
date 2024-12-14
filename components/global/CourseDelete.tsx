@@ -21,7 +21,7 @@ interface DeleteButtonProps {
   entityId: string
   courseId?: string
   entityType: "course" | "chapter"
-  onDelete: (id: string, courseId?: string) => Promise<void>
+  onDelete: (chapterId: string, courseId?: string) => Promise<void>
 }
 
 function DeleteButton({
