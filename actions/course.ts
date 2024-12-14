@@ -74,6 +74,17 @@ export async function teacherCourses(): Promise<CourseWithCount[] | null> {
         _count: {
           select: { chapters: true },
         },
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
+        category: {
+          select: {
+            name: true,
+          },
+        },
       },
     }) // Ensure the result matches the expected `CourseWithCount[]` type
     return courses as CourseWithCount[]
@@ -101,8 +112,19 @@ export async function allCourses(): Promise<CourseWithCount[] | null> {
         _count: {
           select: { chapters: true },
         },
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
+        category: {
+          select: {
+            name: true,
+          },
+        },
       },
-    }) // Ensure the result matches the expected `CourseWithCount[]` type
+    })
     return courses as CourseWithCount[]
   } catch (error) {
     console.error("Failed to fetch course:", error)

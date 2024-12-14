@@ -1,8 +1,9 @@
 import React from "react"
-import CreateCourse from "../_components/CreateCourse"
+
 import { onAuthenticatedUser } from "@/actions/auth"
 import { toast } from "react-hot-toast"
 import { redirect } from "next/navigation"
+import CreateCourse from "@/app/(dashboard)/_components/dashboard/CreateCourse"
 
 const coursePage = async () => {
   const { userId } = await onAuthenticatedUser()

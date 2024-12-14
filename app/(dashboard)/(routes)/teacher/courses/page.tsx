@@ -7,8 +7,6 @@ import { Suspense } from "react"
 import { AuthorizedAccess } from "@/components/global/AuthorizedAccess"
 import { Role } from "@prisma/client"
 import { CourseList } from "@/app/(dashboard)/_components/dashboard/CourseList"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
 
 export default async function CoursesPage() {
   const { user } = await onAuthenticatedUser()

@@ -2,10 +2,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { updateCourse } from "@/actions/course"
 import { toast } from "react-hot-toast"
 import { onCreateCourse } from "@/actions/course"
-import { CourseSchema } from "@/app/(dashboard)/(routes)/teacher/_components/schema"
+
 import { z } from "zod"
 import { Course } from "@prisma/client"
 import { useRouter } from "next/navigation"
+import { CourseSchema } from "@/app/(dashboard)/_components/dashboard/schema"
 
 type CreateCourseData = z.infer<typeof CourseSchema>
 interface UpdateCoursePublishParams {

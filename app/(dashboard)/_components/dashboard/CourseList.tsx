@@ -112,6 +112,7 @@ export function CourseList({
                 <CourseCard
                   key={course.id}
                   course={course as CourseWithCount}
+                  role={role}
                 />
               )
             })}

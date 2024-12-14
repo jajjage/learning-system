@@ -27,6 +27,8 @@ model User {
   role      Role     @default(STUDENT)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  courses   Course[]
 }
 
 model Course {
@@ -38,7 +40,7 @@ model Course {
   imageUrl    String?
   isPublished   Boolean  @default(false)
  
-
+  user User @relation(fields: [userId], references: [clerkId], onDelete: Cascade)
   category Category? @relation(fields: [categoryId], references: [id])
   categoryId String?
 
