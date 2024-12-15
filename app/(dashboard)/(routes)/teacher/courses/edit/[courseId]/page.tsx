@@ -9,10 +9,12 @@ import DescriptionForm from "./_components/DescriptionForm"
 import PriceForm from "./_components/PriceForm"
 import CategoryForm from "./_components/CategoryForm"
 import ImageForm from "./_components/ImageForm"
+import CourseEnrollmentInfo from "./_components/CourseEnrollmentInfo"
 import { IconBadge } from "@/components/global/IconBadge"
 import {
   ArrowLeft,
   CircleDollarSign,
+  ClipboardPen,
   File,
   LayoutDashboard,
   ListChecksIcon as ListCheck,
@@ -27,6 +29,7 @@ import Link from "next/link"
 import { PublishBanner } from "@/components/global/PublishBanner"
 import DeleteButton from "@/components/global/CourseDelete"
 import { deleteCourse } from "@/actions/course"
+import CourseAccessForm from "./_components/CourseAccessForm"
 
 interface PageProps {
   params: {
@@ -44,7 +47,7 @@ export default async function CourseEditPage(context: {
     return redirect("/")
   }
 
-  const resolvedParams = context.params
+  const resolvedParams = await context.params
   const course = await client.fetchQuery({
     queryKey: ["course", resolvedParams.courseId],
     queryFn: () => getCourseEdit(resolvedParams.courseId, userId),
@@ -63,6 +66,11 @@ export default async function CourseEditPage(context: {
     course.imageUrl,
     course.categoryId,
     course.price,
+    course.maxEnrollment,
+    course.startDate,
+    course.endDate,
+    course.enrollmentDeadline,
+    course.isEnrollmentOpen,
     course.chapters.some((chapter) => chapter.isPublished),
   ]
   const totalFields = requiredFields.length
@@ -114,6 +122,7 @@ export default async function CourseEditPage(context: {
             <TitleForm initialData={course} courseId={course.id} />
             <DescriptionForm initialData={course} courseId={course.id} />
             <ImageForm initialData={course} courseId={course.id} />
+            <CourseAccessForm initialData={course} courseId={course.id} />
             <CategoryForm
               initialData={course}
               courseId={course.id}
@@ -144,6 +153,13 @@ export default async function CourseEditPage(context: {
                 <h2 className="text-xl">Resources & Attachments</h2>
               </div>
               <AttachmentForm initialData={course} courseId={course.id} />
+            </div>
+            <div>
+              <div className="flex items-center gap-x-2">
+                <IconBadge icon={ClipboardPen} />
+                <h2 className="text-xl">Enrollment & Dateline</h2>
+              </div>
+              <CourseEnrollmentInfo initialData={course} courseId={course.id} />
             </div>
           </div>
         </div>

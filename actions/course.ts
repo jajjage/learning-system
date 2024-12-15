@@ -166,7 +166,7 @@ export async function allCourses(): Promise<CourseWithCount[] | null> {
             name: true,
           },
         },
-        purchases: {
+        enrollments: {
           where: {
             userId: userId,
           },
@@ -195,9 +195,9 @@ export async function allCourses(): Promise<CourseWithCount[] | null> {
 
     // Calculate progress only for purchased courses
     const coursesWithProgress = courses.map((course) => {
-      const hasPurchased = course.purchases.length > 0
-
-      if (!hasPurchased) {
+      const hasEnroll = course.enrollments.length > 0
+      console.log(hasEnroll)
+      if (!hasEnroll) {
         return {
           ...course,
           progress: null,
@@ -238,13 +238,15 @@ export const updateCourse = async (courseId: string, data: Partial<Course>) => {
     if (!userId) {
       throw new Error("Unauthorized")
     }
-
+    console.log(data)
     const course = await prisma.course.update({
       where: {
         id: courseId,
         userId: userId,
       },
-      data,
+      data: {
+        ...data,
+      },
     })
 
     revalidatePath(`/teacher/courses/${courseId}`)

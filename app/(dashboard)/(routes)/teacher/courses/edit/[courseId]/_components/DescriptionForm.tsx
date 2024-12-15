@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils"
 import { Course } from "@prisma/client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import RichEditor from "@/components/global/editor/RichEditor"
 
 interface DescriptionFormProps {
   initialData: Course
@@ -83,14 +84,15 @@ export default function DescriptionForm({
       </CardHeader>
       <CardContent>
         {!isEditing ? (
-          <p
+          <div
             className={cn(
               "text-sm mt-2",
               !initialData.description && "text-slate-500 italic",
             )}
-          >
-            {initialData.description || "No description provided"}
-          </p>
+            dangerouslySetInnerHTML={{
+              __html: initialData.description || "No description",
+            }}
+          />
         ) : (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="mt-4">
@@ -100,13 +102,10 @@ export default function DescriptionForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Textarea
-                        {...field}
-                        ref={textareaRef}
+                      <RichEditor
+                        content={field.value}
+                        onChange={field.onChange}
                         disabled={isSubmitting}
-                        placeholder="Enter course description"
-                        className="resize-none"
-                        rows={5}
                       />
                     </FormControl>
                     <FormMessage />

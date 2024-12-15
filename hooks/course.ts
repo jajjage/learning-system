@@ -49,23 +49,36 @@ export const useCreateCourse = (userId: string) => {
 
 export const useUpdateCourseMutation = (courseId: string) => {
   const queryClient = useQueryClient()
+
   return useMutation({
     mutationKey: ["course"],
     mutationFn: async (data: Partial<Course>) => {
-      return await updateCourse(courseId, data)
+      const parsedData = {
+        ...data,
+        startDate: data.startDate ? new Date(data.startDate) : undefined,
+        endDate: data.endDate ? new Date(data.endDate) : undefined,
+        enrollmentDeadline: data.enrollmentDeadline
+          ? new Date(data.enrollmentDeadline)
+          : undefined,
+      }
+      console.log("Parsed data being sent to updateCourse:", parsedData)
+      return await updateCourse(courseId, parsedData)
     },
     onMutate: async (data) => {
       await queryClient.cancelQueries({ queryKey: ["course", courseId] })
+
       const previousCourse = queryClient.getQueryData(["course", courseId])
+
       queryClient.setQueryData(["course", courseId], (old: any) => ({
         ...old,
-        data: data,
+        ...data,
       }))
+
       return { previousCourse }
     },
-    onError: (err, newTitle, context: any) => {
+    onError: (err, context: any) => {
       queryClient.setQueryData(["course", courseId], context.previousCourse)
-      toast.error("Failed to update course title")
+      toast.error("Failed to update course")
     },
     onSuccess: () => {
       toast.success("Course updated successfully")
