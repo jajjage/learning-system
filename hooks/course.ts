@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { allCourses, updateCourse } from "@/actions/course"
+import { allCourses, teacherCourses, updateCourse } from "@/actions/course"
 import { toast } from "react-hot-toast"
 import { onCreateCourse } from "@/actions/course"
 
@@ -15,11 +15,23 @@ interface UpdateCoursePublishParams {
   isPublished: boolean
 }
 
-export const fetchCourses = async (
+export const fetchStudentCourses = async (
   searchQuery: string,
   categoryId: string,
 ): Promise<CourseWithCount[]> => {
   const courses = await allCourses(searchQuery, categoryId)
+  if (!courses) {
+    // Handle the null case, e.g., return an empty array or throw an error
+    return []
+  }
+  return courses
+}
+
+export const fetchTeacherCourses = async (
+  searchQuery: string,
+  categoryId: string,
+): Promise<CourseWithCount[]> => {
+  const courses = await teacherCourses(searchQuery, categoryId)
   if (!courses) {
     // Handle the null case, e.g., return an empty array or throw an error
     return []

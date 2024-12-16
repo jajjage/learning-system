@@ -7,7 +7,7 @@ import { Suspense } from "react"
 import { AuthorizedAccess } from "@/components/global/AuthorizedAccess"
 import { Role } from "@prisma/client"
 import { CourseList } from "@/app/(dashboard)/_components/dashboard/CourseList"
-import { fetchCourses } from "@/hooks/course"
+import { fetchStudentCourses } from "@/hooks/course"
 
 interface SearchParams {
   title?: string // Optional if not always present
@@ -34,8 +34,8 @@ export default async function CoursesPage({
 
   const [courses, categories] = await Promise.all([
     client.fetchQuery({
-      queryKey: ["courses", "", ""],
-      queryFn: () => fetchCourses("", ""),
+      queryKey: ["courses", user.role, "", ""],
+      queryFn: () => fetchStudentCourses("", ""),
     }),
     client.fetchQuery({
       queryKey: ["categories"],

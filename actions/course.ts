@@ -98,17 +98,35 @@ export async function getCourseDetail(courseId: string) {
     return null
   }
 }
-export async function teacherCourses(): Promise<CourseWithCount[] | null> {
+export async function teacherCourses(
+  searchQuery?: string,
+  categoryId?: string,
+): Promise<CourseWithCount[] | null> {
   try {
     const { userId } = await auth()
 
     if (!userId) {
       throw new Error("Unauthorized")
     }
+
+    // Build dynamic filter criteria
+    const whereClause: any = {
+      userId: userId,
+    }
+
+    if (searchQuery) {
+      whereClause.OR = [
+        { title: { contains: searchQuery, mode: "insensitive" } },
+        { description: { contains: searchQuery, mode: "insensitive" } },
+      ]
+    }
+
+    if (categoryId) {
+      whereClause.categoryId = categoryId
+    }
+
     const courses = await prisma.course.findMany({
-      where: {
-        userId,
-      },
+      where: whereClause,
       orderBy: {
         createdAt: "desc",
       },

@@ -26,10 +26,11 @@ export function CourseList({
 
   const categoryId = searchParams.get("categoryId") || ""
   const searchQuery = searchParams.get("search") || ""
-
+  console.log(role)
   const { data: courses, isLoading } = useCachedOrFetchCourses(
     searchQuery,
     categoryId,
+    role,
     initialCourses,
   )
 

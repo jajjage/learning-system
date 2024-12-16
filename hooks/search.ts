@@ -1,7 +1,7 @@
-import { Course } from "@prisma/client"
+import { Course, Role } from "@prisma/client"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { CourseWithCount } from "@/types/course"
-import { fetchCourses } from "./course"
+import { fetchTeacherCourses, fetchStudentCourses } from "./course"
 
 // Helper function to filter courses
 const filterCourses = (
@@ -26,30 +26,43 @@ const filterCourses = (
 export const useCachedOrFetchCourses = (
   searchQuery: string,
   categoryId: string,
-  initialData?: CourseWithCount[],
+  role: Role,
+  initialData?: CourseWithCount[], // Initial data is role-specific
 ) => {
+  if (!role || (role !== "TEACHER" && role !== "STUDENT")) {
+    throw new Error("Invalid role parameter")
+  }
+
   const queryClient = useQueryClient()
 
-  // Always fetch initial data
+  // Initial data query
   const initialQuery = useQuery({
-    queryKey: ["courses", "", ""],
-    queryFn: () => fetchCourses("", ""),
-    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+    queryKey: ["courses", role, "", ""], // Include role in the query key
+    queryFn: () =>
+      role === "TEACHER"
+        ? fetchTeacherCourses("", "")
+        : fetchStudentCourses("", ""),
+    staleTime: 1000 * 60 * 5, // 5 minutes cache
+    initialData, // Use initialData when no filters are applied
   })
 
-  // Always fetch filtered data if there are filters
+  // Filtered query
   const filteredQuery = useQuery({
-    queryKey: ["courses", searchQuery, categoryId],
-    queryFn: () => fetchCourses(searchQuery, categoryId),
+    queryKey: ["courses", role, searchQuery, categoryId], // Include role in the query key
+    queryFn: () =>
+      role === "TEACHER"
+        ? fetchTeacherCourses(searchQuery, categoryId)
+        : fetchStudentCourses(searchQuery, categoryId),
+    staleTime: 1000 * 60 * 5, // 5 minutes cache
     initialData:
-      initialData && !searchQuery && !categoryId ? initialData : undefined,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+      initialData && !searchQuery && !categoryId ? initialData : undefined, // Use initialData only if no filters
   })
 
-  // Determine which data to use
+  // Determine data based on filters
   const shouldUseFiltered = !!(searchQuery || categoryId)
   const cachedData = queryClient.getQueryData<CourseWithCount[]>([
     "courses",
+    role,
     "",
     "",
   ])
@@ -59,14 +72,15 @@ export const useCachedOrFetchCourses = (
 
   if (shouldUseFiltered) {
     if (filteredQuery.isLoading) {
-      // If filtered query is loading, try to show cached filtered results
+      // Show cached filtered results if available
       data = filterCourses(cachedData, searchQuery, categoryId)
-      isLoading = data.length === 0 // Only show loading if we don't have cached results
+      isLoading = data.length === 0 // Show loading only if no cached data
     } else {
       data = filteredQuery.data
       isLoading = false
     }
   } else {
+    // Use initial query data when no filters are applied
     data = initialQuery.data
     isLoading = initialQuery.isLoading
   }
@@ -78,8 +92,3 @@ export const useCachedOrFetchCourses = (
     error: shouldUseFiltered ? filteredQuery.error : initialQuery.error,
   }
 }
-
-// Type for the hook return value
-export type UseCachedOrFetchCoursesReturn = ReturnType<
-  typeof useCachedOrFetchCourses
->
