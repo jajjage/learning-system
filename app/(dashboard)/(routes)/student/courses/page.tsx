@@ -7,8 +7,20 @@ import { Suspense } from "react"
 import { AuthorizedAccess } from "@/components/global/AuthorizedAccess"
 import { Role } from "@prisma/client"
 import { CourseList } from "@/app/(dashboard)/_components/dashboard/CourseList"
+import { fetchCourses } from "@/hooks/course"
 
-export default async function CoursesPage() {
+interface SearchParams {
+  title?: string // Optional if not always present
+  categoryId?: string // Optional if not always present
+}
+
+interface SearchParamsProps {
+  searchParams: SearchParams // Directly typed as resolved data
+}
+
+export default async function CoursesPage({
+  searchParams,
+}: SearchParamsProps): Promise<JSX.Element> {
   const { user } = await onAuthenticatedUser()
   const client = new QueryClient()
   console.log(user)
@@ -20,18 +32,15 @@ export default async function CoursesPage() {
     return <AuthorizedAccess />
   }
 
-  const categoriesPromise = await client.fetchQuery({
-    queryKey: ["categories"],
-    queryFn: () => getCategories(),
-  })
-  const coursesPromise = await client.fetchQuery({
-    queryKey: ["courses", "student"],
-    queryFn: () => allCourses(),
-  })
-
   const [courses, categories] = await Promise.all([
-    coursesPromise,
-    categoriesPromise,
+    client.fetchQuery({
+      queryKey: ["courses", "", ""],
+      queryFn: () => fetchCourses("", ""),
+    }),
+    client.fetchQuery({
+      queryKey: ["categories"],
+      queryFn: () => getCategories(),
+    }),
   ])
 
   return (

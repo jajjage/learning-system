@@ -1,6 +1,5 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { CourseCard } from "./CourseCard"
 import { SearchBar } from "./SearchBar"
@@ -9,9 +8,10 @@ import { Category, Course, Role } from "@prisma/client"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { CourseWithCount } from "@/types/course"
+import { useCachedOrFetchCourses } from "@/hooks/search"
 
 interface CourseListProps {
-  initialCourses: Course[]
+  initialCourses: CourseWithCount[]
   initialCategories: Category[]
   role: Role
 }
@@ -23,32 +23,15 @@ export function CourseList({
 }: CourseListProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [courses, setCourses] = useState<Course[] | CourseWithCount[]>(
-    initialCourses,
-  )
-  const [loading, setLoading] = useState(false)
 
   const categoryId = searchParams.get("categoryId") || ""
   const searchQuery = searchParams.get("search") || ""
 
-  useEffect(() => {
-    const filterCourses = () => {
-      setLoading(true)
-      const filteredCourses = initialCourses.filter((course) => {
-        const matchesSearch =
-          course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          course.description?.toLowerCase().includes(searchQuery.toLowerCase())
-
-        const matchesCategory = !categoryId || course.categoryId === categoryId
-        return matchesSearch && matchesCategory
-      })
-
-      setCourses(filteredCourses)
-      setLoading(false)
-    }
-
-    filterCourses()
-  }, [categoryId, searchQuery, initialCourses])
+  const { data: courses, isLoading } = useCachedOrFetchCourses(
+    searchQuery,
+    categoryId,
+    initialCourses,
+  )
 
   const handleSearch = (query: string) => {
     const params = new URLSearchParams(searchParams)
@@ -57,7 +40,7 @@ export function CourseList({
     } else {
       params.delete("search")
     }
-    router.push(`/${role.toLocaleLowerCase()}/courses?${params.toString()}`)
+    router.push(`/${role.toLowerCase()}/courses?${params.toString()}`)
   }
 
   const handleCategorySelect = (categoryId: string | null) => {
@@ -67,7 +50,7 @@ export function CourseList({
     } else {
       params.delete("categoryId")
     }
-    router.push(`/${role.toLocaleLowerCase()}/courses?${params.toString()}`)
+    router.push(`/${role.toLowerCase()}/courses?${params.toString()}`)
   }
 
   return (
@@ -82,6 +65,7 @@ export function CourseList({
           <div>student</div>
         )}
       </div>
+
       <div className="space-y-4">
         <CategoryFilter
           categories={initialCategories}
@@ -93,33 +77,24 @@ export function CourseList({
       <div>
         <div className="flex justify-between items-center mb-4">
           <p className="text-sm text-muted-foreground">
-            Showing {courses.length} course{courses.length !== 1 ? "s" : ""}
+            Showing {courses?.length ?? 0} course
+            {(courses?.length ?? 0) !== 1 ? "s" : ""}
           </p>
         </div>
 
-        {loading ? (
+        {isLoading ? (
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {courses.map((course) => {
-              if (!("_count" in course)) {
-                console.error("Invalid course data:", course)
-                return null
-              }
-              return (
-                <CourseCard
-                  key={course.id}
-                  course={course as CourseWithCount}
-                  role={role}
-                />
-              )
-            })}
+            {courses?.map((course) => (
+              <CourseCard key={course.id} course={course} role={role} />
+            ))}
           </div>
         )}
 
-        {!loading && courses.length === 0 && (
+        {!isLoading && (!courses || courses.length === 0) && (
           <p className="text-center text-muted-foreground py-10">
             No courses found matching your criteria.
           </p>

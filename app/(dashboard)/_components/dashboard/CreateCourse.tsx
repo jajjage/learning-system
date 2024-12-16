@@ -26,7 +26,7 @@ interface CreateCourseProps {
 
 const CreateCourse = ({ userId }: CreateCourseProps) => {
   const router = useRouter()
-  const { createCourse, isPending: isLoading } = useCreateCourse(userId)
+  const { createCourse, isLoading } = useCreateCourse(userId)
 
   const form = useForm<z.infer<typeof CourseSchema>>({
     resolver: zodResolver(CourseSchema),

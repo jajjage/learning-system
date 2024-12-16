@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { updateCourse } from "@/actions/course"
+import { allCourses, updateCourse } from "@/actions/course"
 import { toast } from "react-hot-toast"
 import { onCreateCourse } from "@/actions/course"
 
@@ -7,6 +7,7 @@ import { z } from "zod"
 import { Course } from "@prisma/client"
 import { useRouter } from "next/navigation"
 import { CourseSchema } from "@/app/(dashboard)/_components/dashboard/schema"
+import { CourseWithCount } from "@/types/course"
 
 type CreateCourseData = z.infer<typeof CourseSchema>
 interface UpdateCoursePublishParams {
@@ -14,10 +15,22 @@ interface UpdateCoursePublishParams {
   isPublished: boolean
 }
 
+export const fetchCourses = async (
+  searchQuery: string,
+  categoryId: string,
+): Promise<CourseWithCount[]> => {
+  const courses = await allCourses(searchQuery, categoryId)
+  if (!courses) {
+    // Handle the null case, e.g., return an empty array or throw an error
+    return []
+  }
+  return courses
+}
+
 export const useCreateCourse = (userId: string) => {
   const queryClient = useQueryClient()
 
-  const { mutateAsync, isPending, data } = useMutation({
+  const { mutateAsync, isLoading, data } = useMutation({
     mutationFn: async (data: { userId: string; title: string }) => {
       const result = await onCreateCourse(data.userId, data.title)
       if (result.status !== 200) {
@@ -42,7 +55,7 @@ export const useCreateCourse = (userId: string) => {
 
   return {
     createCourse,
-    isPending,
+    isLoading,
     data,
   }
 }

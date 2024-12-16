@@ -136,7 +136,10 @@ export async function teacherCourses(): Promise<CourseWithCount[] | null> {
   }
 }
 
-export async function allCourses(): Promise<CourseWithCount[] | null> {
+export async function allCourses(
+  searchQuery?: string,
+  categoryId?: string,
+): Promise<CourseWithCount[] | null> {
   try {
     const { userId } = await auth()
 
@@ -144,10 +147,24 @@ export async function allCourses(): Promise<CourseWithCount[] | null> {
       throw new Error("Unauthorized")
     }
 
+    // Build dynamic filter criteria
+    const whereClause: any = {
+      isPublished: true,
+    }
+
+    if (searchQuery) {
+      whereClause.OR = [
+        { title: { contains: searchQuery, mode: "insensitive" } },
+        { description: { contains: searchQuery, mode: "insensitive" } },
+      ]
+    }
+
+    if (categoryId) {
+      whereClause.categoryId = categoryId
+    }
+
     const courses = await prisma.course.findMany({
-      where: {
-        isPublished: true,
-      },
+      where: whereClause,
       orderBy: {
         createdAt: "desc",
       },
