@@ -35,7 +35,7 @@ export function MainNav({ userDB }: MainNavProps) {
         <Button variant="ghost" className="hidden sm:flex items-center gap-2">
           {isLoaded ? (
             <>
-              <Avatar className="h-8 w-8">
+              <Avatar className="h-6 w-6">
                 <AvatarImage src={user?.imageUrl} />
                 <AvatarFallback>
                   {user?.firstName?.[0]}
