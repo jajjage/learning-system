@@ -1,7 +1,7 @@
 "use server"
 
 import ChaptersList from "@/app/(dashboard)/(routes)/teacher/courses/edit/[courseId]/_components/ChaptersList"
-import { CourseWithCount } from "@/types/course"
+import { CourseWithCount, CourseWithCountAndRatings } from "@/types/course"
 import { prisma } from "@/utils/prisma"
 import { auth } from "@clerk/nextjs/server"
 import { Course } from "@prisma/client"
@@ -67,7 +67,9 @@ export async function getCourseEdit(courseId: string, userId: string) {
     return null
   }
 }
-export async function getCourseDetail(courseId: string) {
+export async function getCourseDetail(
+  courseId: string,
+): Promise<CourseWithCountAndRatings | null> {
   try {
     const { userId } = await auth()
 
@@ -79,20 +81,24 @@ export async function getCourseDetail(courseId: string) {
         id: courseId,
       },
       include: {
-        chapters: {
-          orderBy: {
-            position: "asc",
+        _count: {
+          select: { chapters: true },
+        },
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+            clerkId: true,
           },
         },
-
-        attachments: {
-          orderBy: {
-            createdAt: "desc",
+        category: {
+          select: {
+            name: true,
           },
         },
       },
     })
-    return course
+    return course as CourseWithCountAndRatings
   } catch (error) {
     console.error("Failed to fetch course:", error)
     return null

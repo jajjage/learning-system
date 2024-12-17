@@ -70,7 +70,7 @@ export default async function CourseEditPage(context: {
     course.startDate,
     course.endDate,
     course.enrollmentDeadline,
-    course.isEnrollmentOpen,
+
     course.chapters.some((chapter) => chapter.isPublished),
   ]
   const totalFields = requiredFields.length

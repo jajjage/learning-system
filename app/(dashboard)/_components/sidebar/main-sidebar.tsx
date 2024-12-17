@@ -49,6 +49,7 @@ interface MainSidebarProps {
         firstName: string
         lastName: string
         email: string
+        id: string
       }
     | undefined
 }
@@ -60,7 +61,11 @@ export function MainSidebar({ userDB }: MainSidebarProps) {
   const menuItems = {
     [Role.STUDENT]: [
       { icon: LayoutDashboard, label: "Dashboard", href: "/student" },
-      { icon: BookOpen, label: "My Courses", href: "/student/courses" },
+      {
+        icon: BookOpen,
+        label: "My Courses",
+        href: `/student/${userDB?.id}/courses`,
+      },
       { icon: Calendar, label: "Schedule", href: "/student/schedule" },
       { icon: Search, label: "Browse Courses", href: "/student/courses" },
       {

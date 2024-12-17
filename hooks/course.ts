@@ -5,7 +5,7 @@ import { onCreateCourse } from "@/actions/course"
 
 import { z } from "zod"
 import { Course } from "@prisma/client"
-import { useRouter } from "next/navigation"
+
 import { CourseSchema } from "@/app/(dashboard)/_components/dashboard/schema"
 import { CourseWithCount } from "@/types/course"
 
@@ -113,30 +113,3 @@ export const useUpdateCourseMutation = (courseId: string) => {
     },
   })
 }
-
-// export const useUpdateCoursePublish = () => {
-//   const queryClient = useQueryClient()
-
-//   return useMutation({
-//     mutationKey: ["course"],
-//     mutationFn: async ({
-//       courseId,
-//       isPublished,
-//     }: UpdateCoursePublishParams) => {
-//       return await updateCourseStatus(courseId, isPublished)
-//     },
-//     onMutate: async (data) => {
-//       await queryClient.cancelQueries({ queryKey: ["course", data.courseId] })
-//       const previousCourse = queryClient.getQueryData(["course", data.courseId])
-//       queryClient.setQueryData(["course", data.courseId], (old: any) => ({
-//         ...old,
-//         data: data,
-//       }))
-//       return { previousCourse }
-//     },
-//     onError: (error) => {
-//       toast.error("Something went wrong")
-//       console.error(error)
-//     },
-//   })
-// }

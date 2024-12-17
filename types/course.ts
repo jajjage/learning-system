@@ -24,3 +24,18 @@ export interface CourseWithCount extends Course {
 
   progress: number | null // percentage of completed chapters
 }
+
+export interface CourseWithCountAndRatings extends Course {
+  user: {
+    firstName: string
+    lastName: string
+    clerkId: string
+  }
+  category: {
+    name: string
+  } | null
+  _count: {
+    chapters: number
+  }
+  // ratings
+}

@@ -44,7 +44,7 @@ export default function DescriptionForm({
     }
   }, [isEditing])
 
-  const { mutate: updateDescription, isPending } =
+  const { mutate: updateDescription, isLoading } =
     useUpdateCourseMutation(courseId)
 
   const form = useForm<z.infer<typeof descriptionSchema>>({

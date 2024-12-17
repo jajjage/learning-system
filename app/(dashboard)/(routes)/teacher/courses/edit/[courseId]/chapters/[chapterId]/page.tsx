@@ -11,11 +11,7 @@ import { ChapterTitleForm } from "./_components/ChapterTitleForm"
 import { ChapterDescriptionForm } from "./_components/ChapterDescriptionForm"
 import { ChapterAccessForm } from "./_components/ChapterAccessForm"
 import { ChapterVideoForm } from "./_components/ChapterVideoForm"
-import {
-  dehydrate,
-  HydrationBoundary,
-  QueryClient,
-} from "@tanstack/react-query"
+import { dehydrate, QueryClient } from "@tanstack/react-query"
 import { onAuthenticatedUser } from "@/actions/auth"
 import { PublishBanner } from "@/components/global/PublishBanner"
 import DeleteButton from "@/components/global/CourseDelete"
@@ -51,7 +47,7 @@ const ChapterIdPage = async (context: {
   const isComplete = requiredFields.every(Boolean)
 
   return (
-    <HydrationBoundary state={dehydrate(client)}>
+    <>
       {isComplete && (
         <PublishBanner
           initialIsPublished={chapter.isPublished}
@@ -130,7 +126,7 @@ const ChapterIdPage = async (context: {
           </div>
         </div>
       </div>
-    </HydrationBoundary>
+    </>
   )
 }
 

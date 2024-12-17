@@ -1,4 +1,6 @@
+"use client"
 import { Card } from "@/components/ui/card"
+import { useUser } from "@clerk/nextjs"
 
 interface CourseTutorProps {
   name: string
@@ -7,6 +9,7 @@ interface CourseTutorProps {
 }
 
 export function CourseTutor({ name, bio, imageUrl }: CourseTutorProps) {
+  const { user } = useUser()
   return (
     <Card className="p-6">
       <h2 className="text-xl font-semibold mb-4">Course Tutor</h2>

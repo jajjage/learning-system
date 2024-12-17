@@ -19,6 +19,7 @@ export function CourseReviews({ reviews }: CourseReviewsProps) {
         {reviews.map((review, index) => (
           <Card key={index} className="p-4">
             <div className="flex mb-2">
+              {/* i would implement the real rating from the database */}
               {Array(5)
                 .fill(0)
                 .map((_, i) => (

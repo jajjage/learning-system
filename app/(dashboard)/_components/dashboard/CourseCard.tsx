@@ -8,7 +8,6 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
-import { Progress } from "@/components/ui/progress"
 import {
   Tooltip,
   TooltipContent,
