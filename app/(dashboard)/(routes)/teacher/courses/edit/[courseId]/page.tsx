@@ -37,8 +37,10 @@ interface PageProps {
   }
 }
 
-export default async function CourseEditPage(context: {
-  params: { courseId: string }
+export default async function CourseEditPage({
+  params,
+}: {
+  params: Promise<{ courseId: string }>
 }) {
   const { userId } = await onAuthenticatedUser()
   const client = new QueryClient()
@@ -47,10 +49,10 @@ export default async function CourseEditPage(context: {
     return redirect("/")
   }
 
-  const resolvedParams = await context.params
+  const { courseId } = await params
   const course = await client.fetchQuery({
-    queryKey: ["course", resolvedParams.courseId],
-    queryFn: () => getCourseEdit(resolvedParams.courseId, userId),
+    queryKey: ["course", courseId],
+    queryFn: () => getCourseEdit(courseId, userId),
   })
 
   const categories = await getCategories()

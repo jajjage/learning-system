@@ -16,8 +16,10 @@ import { onAuthenticatedUser } from "@/actions/auth"
 import { PublishBanner } from "@/components/global/PublishBanner"
 import DeleteButton from "@/components/global/CourseDelete"
 
-const ChapterIdPage = async (context: {
-  params: { courseId: string; chapterId: string }
+const ChapterIdPage = async ({
+  params,
+}: {
+  params: Promise<{ courseId: string; chapterId: string }>
 }) => {
   const { userId } = await onAuthenticatedUser()
   const client = new QueryClient()
@@ -26,8 +28,7 @@ const ChapterIdPage = async (context: {
     return redirect("/")
   }
 
-  const resolvedParams = context.params
-  const { courseId, chapterId } = resolvedParams
+  const { courseId, chapterId } = await params
 
   const chapter = await client.fetchQuery({
     queryKey: ["chapter", chapterId],

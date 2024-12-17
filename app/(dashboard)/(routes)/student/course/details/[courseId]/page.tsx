@@ -9,9 +9,14 @@ import { QueryClient } from "@tanstack/react-query"
 import { redirect } from "next/navigation"
 import { getCourseDetail } from "@/actions/course"
 import { getUserByClerkId } from "@/hooks/clerk-user"
+import { checkEnrollmentStatus } from "@/actions/enrollments"
 
 // would be back to use the actual data from the db
-const CoursePage = async (context: { params: { courseId: string } }) => {
+const CoursePage = async ({
+  params,
+}: {
+  params: Promise<{ courseId: string }>
+}) => {
   const { userId } = await onAuthenticatedUser()
   const client = new QueryClient()
 
@@ -19,9 +24,10 @@ const CoursePage = async (context: { params: { courseId: string } }) => {
     return redirect("/")
   }
 
-  const resolvedParams = await context.params
-  const { courseId } = resolvedParams
+  const { courseId } = await params
   // const cachedCourse = client.getQueryData(["course", courseId])
+
+  const { isEnrolled } = await checkEnrollmentStatus(courseId)
 
   const course = await client.fetchQuery({
     queryKey: ["course", courseId],
@@ -88,6 +94,8 @@ const CoursePage = async (context: { params: { courseId: string } }) => {
         isFree={courseData.isFree}
         category={courseData.category?.name || ""}
         level={courseData.level}
+        courseId={course.id}
+        isEnrolled={isEnrolled}
       />
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

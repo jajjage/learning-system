@@ -189,7 +189,7 @@ model Enrollment {
   notes        String?          // Administrative notes about the enrollment
 
   // Relations
-  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User             @relation(fields: [userId], references: [clerkId], onDelete: Cascade)
   userId       String
   course       Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseId     String

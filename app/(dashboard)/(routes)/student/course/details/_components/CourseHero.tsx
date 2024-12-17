@@ -1,6 +1,7 @@
 import { StarIcon, Play, Clock, Tag, DollarSign } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import Link from "next/link"
 
 interface CourseHeroProps {
   title: string
@@ -12,6 +13,8 @@ interface CourseHeroProps {
   category: string
   level: string
   imageUrl: string
+  courseId: string
+  isEnrolled: Boolean
 }
 
 export function CourseHero({
@@ -24,7 +27,10 @@ export function CourseHero({
   category,
   level,
   imageUrl,
+  courseId,
+  isEnrolled,
 }: CourseHeroProps) {
+  console.log(isEnrolled)
   return (
     <div className="relative h-[350px] bg-blue-600 rounded-b-3xl overflow-hidden">
       <div
@@ -72,9 +78,31 @@ export function CourseHero({
             <Play className="w-4 h-4 mr-2" />
             Course Highlight
           </Button>
-          <Button className="bg-blue-500 text-white hover:bg-blue-600">
-            {isOpen ? "Enroll Now" : "Join Waitlist"}
-          </Button>
+          {!!isEnrolled ? (
+            <Button
+              className="bg-blue-500 text-white hover:bg-blue-600"
+              disabled={!!isEnrolled}
+            >
+              {isEnrolled
+                ? "Already Enrolled"
+                : isOpen
+                  ? "Enroll Now"
+                  : "Join Waitlist"}
+            </Button>
+          ) : (
+            <Link href={isOpen ? `/student/courses/${courseId}/` : "#"}>
+              <Button
+                className="bg-blue-500 text-white hover:bg-blue-600"
+                disabled={!!isEnrolled}
+              >
+                {isEnrolled
+                  ? "Already Enrolled"
+                  : isOpen
+                    ? "Enroll Now"
+                    : "Join Waitlist"}
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </div>

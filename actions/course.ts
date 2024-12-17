@@ -2,6 +2,7 @@
 
 import ChaptersList from "@/app/(dashboard)/(routes)/teacher/courses/edit/[courseId]/_components/ChaptersList"
 import { CourseWithCount, CourseWithCountAndRatings } from "@/types/course"
+import { Enrollment } from "@/types/enrollment"
 import { prisma } from "@/utils/prisma"
 import { auth } from "@clerk/nextjs/server"
 import { Course } from "@prisma/client"
@@ -67,6 +68,24 @@ export async function getCourseEdit(courseId: string, userId: string) {
     return null
   }
 }
+
+// export async function getCourseForEnroll(
+//   courseId: string
+// ): Promise<Enrollment>{
+//   try {
+//     const course = await prisma.course.findUnique({
+//       where: { id: courseId },
+//       include: {
+//         _count: {
+//           select: { enrollments: true }
+//         }
+//       }
+//     });
+//     return course as Enrollment
+//   } catch (error) {
+
+//   }
+// }
 export async function getCourseDetail(
   courseId: string,
 ): Promise<CourseWithCountAndRatings | null> {
