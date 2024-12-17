@@ -13,7 +13,12 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
+enum Level{
+BEGINNER
+INTERMEDIATE 
+ADVANCED
+PROFESSIONAL 
+}
 enum Role {
   TEACHER
   STUDENT
@@ -54,7 +59,10 @@ model Course {
   endDate       DateTime?    // When the course ends
   isEnrollmentOpen Boolean   @default(true)
   isFree        Boolean  @default(true)
+  level         Level    @default(BEGINNER)
+  isCertificateOffered   Boolean  @default(false)
  
+
   user User @relation(fields: [userId], references: [clerkId], onDelete: Cascade)
   category Category? @relation(fields: [categoryId], references: [id])
   categoryId String?
