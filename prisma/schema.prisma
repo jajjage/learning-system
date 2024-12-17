@@ -67,6 +67,9 @@ model Course {
   isFree        Boolean  @default(true)
   level      Level  @default(BEGINNER)
   isCertificateOffered    Boolean @default(false)
+
+  averageRating Float?       // Calculated average rating
+  totalRatings  Int          @default(0) // Count of total ratings
  
   user User @relation(fields: [userId], references: [clerkId], onDelete: Cascade)
   category Category? @relation(fields: [categoryId], references: [id])
