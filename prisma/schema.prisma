@@ -13,12 +13,9 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-enum Level{
-BEGINNER
-INTERMEDIATE 
-ADVANCED
-PROFESSIONAL 
-}
+
+
+
 enum Role {
   TEACHER
   STUDENT
@@ -30,6 +27,14 @@ enum EnrollmentStatus {
   COMPLETED
   DROPPED
   WAITLISTED
+}
+
+enum Level {
+  ALL
+  BEGINNER
+  INTERMEDIATE 
+  ADVANCED
+  PROFESSIONAL 
 }
 model User {
   id        String   @id @default(cuid())
@@ -60,6 +65,8 @@ model Course {
   endDate       DateTime?    // When the course ends
   isEnrollmentOpen Boolean   @default(true)
   isFree        Boolean  @default(true)
+  level      Level  @default(BEGINNER)
+  isCertificateOffered    Boolean @default(false)
  
   user User @relation(fields: [userId], references: [clerkId], onDelete: Cascade)
   category Category? @relation(fields: [categoryId], references: [id])
@@ -190,4 +197,46 @@ model Enrollment {
   @@unique([userId, courseId]) // Prevent duplicate enrollments
   @@index([userId])
   @@index([courseId])
+}
+
+model Rating {
+  id          String    @id @default(cuid())
+  rating      Int       @db.SmallInt // Rating score (e.g., 1-5)
+  comment     String?   @db.Text     // Optional review text
+  isPublished Boolean   @default(true)
+  
+  // Reply from the course creator
+  instructorReply String? @db.Text
+  repliedAt      DateTime?
+
+  // Relations
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  course    Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId  String
+
+  // Helpful votes from other users
+  helpfulCount Int     @default(0)
+  
+  // Metadata
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Ensure user can only rate a course once
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
+  
+  // Constraint to ensure rating is between 1 and 5
+ 
+}
+
+model HelpfulVote {
+  id        String   @id @default(cuid())
+  userId    String
+  ratingId  String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, ratingId])
+  @@index([ratingId])
 }
