@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { v4 as uuidv4 } from "uuid"
 import { useEnrollment } from "@/hooks/use-enrollment"
 import { useUser } from "@clerk/nextjs"
 import {
@@ -21,6 +22,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { handlePayment } from "@/actions/flutterwave"
+import { User } from "@prisma/client"
 
 interface EnrollmentCardProps {
   courseId: string
@@ -29,6 +32,10 @@ interface EnrollmentCardProps {
   enrollmentLimit?: number
   currentEnrollments?: number
   description?: string
+  userData: {
+    firstName: string
+    email: string
+  }
 }
 
 export const EnrollPopUp = ({
@@ -38,11 +45,14 @@ export const EnrollPopUp = ({
   enrollmentLimit,
   currentEnrollments = 0,
   description,
+  userData,
 }: EnrollmentCardProps) => {
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const [verifying, setVerifying] = useState(false)
+
   const {
     enrollmentStatus,
-    enrollInCourse,
+    // enrollInCourse,
     isEnrolling,
     isCheckingEnrollment,
   } = useEnrollment(courseId)
@@ -52,9 +62,15 @@ export const EnrollPopUp = ({
     if (price && price > 0) {
       setConfirmOpen(true)
     } else {
-      enrollInCourse(courseId)
+      // enrollInCourse(courseId)
     }
   }
+  const generateTxRef = (): string => {
+    return `tx_${uuidv4()}` // Prefix with "tx_" to make it more descriptive
+  }
+
+  const tx_ref = generateTxRef()
+  const currency = "NGN"
 
   const redirectToSignIn = () => {
     // Implement sign-in redirection logic here
@@ -113,13 +129,15 @@ export const EnrollPopUp = ({
           <Button
             className="w-full"
             onClick={handleEnroll}
-            disabled={isEnrolling}
+            disabled={verifying}
           >
-            {isEnrolling
-              ? "Enrolling..."
-              : price && price > 0
-                ? "Proceed to Enrollment"
-                : "Enroll for Free"}
+            {verifying ? (
+              <div className="w-6 h-6 border-t-2 border-l-white rounded-full animate-spin"></div>
+            ) : price && price > 0 ? (
+              "Proceed to Enrollment"
+            ) : (
+              "Enroll for Free"
+            )}
           </Button>
         )}
       </CardFooter>
@@ -130,7 +148,7 @@ export const EnrollPopUp = ({
             <AlertDialogTitle>Confirm Enrollment</AlertDialogTitle>
             <AlertDialogDescription>
               {price && price > 0
-                ? `You will be charged $${price.toFixed(2)} for this course. Would you like to proceed with the enrollment?`
+                ? `You will be charged NG${price.toFixed(2)} for this course. Would you like to proceed with the enrollment?`
                 : "This course is free. Would you like to proceed with the enrollment?"}
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -138,12 +156,25 @@ export const EnrollPopUp = ({
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                enrollInCourse(courseId)
+                const tx_ref = generateTxRef() // Generate unique transaction reference
+                const paymentDetails = {
+                  tx_ref,
+                  amount: price,
+                  currency: "NGN",
+                  redirect_url: `http://localhost:3000/flutterwave/payment?amount=${price}&courseId=${courseId}`,
+                  customer: {
+                    name: userData.firstName,
+                    email: userData.email,
+                  },
+                }
+
+                handlePayment(paymentDetails)
                 setConfirmOpen(false)
+                setVerifying(true)
               }}
               disabled={isEnrolling}
             >
-              {isEnrolling ? "Processing..." : "Confirm Enrollment"}
+              {verifying ? "Processing..." : "Confirm Enrollment"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

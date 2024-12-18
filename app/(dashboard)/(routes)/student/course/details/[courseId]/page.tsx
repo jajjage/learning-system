@@ -11,6 +11,7 @@ import { getCourseDetail } from "@/actions/course"
 import { getUserByClerkId } from "@/hooks/clerk-user"
 import { checkEnrollmentStatus, getEnrollCourse } from "@/actions/enrollments"
 import { EnrollPopUp } from "../_components/EnrollPopUp"
+import { User } from "lucide-react"
 
 // would be back to use the actual data from the db
 const CoursePage = async ({
@@ -18,10 +19,10 @@ const CoursePage = async ({
 }: {
   params: Promise<{ courseId: string }>
 }) => {
-  const { userId } = await onAuthenticatedUser()
+  const { user } = await onAuthenticatedUser()
   const client = new QueryClient()
 
-  if (!userId) {
+  if (!user?.clerkId) {
     return redirect("/")
   }
 
@@ -42,7 +43,7 @@ const CoursePage = async ({
   if (!course) {
     return redirect("/")
   }
-  const user = await getUserByClerkId(course.user.clerkId)
+  const clerkUser = await getUserByClerkId(course.user.clerkId)
 
   const courseData = {
     title: course.title,
@@ -82,7 +83,7 @@ const CoursePage = async ({
 
         I trained in the Thai Forest Tradition, in the Western monastic lineage of the
         teacher Ajahn Chah.`,
-      imageUrl: user.imageUrl,
+      imageUrl: clerkUser.imageUrl,
     },
   }
 
@@ -109,6 +110,7 @@ const CoursePage = async ({
           enrollmentLimit={courseEnroll?.maxEnrollment || undefined}
           currentEnrollments={courseEnroll?._count.enrollments}
           description={courseEnroll?.description || ""}
+          userData={user}
         />
       </CourseHero>
       <div className="container mx-auto px-4 py-8">
