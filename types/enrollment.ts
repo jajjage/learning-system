@@ -1,20 +1,8 @@
-import { EnrollmentStatus } from "@prisma/client"
-
-export interface Enrollment {
+export interface CourseWithEnrollments {
   id: string
-  status: EnrollmentStatus
-  enrolledAt: Date
-  completedAt?: Date
-  grade?: number
-  lastAccessed?: Date
-  notes?: string
-  userId: string
-  courseId: string
-  courseTitle: string
-  price?: number
-  enrollmentLimit?: number
-  currentEnrollments?: number
-  //   _count: {
-  //     enrollments: number
-  //   }
+  title: string
+  price: number | null
+  description: string | null
+  maxEnrollment: number | null
+  _count: { enrollments: number }
 }

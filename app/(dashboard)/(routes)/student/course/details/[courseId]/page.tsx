@@ -9,7 +9,8 @@ import { QueryClient } from "@tanstack/react-query"
 import { redirect } from "next/navigation"
 import { getCourseDetail } from "@/actions/course"
 import { getUserByClerkId } from "@/hooks/clerk-user"
-import { checkEnrollmentStatus } from "@/actions/enrollments"
+import { checkEnrollmentStatus, getEnrollCourse } from "@/actions/enrollments"
+import { EnrollPopUp } from "../_components/EnrollPopUp"
 
 // would be back to use the actual data from the db
 const CoursePage = async ({
@@ -32,6 +33,10 @@ const CoursePage = async ({
   const course = await client.fetchQuery({
     queryKey: ["course", courseId],
     queryFn: () => getCourseDetail(courseId),
+  })
+  const courseEnroll = await client.fetchQuery({
+    queryKey: ["course", courseId],
+    queryFn: () => getEnrollCourse(courseId),
   })
 
   if (!course) {
@@ -96,7 +101,16 @@ const CoursePage = async ({
         level={courseData.level}
         courseId={course.id}
         isEnrolled={isEnrolled}
-      />
+      >
+        <EnrollPopUp
+          courseId={courseEnroll?.id || ""}
+          title={courseEnroll?.title || ""}
+          price={courseEnroll?.price || undefined}
+          enrollmentLimit={courseEnroll?.maxEnrollment || undefined}
+          currentEnrollments={courseEnroll?._count.enrollments}
+          description={courseEnroll?.description || ""}
+        />
+      </CourseHero>
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">

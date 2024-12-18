@@ -12,13 +12,15 @@ import {
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 interface EnrollmentCardProps {
   courseId: string
@@ -29,7 +31,7 @@ interface EnrollmentCardProps {
   description?: string
 }
 
-export const EnrollmentCard = ({
+export const EnrollPopUp = ({
   courseId,
   title,
   price,
@@ -60,7 +62,7 @@ export const EnrollmentCard = ({
   }
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>
@@ -115,40 +117,37 @@ export const EnrollmentCard = ({
           >
             {isEnrolling
               ? "Enrolling..."
-              : price
-                ? `Enroll for $${price}`
+              : price && price > 0
+                ? "Proceed to Enrollment"
                 : "Enroll for Free"}
           </Button>
         )}
       </CardFooter>
 
-      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirm Enrollment</DialogTitle>
-            <DialogDescription>
-              {price
-                ? `You will be charged $ ${price} for this course.`
-                : "Confirm your enrollment in this course."}
-            </DialogDescription>
-          </DialogHeader>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setConfirmOpen(false)}>
-              Cancel
-            </Button>
-            <Button
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Enrollment</AlertDialogTitle>
+            <AlertDialogDescription>
+              {price && price > 0
+                ? `You will be charged $${price.toFixed(2)} for this course. Would you like to proceed with the enrollment?`
+                : "This course is free. Would you like to proceed with the enrollment?"}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
               onClick={() => {
                 enrollInCourse(courseId)
                 setConfirmOpen(false)
               }}
               disabled={isEnrolling}
             >
-              {isEnrolling ? "Processing..." : "Confirm"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+              {isEnrolling ? "Processing..." : "Confirm Enrollment"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   )
 }

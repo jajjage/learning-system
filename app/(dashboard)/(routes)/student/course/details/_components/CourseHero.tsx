@@ -1,7 +1,11 @@
+"use client"
+
+import React, { useState } from "react"
 import { StarIcon, Play, Clock, Tag, DollarSign } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import Link from "next/link"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { DialogTitle } from "@radix-ui/react-dialog"
 
 interface CourseHeroProps {
   title: string
@@ -14,8 +18,20 @@ interface CourseHeroProps {
   level: string
   imageUrl: string
   courseId: string
-  isEnrolled: Boolean
+  isEnrolled: boolean
+  price?: number
+  enrollmentLimit?: number
+  currentEnrollments?: number
+  description?: string
+  children: React.ReactNode
 }
+
+// courseId: string
+// title: string
+// price?: number
+// enrollmentLimit?: number
+// currentEnrollments?: number
+// description?: string
 
 export function CourseHero({
   title,
@@ -29,8 +45,14 @@ export function CourseHero({
   imageUrl,
   courseId,
   isEnrolled,
+  price,
+  enrollmentLimit,
+  currentEnrollments,
+  description,
+  children,
 }: CourseHeroProps) {
-  console.log(isEnrolled)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+
   return (
     <div className="relative h-[350px] bg-blue-600 rounded-b-3xl overflow-hidden">
       <div
@@ -78,22 +100,11 @@ export function CourseHero({
             <Play className="w-4 h-4 mr-2" />
             Course Highlight
           </Button>
-          {!!isEnrolled ? (
-            <Button
-              className="bg-blue-500 text-white hover:bg-blue-600"
-              disabled={!!isEnrolled}
-            >
-              {isEnrolled
-                ? "Already Enrolled"
-                : isOpen
-                  ? "Enroll Now"
-                  : "Join Waitlist"}
-            </Button>
-          ) : (
-            <Link href={isOpen ? `/student/courses/${courseId}/` : "#"}>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
               <Button
                 className="bg-blue-500 text-white hover:bg-blue-600"
-                disabled={!!isEnrolled}
+                disabled={isEnrolled}
               >
                 {isEnrolled
                   ? "Already Enrolled"
@@ -101,8 +112,12 @@ export function CourseHero({
                     ? "Enroll Now"
                     : "Join Waitlist"}
               </Button>
-            </Link>
-          )}
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogTitle>enroll</DialogTitle>
+              {children}
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>

@@ -167,12 +167,12 @@ export function CourseCard({ course, role }: CourseCardProps) {
       </CardContent>
       <CardFooter className="px-4 py-3 bg-secondary/20 text-secondary-foreground">
         <div className="flex items-center justify-between w-full">
-          <div className="flex items-center gap-2">
-            <Avatar className="w-6 h-6">
-              <AvatarImage src={`/placeholder.svg?height=24&width=24`} />
-            </Avatar>
+          <div className="flex items-left gap-2">
+            {/* <Avatar className="w-6 h-6">
+              <AvatarImage src={`${}`} />
+            </Avatar> */}
             <span className="text-sm font-medium truncate">
-              {course.user.firstName} {course.user.lastName}
+              By: {course.user.firstName} {course.user.lastName}
             </span>
           </div>
           <TooltipProvider>

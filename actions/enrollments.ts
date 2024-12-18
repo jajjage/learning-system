@@ -1,6 +1,7 @@
 // lib/actions/enrollment.ts
 "use server"
 
+import { CourseWithEnrollments } from "@/types/enrollment"
 import { prisma } from "@/utils/prisma"
 import { auth } from "@clerk/nextjs/server"
 import { EnrollmentStatus } from "@prisma/client"
@@ -12,6 +13,31 @@ export type EnrollmentStatusType = {
   enrolledAt?: Date
   courseId: string
 }
+
+export async function getEnrollCourse(
+  courseId: string,
+): Promise<CourseWithEnrollments | null> {
+  try {
+    const { userId } = await auth()
+
+    if (!userId) {
+      throw new Error("Unauthorized")
+    }
+    const course = await prisma.course.findUnique({
+      where: { id: courseId },
+      include: {
+        _count: {
+          select: { enrollments: true },
+        },
+      },
+    })
+    return course
+  } catch (error) {
+    console.error("[ENROLLMENT_STATUS]", error)
+    throw new Error("Failed to check enrollment status")
+  }
+}
+
 export async function checkEnrollmentStatus(
   courseId: string,
 ): Promise<EnrollmentStatusType> {
