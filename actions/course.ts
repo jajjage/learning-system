@@ -212,6 +212,11 @@ export async function allCourses(
             userId: userId,
           },
         },
+        purchases: {
+          where: {
+            userId: userId,
+          },
+        },
         chapters: {
           where: {
             isPublished: true,
@@ -237,8 +242,9 @@ export async function allCourses(
     // Calculate progress only for purchased courses
     const coursesWithProgress = courses.map((course) => {
       const hasEnroll = course.enrollments.length > 0
-      console.log(hasEnroll)
-      if (!hasEnroll) {
+      const hasPurchased = course.purchases.length > 0
+      console.log(`allcourse ${hasEnroll}, allcoure ${hasPurchased}`)
+      if (!hasEnroll || !hasPurchased) {
         return {
           ...course,
           progress: null,

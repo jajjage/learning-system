@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { useEnrollment } from "@/hooks/use-enrollment"
 
 type PaymentStatus = "initializing" | "verifying" | "success" | "error"
 
@@ -14,6 +15,8 @@ const PaymentSuccessPage = () => {
   const amount = searchParams.get("amount") || ""
   const courseId = searchParams.get("courseId") || ""
 
+  const { enrollInCourse, purchaseCourse, isEnrolling } =
+    useEnrollment(courseId)
   const [paymentStatus, setPaymentStatus] =
     useState<PaymentStatus>("initializing")
   const [errorMessage, setErrorMessage] = useState<string>("")
@@ -74,8 +77,10 @@ const PaymentSuccessPage = () => {
         const data = await response.json()
 
         if (response.ok && data.status === "success") {
+          enrollInCourse(courseId)
           setPaymentStatus("success")
-          router.push(`/paid/${courseId}`)
+          purchaseCourse(courseId)
+          router.push(`/learn/course/${courseId}`)
         } else {
           // If verification fails, try again after delay
           if (verificationAttempts < MAX_ATTEMPTS - 1) {

@@ -6,6 +6,7 @@ import {
   type EnrollmentStatusType,
 } from "@/actions/enrollments"
 import toast from "react-hot-toast"
+import { CoursePurchase } from "@/actions/purchase"
 
 export const useEnrollment = (courseId: string) => {
   const queryClient = useQueryClient()
@@ -54,9 +55,21 @@ export const useEnrollment = (courseId: string) => {
     },
   })
 
+  const purchaseMutation = useMutation({
+    mutationFn: CoursePurchase,
+
+    onError: (error: any, variables, context) => {
+      toast.error(error.message || "Failed to purchase the course")
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["enrollment", courseId] })
+    },
+  })
+
   return {
     enrollmentStatus,
     isCheckingEnrollment,
+    purchaseCourse: purchaseMutation.mutate,
     enrollInCourse: enrollMutation.mutate,
     isEnrolling: enrollMutation.isLoading,
   }

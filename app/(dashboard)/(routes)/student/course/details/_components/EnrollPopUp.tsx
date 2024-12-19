@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
 import { useEnrollment } from "@/hooks/use-enrollment"
 import { useUser } from "@clerk/nextjs"
@@ -23,7 +23,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { handlePayment } from "@/actions/flutterwave"
-import { User } from "@prisma/client"
+import { useRouter } from "next/navigation"
+import toast from "react-hot-toast"
 
 interface EnrollmentCardProps {
   courseId: string
@@ -32,6 +33,7 @@ interface EnrollmentCardProps {
   enrollmentLimit?: number
   currentEnrollments?: number
   description?: string
+  isFree?: boolean
   userData: {
     firstName: string
     email: string
@@ -41,21 +43,18 @@ interface EnrollmentCardProps {
 export const EnrollPopUp = ({
   courseId,
   title,
-  price,
+  price = 0,
   enrollmentLimit,
   currentEnrollments = 0,
   description,
   userData,
+  isFree,
 }: EnrollmentCardProps) => {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [verifying, setVerifying] = useState(false)
+  const route = useRouter()
 
-  const {
-    enrollmentStatus,
-    // enrollInCourse,
-    isEnrolling,
-    isCheckingEnrollment,
-  } = useEnrollment(courseId)
+  const { enrollmentStatus, isCheckingEnrollment } = useEnrollment(courseId)
   const { user } = useUser()
 
   const handleEnroll = () => {
@@ -65,12 +64,18 @@ export const EnrollPopUp = ({
       // enrollInCourse(courseId)
     }
   }
+  const handleFreeEnroll = () => {
+    if (isFree) {
+      route.push(`/free/${courseId}`)
+    } else {
+      route.push(`/student/course/details/${courseId}`)
+      toast.error("Error enrolling in course")
+    }
+  }
+
   const generateTxRef = (): string => {
     return `tx_${uuidv4()}` // Prefix with "tx_" to make it more descriptive
   }
-
-  const tx_ref = generateTxRef()
-  const currency = "NGN"
 
   const redirectToSignIn = () => {
     // Implement sign-in redirection logic here
@@ -98,7 +103,7 @@ export const EnrollPopUp = ({
         )}
         {price !== undefined && (
           <p className="text-lg font-bold mb-4">
-            {price > 0 ? `Price: $${price.toFixed(2)}` : "Free"}
+            {price > 0 && !isFree ? `Price: ₦${price.toFixed(2)}` : "Free"}
           </p>
         )}
       </CardContent>
@@ -133,7 +138,7 @@ export const EnrollPopUp = ({
           >
             {verifying ? (
               <div className="w-6 h-6 border-t-2 border-l-white rounded-full animate-spin"></div>
-            ) : price && price > 0 ? (
+            ) : !isFree ? (
               "Proceed to Enrollment"
             ) : (
               "Enroll for Free"
@@ -147,32 +152,40 @@ export const EnrollPopUp = ({
           <AlertDialogHeader>
             <AlertDialogTitle>Confirm Enrollment</AlertDialogTitle>
             <AlertDialogDescription>
-              {price && price > 0
-                ? `You will be charged NG${price.toFixed(2)} for this course. Would you like to proceed with the enrollment?`
+              {!isFree && price > 0
+                ? `You will be charged ₦${price.toFixed(2)} for this course. Would you like to proceed with the enrollment?`
                 : "This course is free. Would you like to proceed with the enrollment?"}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => {
-                const tx_ref = generateTxRef() // Generate unique transaction reference
-                const paymentDetails = {
-                  tx_ref,
-                  amount: price,
-                  currency: "NGN",
-                  redirect_url: `http://localhost:3000/flutterwave/payment?amount=${price}&courseId=${courseId}`,
-                  customer: {
-                    name: userData.firstName,
-                    email: userData.email,
-                  },
-                }
+              onClick={
+                !isFree && price > 0
+                  ? () => {
+                      const tx_ref: string = generateTxRef() // Generate unique transaction reference
+                      const paymentDetails = {
+                        tx_ref,
+                        amount: price,
+                        currency: "NGN",
+                        redirect_url: `http://localhost:3000/flutterwave/payment?amount=${price}&courseId=${courseId}`,
+                        customer: {
+                          name: userData.firstName,
+                          email: userData.email,
+                        },
+                      }
 
-                handlePayment(paymentDetails)
-                setConfirmOpen(false)
-                setVerifying(true)
-              }}
-              disabled={isEnrolling}
+                      handlePayment(paymentDetails)
+                      setConfirmOpen(false)
+                      setVerifying(true)
+                    }
+                  : () => {
+                      setVerifying(true)
+                      setConfirmOpen(false)
+                      handleFreeEnroll()
+                    }
+              }
+              disabled={verifying}
             >
               {verifying ? "Processing..." : "Confirm Enrollment"}
             </AlertDialogAction>

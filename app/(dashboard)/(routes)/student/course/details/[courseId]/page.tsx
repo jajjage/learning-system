@@ -59,6 +59,7 @@ const CoursePage = async ({
     startDate: course.startDate,
     endDate: course.endDate,
     certificateOffered: true,
+
     reviews: [
       {
         title: "Amazing Course!",
@@ -110,6 +111,7 @@ const CoursePage = async ({
           enrollmentLimit={courseEnroll?.maxEnrollment || undefined}
           currentEnrollments={courseEnroll?._count.enrollments}
           description={courseEnroll?.description || ""}
+          isFree={courseData.isFree || false}
           userData={user}
         />
       </CourseHero>
