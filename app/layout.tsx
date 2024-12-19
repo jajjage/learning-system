@@ -29,8 +29,8 @@ export default function RootLayout({
           {!isStudentRoute &&
             !isTeacherRoute &&
             !isCourseRoute &&
-            isFreeRoute &&
-            isPaidRoute && <Header />}
+            !isFreeRoute &&
+            !isPaidRoute && <Header />}
           <ReactQueryProvider>{children}</ReactQueryProvider>
           <Toaster />
         </body>

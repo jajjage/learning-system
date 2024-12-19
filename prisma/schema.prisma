@@ -116,6 +116,7 @@ model Chapter {
   position Int
   isPublished Boolean @default(false)
   isFree Boolean @default(false)
+  duration String?
 
   muxData MuxData?
 
@@ -142,6 +143,10 @@ model MuxData {
 model UserProgess {
   id String @id @default(cuid())
   userId String
+  duration   Int       @default(0) // Duration in seconds spent on this chapter
+  progress   Float?    // Percentage of progress (e.g., 50.0 for 50%)
+  startedAt  DateTime? // When the user started this chapter
+  completedAt DateTime? // When the user completed this chapter
 
   chapterId String 
   chapter  Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)

@@ -27,7 +27,6 @@ const CoursePage = async ({
   }
 
   const { courseId } = await params
-  // const cachedCourse = client.getQueryData(["course", courseId])
 
   const { isEnrolled } = await checkEnrollmentStatus(courseId)
 

@@ -1,7 +1,7 @@
 "use server"
 
 import { prisma } from "@/utils/prisma"
-import { auth, currentUser, EmailAddress } from "@clerk/nextjs/server"
+import { auth } from "@clerk/nextjs/server"
 import { Role } from "@prisma/client"
 
 type UserData = {

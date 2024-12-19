@@ -23,7 +23,7 @@ export default async function CoursesPage({
 }: SearchParamsProps): Promise<JSX.Element> {
   const { user } = await onAuthenticatedUser()
   const client = new QueryClient()
-  console.log(user)
+
   if (!user?.clerkId) {
     return redirect("/")
   }

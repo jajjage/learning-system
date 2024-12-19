@@ -4,7 +4,13 @@ import {
   deleteChapter,
   updateChapterPublishStatus,
 } from "@/actions/chapter"
-import { ArrowLeft, LayoutDashboard, ListChecks, Video } from "lucide-react"
+import {
+  ArrowLeft,
+  LayoutDashboard,
+  ListChecks,
+  TimerIcon,
+  Video,
+} from "lucide-react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import { ChapterTitleForm } from "./_components/ChapterTitleForm"
@@ -15,6 +21,7 @@ import { dehydrate, QueryClient } from "@tanstack/react-query"
 import { onAuthenticatedUser } from "@/actions/auth"
 import { PublishBanner } from "@/components/global/PublishBanner"
 import DeleteButton from "@/components/global/CourseDelete"
+import { ChapterDurationForm } from "./_components/ChapterDurationForm"
 
 const ChapterIdPage = async ({
   params,
@@ -39,7 +46,12 @@ const ChapterIdPage = async ({
     return redirect("/")
   }
 
-  const requiredFields = [chapter.title, chapter.description, chapter.videoUrl]
+  const requiredFields = [
+    chapter.title,
+    chapter.description,
+    chapter.videoUrl,
+    chapter.duration,
+  ]
 
   const totalFields = requiredFields.length
   const completedFields = requiredFields.filter(Boolean).length
@@ -114,16 +126,29 @@ const ChapterIdPage = async ({
               />
             </div>
           </div>
-          <div>
-            <div className="flex items-center gap-x-2">
-              <IconBadge icon={ListChecks} />
-              <h2 className="text-xl">Access Settings</h2>
+          <div className="space-y-6">
+            <div>
+              <div className="flex items-center gap-x-2">
+                <IconBadge icon={ListChecks} />
+                <h2 className="text-xl">Access Settings</h2>
+              </div>
+              <ChapterAccessForm
+                initialData={chapter}
+                courseId={courseId}
+                chapterId={chapterId}
+              />
             </div>
-            <ChapterAccessForm
-              initialData={chapter}
-              courseId={courseId}
-              chapterId={chapterId}
-            />
+            <div>
+              <div className="flex items-center gap-x-2">
+                <IconBadge icon={TimerIcon} />
+                <h2 className="text-xl">Duration Settings</h2>
+              </div>
+              <ChapterDurationForm
+                initialData={chapter}
+                courseId={courseId}
+                chapterId={chapterId}
+              />
+            </div>
           </div>
         </div>
       </div>

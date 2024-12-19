@@ -39,3 +39,24 @@ export interface CourseWithCountAndRatings extends Course {
   }
   // ratings
 }
+
+export interface CourseEnroll extends Course {
+  user: {
+    firstName: string
+    lastName: string
+  }
+  _count: {
+    chapters: number
+  }
+  chapters: {
+    id: string
+    title: string
+    position: number
+    duration: string
+    userProgress: {
+      id: string
+      userId: string
+      isCompleted: boolean
+    }[]
+  }[]
+}

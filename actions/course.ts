@@ -1,6 +1,10 @@
 "use server"
 
-import { CourseWithCount, CourseWithCountAndRatings } from "@/types/course"
+import {
+  CourseEnroll,
+  CourseWithCount,
+  CourseWithCountAndRatings,
+} from "@/types/course"
 import { prisma } from "@/utils/prisma"
 import { auth } from "@clerk/nextjs/server"
 import { Course } from "@prisma/client"
@@ -104,6 +108,62 @@ export async function getCourseDetail(
     return null
   }
 }
+
+export async function getEnrollCourse(
+  courseId: string,
+): Promise<CourseEnroll | null> {
+  try {
+    const { userId } = await auth()
+    if (!userId) {
+      throw new Error("Unauthorized")
+    }
+    console.log(userId)
+    const course = await prisma.course.findUnique({
+      where: {
+        id: courseId,
+      },
+
+      include: {
+        _count: {
+          select: { chapters: true },
+        },
+
+        chapters: {
+          where: {
+            isPublished: true,
+          },
+          select: {
+            id: true,
+            title: true,
+            position: true,
+            duration: true,
+            userProgress: {
+              where: {
+                userId: userId,
+                isCompleted: true,
+              },
+            },
+          },
+          orderBy: {
+            position: "asc",
+          },
+        },
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+    })
+    console.log("course data:", course)
+    return course as CourseEnroll
+  } catch (error) {
+    console.error("Failed to fetch course:", error)
+    return null
+  }
+}
+
 export async function teacherCourses(
   searchQuery?: string,
   categoryId?: string,
