@@ -137,9 +137,21 @@ export async function getEnrollCourse(
             title: true,
             position: true,
             duration: true,
+            videoUrl: true,
+
+            muxData: {
+              select: {
+                playBackId: true,
+              },
+            },
+
             userProgress: {
               where: {
                 userId: userId,
+              },
+              select: {
+                id: true,
+                userId: true,
                 isCompleted: true,
               },
             },

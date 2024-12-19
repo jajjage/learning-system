@@ -82,10 +82,19 @@ const courseData = {
 
 interface CourseProps {
   course: CourseEnroll | null
+  userId: string
 }
 
-export default function Course({ course }: CourseProps) {
+export default function Course({ course, userId }: CourseProps) {
   const [isCurriculumOpen, setIsCurriculumOpen] = useState(false)
+  const [currentChapter, setCurrentChapter] = useState(
+    course?.chapters?.[0] ?? null,
+  )
+
+  const handleChapterSelect = (chapter: NonNullable<typeof currentChapter>) => {
+    setCurrentChapter(chapter)
+    setIsCurriculumOpen(false) // Close curriculum on mobile after selection
+  }
   console.log(course?.id)
   return (
     <>
@@ -97,13 +106,17 @@ export default function Course({ course }: CourseProps) {
       <div className="relative flex flex-1 overflow-hidden">
         {/* chapter video  */}
         <div className="flex-1 overflow-auto">
-          <VideoPlayer />
+          {currentChapter && (
+            <VideoPlayer chapter={currentChapter} userId={userId} />
+          )}
         </div>
         <Curriculum
           // chapters from the database
           chapters={course?.chapters || []}
           isOpen={isCurriculumOpen}
           onClose={() => setIsCurriculumOpen(false)}
+          onChapterSelect={handleChapterSelect}
+          currentChapterId={currentChapter?.id ?? ""}
         />
       </div>
     </>

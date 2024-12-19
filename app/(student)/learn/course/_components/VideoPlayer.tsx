@@ -1,27 +1,40 @@
-import { Play } from "lucide-react"
+"use client"
 
-import { Button } from "@/components/ui/button"
+import { useEffect } from "react"
 import { Card } from "@/components/ui/card"
+import { updateUserProgress } from "@/actions/user-progress"
+import MuxPlayer from "@mux/mux-player-react"
 
-export function VideoPlayer() {
+interface VideoPlayerProps {
+  chapter: {
+    id: string
+    title: string
+    videoUrl: string
+    muxData: {
+      playBackId: string
+    }
+  }
+  userId: string
+}
+
+export function VideoPlayer({ chapter, userId }: VideoPlayerProps) {
+  useEffect(() => {
+    if (userId && chapter.id) {
+      updateUserProgress(userId, chapter.id)
+    }
+  }, [userId, chapter.id])
+
   return (
     <div className="flex flex-col gap-4 p-6">
-      <div className="relative aspect-video overflow-hidden rounded-lg bg-muted">
-        <Button
-          size="icon"
-          className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/20 text-white hover:bg-white/30"
-        >
-          <Play className="h-8 w-8" fill="currentColor" />
-          <span className="sr-only">Play</span>
-        </Button>
+      <div className="relative aspect-video mt-4">
+        <MuxPlayer playbackId={chapter.muxData?.playBackId || ""} />
       </div>
       <div className="space-y-4">
         <div className="space-y-2">
-          <h2 className="text-2xl font-bold">
-            Introduction: Tutor Introduction
-          </h2>
+          <h2 className="text-2xl font-bold">{chapter.title}</h2>
           <p className="text-muted-foreground">
-            Learn about your tutor and get an overview of the course.
+            Learn and practice meditation techniques for relaxation and
+            mindfulness.
           </p>
         </div>
         <Card className="p-4">

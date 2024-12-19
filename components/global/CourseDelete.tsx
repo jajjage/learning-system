@@ -43,6 +43,7 @@ function DeleteButton({
       if (entityType === "chapter") {
         router.push(`/teacher/courses/${courseId}`)
       } else {
+        router.push(`/teacher/courses`)
         router.refresh()
       }
     } catch (error) {

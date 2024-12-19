@@ -123,7 +123,7 @@ model Chapter {
   courseId String
   course  Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
-  userProgress UserProgess[]
+  userProgress UserProgress[]
 
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now())
@@ -140,7 +140,7 @@ model MuxData {
   chapter  Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 }
 
-model UserProgess {
+model UserProgress {
   id String @id @default(cuid())
   userId String
   duration   Int       @default(0) // Duration in seconds spent on this chapter

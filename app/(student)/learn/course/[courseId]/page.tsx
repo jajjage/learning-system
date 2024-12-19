@@ -13,7 +13,6 @@ export default async function CoursePage({
   params: Promise<{ courseId: string }>
 }) {
   const { user } = await onAuthenticatedUser()
-  const { userId } = await auth()
   const client = new QueryClient()
 
   if (!user?.clerkId) {
@@ -33,7 +32,7 @@ export default async function CoursePage({
 
   return (
     <>
-      <Course course={course} />
+      <Course course={course} userId={user.clerkId} />
     </>
   )
 }

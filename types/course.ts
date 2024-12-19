@@ -53,6 +53,10 @@ export interface CourseEnroll extends Course {
     title: string
     position: number
     duration: string
+    videoUrl: string
+    muxData: {
+      playBackId: string
+    }
     userProgress: {
       id: string
       userId: string
