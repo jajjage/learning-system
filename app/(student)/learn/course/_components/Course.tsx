@@ -5,6 +5,7 @@ import { Curriculum } from "./Curriculum"
 import React, { useState } from "react"
 import { CourseHeader } from "./CourseHeader"
 import { CourseEnroll } from "@/types/course"
+import { Chapter } from "@prisma/client"
 
 const courseData = {
   title: "Course: Meditation for Relaxation",
@@ -91,9 +92,12 @@ export default function Course({ course, userId }: CourseProps) {
     course?.chapters?.[0] ?? null,
   )
 
-  const handleChapterSelect = (chapter: NonNullable<typeof currentChapter>) => {
-    setCurrentChapter(chapter)
-    setIsCurriculumOpen(false) // Close curriculum on mobile after selection
+  const handleChapterSelect = (chapter: any) => {
+    const fullChapter = course?.chapters.find((c) => c.id === chapter.id)
+    if (fullChapter) {
+      setCurrentChapter(fullChapter)
+      setIsCurriculumOpen(false) // Close curriculum on mobile after selection
+    }
   }
   console.log(course?.id)
   return (
@@ -107,12 +111,22 @@ export default function Course({ course, userId }: CourseProps) {
         {/* chapter video  */}
         <div className="flex-1 overflow-auto">
           {currentChapter && (
-            <VideoPlayer chapter={currentChapter} userId={userId} />
+            <VideoPlayer
+              chapter={{
+                ...currentChapter,
+                userProgress: currentChapter.userProgress[0] || null,
+              }}
+            />
           )}
         </div>
         <Curriculum
           // chapters from the database
-          chapters={course?.chapters || []}
+          chapters={
+            course?.chapters.map((chapter) => ({
+              ...chapter,
+              userProgress: chapter.userProgress[0],
+            })) || []
+          }
           isOpen={isCurriculumOpen}
           onClose={() => setIsCurriculumOpen(false)}
           onChapterSelect={handleChapterSelect}

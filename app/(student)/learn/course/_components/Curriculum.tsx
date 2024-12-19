@@ -1,26 +1,31 @@
-import { Check, ChevronRight, Clock, X } from "lucide-react"
+"use client"
 
+import { Check, CheckCircle, ChevronRight, Clock, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
+import { useEffect, useState } from "react"
+import { initializeChapterProgress } from "@/actions/user-progress"
+
+interface Chapter {
+  id: string
+  title: string
+  position: number
+  duration: string
+  videoUrl: string
+  userProgress?: {
+    id: string
+    userId: string
+    isCompleted: boolean
+  }
+}
 
 interface CurriculumProps {
-  chapters: {
-    id: string
-    title: string
-    position: number
-    duration: string
-    videoUrl: string
-    userProgress?: {
-      id: string
-      userId: string
-      isCompleted: boolean
-    }
-  }[]
+  chapters: Chapter[]
   isOpen: boolean
   onClose: () => void
-  onChapterSelect: (chapter: any) => void
+  onChapterSelect: (chapter: Chapter) => void
   currentChapterId: string
 }
 
@@ -31,6 +36,27 @@ export function Curriculum({
   onChapterSelect,
   currentChapterId,
 }: CurriculumProps) {
+  const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null)
+
+  // Initialize progress when component mounts and when chapter changes
+  useEffect(() => {
+    const currentChapter = chapters.find(
+      (chapter) => chapter.id === currentChapterId,
+    )
+    if (
+      currentChapter &&
+      (!selectedChapter || selectedChapter.id !== currentChapter.id)
+    ) {
+      setSelectedChapter(currentChapter)
+      initializeChapterProgress(currentChapter.id)
+    }
+  }, [currentChapterId, chapters])
+
+  const handleChapterSelect = async (chapter: Chapter) => {
+    setSelectedChapter(chapter)
+    onChapterSelect(chapter)
+  }
+
   const content = (
     <div className="space-y-6 p-6">
       {chapters.map((chapter) => (
@@ -38,16 +64,16 @@ export function Curriculum({
           key={chapter.id}
           variant="ghost"
           className={cn(
-            "w-full justify-start gap-2 rounded-sm p-2 text-sm font-normal",
+            "w-full justify-start gap-2 rounded-sm p-2 text-sm font-normal hover:bg-accent/50",
             chapter.userProgress?.isCompleted && "text-muted-foreground",
             chapter.id === currentChapterId &&
               "bg-accent text-accent-foreground",
           )}
-          onClick={() => onChapterSelect(chapter)}
+          onClick={() => handleChapterSelect(chapter)}
         >
           <div className="flex h-5 w-5 items-center justify-center rounded-full border">
             {chapter.userProgress?.isCompleted ? (
-              <Check className="h-3 w-3" />
+              <CheckCircle className="w-4 h-4 text-green-500" />
             ) : chapter.id === currentChapterId ? (
               <div className="h-2 w-2 rounded-full bg-current" />
             ) : (
