@@ -109,7 +109,7 @@ export async function getCourseDetail(
   }
 }
 
-export async function getEnrollCourse(
+export async function getEnrolledCourse(
   courseId: string,
 ): Promise<CourseEnroll | null> {
   try {
@@ -117,17 +117,15 @@ export async function getEnrollCourse(
     if (!userId) {
       throw new Error("Unauthorized")
     }
-    console.log(userId)
+
     const course = await prisma.course.findUnique({
       where: {
         id: courseId,
       },
-
       include: {
         _count: {
           select: { chapters: true },
         },
-
         chapters: {
           where: {
             isPublished: true,
@@ -138,13 +136,13 @@ export async function getEnrollCourse(
             position: true,
             duration: true,
             videoUrl: true,
-
+            isFree: true,
+            isPublished: true,
             muxData: {
               select: {
                 playBackId: true,
               },
             },
-
             userProgress: {
               where: {
                 userId: userId,
@@ -153,6 +151,15 @@ export async function getEnrollCourse(
                 id: true,
                 userId: true,
                 isCompleted: true,
+              },
+            },
+            // Add this to include user-specific access records
+            userChapterAccess: {
+              where: {
+                userId: userId,
+              },
+              select: {
+                id: true,
               },
             },
           },
@@ -168,8 +175,24 @@ export async function getEnrollCourse(
         },
       },
     })
-    console.log("course data:", course)
-    return course as CourseEnroll
+
+    if (!course) {
+      return null
+    }
+
+    // Transform the data to include hasAccess field
+    const transformedCourse: CourseEnroll = {
+      ...course,
+      chapters: course.chapters.map((chapter) => ({
+        ...chapter,
+        hasAccess: chapter.isFree || chapter.userChapterAccess.length > 0,
+        // Remove the UserChapterAccess field as it's not in our type definition
+        UserChapterAccess: undefined,
+      })) as CourseEnroll["chapters"],
+    }
+
+    console.log("course data:", transformedCourse)
+    return transformedCourse
   } catch (error) {
     console.error("Failed to fetch course:", error)
     return null
@@ -284,11 +307,7 @@ export async function allCourses(
             userId: userId,
           },
         },
-        purchases: {
-          where: {
-            userId: userId,
-          },
-        },
+
         chapters: {
           where: {
             isPublished: true,
@@ -314,9 +333,8 @@ export async function allCourses(
     // Calculate progress only for purchased courses
     const coursesWithProgress = courses.map((course) => {
       const hasEnroll = course.enrollments.length > 0
-      const hasPurchased = course.purchases.length > 0
-      console.log(`allcourse ${hasEnroll}, allcoure ${hasPurchased}`)
-      if (!hasEnroll || !hasPurchased) {
+
+      if (!hasEnroll) {
         return {
           ...course,
           progress: null,

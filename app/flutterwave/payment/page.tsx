@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { useEnrollment } from "@/hooks/use-enrollment"
+import { grantCourseAccess } from "@/actions/enrollments"
 
 type PaymentStatus = "initializing" | "verifying" | "success" | "error"
 
@@ -15,8 +16,7 @@ const PaymentSuccessPage = () => {
   const amount = searchParams.get("amount") || ""
   const courseId = searchParams.get("courseId") || ""
 
-  const { enrollInCourse, purchaseCourse, isEnrolling } =
-    useEnrollment(courseId)
+  const { enrollInCourse, isEnrolling } = useEnrollment(courseId)
   const [paymentStatus, setPaymentStatus] =
     useState<PaymentStatus>("initializing")
   const [errorMessage, setErrorMessage] = useState<string>("")
@@ -77,10 +77,23 @@ const PaymentSuccessPage = () => {
         const data = await response.json()
 
         if (response.ok && data.status === "success") {
-          enrollInCourse(courseId)
-          setPaymentStatus("success")
-          purchaseCourse(courseId)
-          router.push(`/learn/course/${courseId}`)
+          try {
+            // Try to enroll user in course
+            await grantCourseAccess(courseId)
+            enrollInCourse(courseId)
+            setPaymentStatus("success")
+            router.push(`/learn/course/${courseId}`)
+          } catch (error) {
+            if (
+              error instanceof Error &&
+              error.message.includes("already enrolled")
+            ) {
+              setPaymentStatus("error")
+              setErrorMessage("You're already enrolled in this course")
+            } else {
+              throw error
+            }
+          }
         } else {
           // If verification fails, try again after delay
           if (verificationAttempts < MAX_ATTEMPTS - 1) {

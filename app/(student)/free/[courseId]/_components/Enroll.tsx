@@ -4,6 +4,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { useEnrollment } from "@/hooks/use-enrollment"
 import { useRouter } from "next/navigation"
 import { CheckCircle, Loader2 } from "lucide-react"
+import { grantCourseAccess } from "@/actions/enrollments"
 
 interface EnrollProps {
   courseId: string
@@ -11,8 +12,7 @@ interface EnrollProps {
 
 const Enroll = ({ courseId }: EnrollProps) => {
   const router = useRouter()
-  const { enrollInCourse, purchaseCourse, isEnrolling } =
-    useEnrollment(courseId)
+  const { enrollInCourse, isEnrolling } = useEnrollment(courseId)
   const [enrollmentStatus, setEnrollmentStatus] = useState<
     "verifying" | "success" | "error" | "already-enrolled"
   >("verifying")
@@ -25,7 +25,7 @@ const Enroll = ({ courseId }: EnrollProps) => {
 
       try {
         enrollInCourse(courseId)
-        purchaseCourse(courseId)
+        await grantCourseAccess(courseId)
         setEnrollmentStatus("success")
 
         // Add a small delay before redirect for better UX

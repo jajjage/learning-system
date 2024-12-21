@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { DialogTitle } from "@radix-ui/react-dialog"
+import { CoursePreviewModal } from "./CoursePreviewModal"
+import { CourseEnroll } from "@/types/course"
 
 interface CourseHeroProps {
   title: string
@@ -24,14 +26,8 @@ interface CourseHeroProps {
   currentEnrollments?: number
   description?: string
   children: React.ReactNode
+  coursePreview: CourseEnroll
 }
-
-// courseId: string
-// title: string
-// price?: number
-// enrollmentLimit?: number
-// currentEnrollments?: number
-// description?: string
 
 export function CourseHero({
   title,
@@ -43,15 +39,12 @@ export function CourseHero({
   category,
   level,
   imageUrl,
-  courseId,
   isEnrolled,
-  price,
-  enrollmentLimit,
-  currentEnrollments,
-  description,
   children,
+  coursePreview,
 }: CourseHeroProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
 
   return (
     <div className="relative h-[350px] bg-blue-600 rounded-b-3xl overflow-hidden">
@@ -95,11 +88,19 @@ export function CourseHero({
         <div className="flex gap-4">
           <Button
             variant="outline"
+            onClick={() => setShowPreview(true)}
             className="bg-white text-blue-600 hover:bg-blue-50"
           >
             <Play className="w-4 h-4 mr-2" />
             Course Highlight
           </Button>
+          {/* Course Preview */}
+          <CoursePreviewModal
+            isOpen={showPreview}
+            onClose={() => setShowPreview(false)}
+            course={coursePreview}
+            isPurchased={false} // set to true if user has purchased
+          />
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button

@@ -41,6 +41,8 @@ export interface CourseWithCountAndRatings extends Course {
 }
 
 export interface CourseEnroll extends Course {
+  id: string
+  title: string
   user: {
     firstName: string
     lastName: string
@@ -52,10 +54,13 @@ export interface CourseEnroll extends Course {
     id: string
     title: string
     position: number
-    duration: string
+    duration: string | null
     videoUrl: string
+    isFree: boolean
+    isPublished: boolean
+    hasAccess: boolean
     muxData: {
-      playBackId: string
+      playBackId: string | null
     }
     userProgress: {
       id: string

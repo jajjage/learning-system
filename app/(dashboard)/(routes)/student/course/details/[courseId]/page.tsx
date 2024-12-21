@@ -7,11 +7,12 @@ import { CourseTutor } from "../_components/CourseTutor"
 import { onAuthenticatedUser } from "@/actions/auth"
 import { QueryClient } from "@tanstack/react-query"
 import { redirect } from "next/navigation"
-import { getCourseDetail } from "@/actions/course"
+import { getCourseDetail, getEnrolledCourse } from "@/actions/course"
 import { getUserByClerkId } from "@/hooks/clerk-user"
 import { checkEnrollmentStatus, getEnrollCourse } from "@/actions/enrollments"
 import { EnrollPopUp } from "../_components/EnrollPopUp"
 import { User } from "lucide-react"
+import { CourseEnroll } from "@/types/course"
 
 // would be back to use the actual data from the db
 const CoursePage = async ({
@@ -37,6 +38,11 @@ const CoursePage = async ({
   const courseEnroll = await client.fetchQuery({
     queryKey: ["course", courseId],
     queryFn: () => getEnrollCourse(courseId),
+  })
+
+  const coursePreview = await client.fetchQuery({
+    queryKey: ["course", courseId],
+    queryFn: () => getEnrolledCourse(courseId),
   })
 
   if (!course) {
@@ -102,6 +108,7 @@ const CoursePage = async ({
         level={courseData.level}
         courseId={course.id}
         isEnrolled={isEnrolled}
+        coursePreview={coursePreview || ({} as CourseEnroll)}
       >
         <EnrollPopUp
           courseId={courseEnroll?.id || ""}

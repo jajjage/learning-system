@@ -115,6 +115,10 @@ export default function Course({ course, userId }: CourseProps) {
               chapter={{
                 ...currentChapter,
                 userProgress: currentChapter.userProgress[0] || null,
+                muxData: {
+                  ...currentChapter.muxData,
+                  playBackId: currentChapter.muxData.playBackId || "",
+                },
               }}
             />
           )}
@@ -124,9 +128,11 @@ export default function Course({ course, userId }: CourseProps) {
           chapters={
             course?.chapters.map((chapter) => ({
               ...chapter,
+              duration: chapter.duration || "",
               userProgress: chapter.userProgress[0],
             })) || []
           }
+          courseTitle={course?.title || ""}
           isOpen={isCurriculumOpen}
           onClose={() => setIsCurriculumOpen(false)}
           onChapterSelect={handleChapterSelect}

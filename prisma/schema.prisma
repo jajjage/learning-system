@@ -80,6 +80,7 @@ model Course {
   purchases Purchase[]
   enrollments Enrollment[]
   ratings     Rating[] 
+  userChapterAccess UserChapterAccess[]
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -124,6 +125,7 @@ model Chapter {
   course  Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   userProgress UserProgress[]
+  userChapterAccess UserChapterAccess[]
 
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now())
@@ -131,6 +133,20 @@ model Chapter {
   @@index([courseId])
 }
 
+
+model UserChapterAccess {
+  id        String   @id @default(cuid())
+  userId    String
+  chapterId String
+  courseId  String
+  chapter   Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, chapterId])
+  @@index([userId])
+  @@index([courseId])
+}
 model MuxData {
   id  String @id @default(cuid())
   assetId String

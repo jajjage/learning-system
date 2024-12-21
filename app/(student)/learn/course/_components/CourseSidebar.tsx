@@ -12,7 +12,7 @@ import { usePathname } from "next/navigation"
 
 const navigation = [
   { icon: Home, href: "/" },
-  { icon: BookOpen, href: "/courses" },
+  { icon: BookOpen, href: "/student/courses" },
   { icon: Play, href: "/watch" },
   { icon: MessageCircle, href: "/community" },
   { icon: Settings, href: "/settings" },

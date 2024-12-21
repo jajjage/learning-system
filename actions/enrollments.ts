@@ -154,3 +154,42 @@ export async function createEnrollment(courseId: string) {
     throw error
   }
 }
+
+export async function grantCourseAccess(courseId: string) {
+  try {
+    const { userId } = await auth()
+
+    if (!userId) {
+      throw new Error("Unauthorized")
+    }
+
+    // 1. First get all chapters for the course
+    const chapters = await prisma.chapter.findMany({
+      where: {
+        courseId: courseId,
+        isPublished: true,
+      },
+      select: {
+        id: true,
+      },
+    })
+
+    // 2. Create UserChapterAccess records for each chapter
+    const chapterAccesses = chapters.map((chapter) => ({
+      userId: userId,
+      chapterId: chapter.id,
+      courseId: courseId,
+    }))
+
+    // 3. Use createMany to efficiently insert all records
+    await prisma.userChapterAccess.createMany({
+      data: chapterAccesses,
+      skipDuplicates: true, // In case some access records already exist
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error("[GRANT_COURSE_ACCESS]", error)
+    throw new Error("Failed to grant course access")
+  }
+}

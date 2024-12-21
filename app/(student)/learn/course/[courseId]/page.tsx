@@ -1,11 +1,12 @@
 // This is the course page that the student sees when they click on a course from the course list
 
 import { onAuthenticatedUser } from "@/actions/auth"
-import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import Course from "../_components/Course"
-import { getEnrollCourse } from "@/actions/course"
+import { getEnrolledCourse } from "@/actions/course"
 import { QueryClient } from "@tanstack/react-query"
+import { AuthorizedAccess } from "@/components/global/AuthorizedAccess"
+import { Role } from "@prisma/client"
 
 export default async function CoursePage({
   params,
@@ -15,6 +16,10 @@ export default async function CoursePage({
   const { user } = await onAuthenticatedUser()
   const client = new QueryClient()
 
+  if (!user || user.role !== Role.STUDENT) {
+    return <AuthorizedAccess />
+  }
+
   if (!user?.clerkId) {
     return redirect("/")
   }
@@ -23,7 +28,7 @@ export default async function CoursePage({
 
   const course = await client.fetchQuery({
     queryKey: ["course", courseId],
-    queryFn: () => getEnrollCourse(courseId),
+    queryFn: () => getEnrolledCourse(courseId),
   })
 
   if (!course) {

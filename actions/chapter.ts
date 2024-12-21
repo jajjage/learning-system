@@ -318,3 +318,37 @@ export async function deleteChapter(chapterId: string, courseId?: string) {
     throw new Error("Failed to delete chapter")
   }
 }
+
+export async function hasChapterAccess(chapterId: string): Promise<boolean> {
+  try {
+    const { userId } = await auth()
+
+    if (!userId) {
+      throw new Error("Unauthorized")
+    }
+
+    // Check if chapter is marked as free for everyone
+    const chapter = await prisma.chapter.findUnique({
+      where: { id: chapterId },
+      select: { isFree: true },
+    })
+
+    if (chapter?.isFree) {
+      return true
+    }
+
+    // Check if user has specific access
+    const access = await prisma.userChapterAccess.findUnique({
+      where: {
+        userId_chapterId: {
+          userId: userId,
+          chapterId: chapterId,
+        },
+      },
+    })
+
+    return !!access
+  } catch {
+    return false
+  }
+}
