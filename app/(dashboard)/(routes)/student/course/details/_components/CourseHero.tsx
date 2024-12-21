@@ -100,6 +100,7 @@ export function CourseHero({
             onClose={() => setShowPreview(false)}
             course={coursePreview}
             isPurchased={false} // set to true if user has purchased
+            isFree={isFree}
           />
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
