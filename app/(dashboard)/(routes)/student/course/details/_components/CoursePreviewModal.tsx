@@ -134,6 +134,8 @@ export function CoursePreviewModal({
             <ScrollArea className="flex-1">
               <div className="p-4 space-y-2">
                 {publishedChapters.map((chapter) => {
+                  const isAccessible = chapter.isFree || isFree
+                  const isFreePreview = chapter.position === 0
                   const isLocked = !chapter.isFree && !chapter.hasAccess
                   return (
                     <button
@@ -152,52 +154,42 @@ export function CoursePreviewModal({
                           <ChevronRight className="h-3 w-3" />
                         )}
                       </div>
-                      <div className="flex-1 flex items-start gap-1">
-                        <span className="text-muted-foreground">
-                          {chapter.position}.
-                        </span>
-                        <Tooltip>
-                          {(!chapter.isFree && !isFree) ||
-                          chapter.position === 0 ? (
-                            // Render title without tooltip if it's free or premium
-                            <span className="truncate">
-                              {chapter.position === 0 ? (
-                                <span className="truncate cursor-pointer">
-                                  {chapter.title}
-                                </span>
-                              ) : (
-                                <TooltipTrigger>
+                      <div className="flex items-center justify-between w-full">
+                        <div className="flex-1 flex items-start gap-1">
+                          <span className="text-muted-foreground">
+                            {chapter.position}.
+                          </span>
+                          {isAccessible ? (
+                            <div className="truncate">
+                              <span className="truncate cursor-pointer">
+                                {chapter.title}
+                              </span>
+                              <span className="ml-1 text-xs text-muted-foreground">
+                                {isFreePreview ? "(Free)" : "(Premium)"}
+                              </span>
+                            </div>
+                          ) : (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="truncate">
                                   <span className="truncate cursor-pointer">
                                     {chapter.title}
                                   </span>
-                                </TooltipTrigger>
-                              )}
-                              {chapter.position === 0 ? (
-                                <span className="ml-1 text-xs text-muted-foreground">
-                                  (Free)
-                                </span>
-                              ) : (
-                                <span className="ml-1 text-xs text-muted-foreground">
-                                  (Premium)
-                                </span>
-                              )}
-                            </span>
-                          ) : (
-                            // Wrap title in TooltipTrigger for required chapters
-                            <TooltipTrigger>
-                              <span className="truncate  cursor-pointer">
-                                {chapter.title}
-                              </span>
-                            </TooltipTrigger>
+                                  <span className="ml-1 text-xs text-muted-foreground">
+                                    (Premium)
+                                  </span>
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent className="bg-gray-800 text-white p-2 rounded-md shadow-md">
+                                You have to enroll to access the chapter.
+                              </TooltipContent>
+                            </Tooltip>
                           )}
-                          <TooltipContent className="bg-gray-800 text-white p-2 rounded-md shadow-md">
-                            You have to enroll to access the chapter.
-                          </TooltipContent>
-                        </Tooltip>
-                      </div>
-                      <div className="flex items-center text-xs text-muted-foreground">
-                        <Clock className="h-3 w-3 mr-1" />
-                        {chapter.duration}
+                        </div>
+                        <div className="flex items-center text-xs text-muted-foreground">
+                          <Clock className="h-3 w-3 mr-1" />
+                          {chapter.duration}
+                        </div>
                       </div>
                     </button>
                   )

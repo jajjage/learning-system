@@ -4,6 +4,7 @@ import {
   CourseEnroll,
   CourseWithCount,
   CourseWithCountAndRatings,
+  EnrolledCourseWithProgress,
 } from "@/types/course"
 import { prisma } from "@/utils/prisma"
 import { auth } from "@clerk/nextjs/server"
@@ -477,5 +478,104 @@ export async function deleteCourse(courseId: string) {
   } catch (error) {
     console.error("[DELETE_COURSE]", error)
     throw new Error("Failed to delete course")
+  }
+}
+
+export async function getUserEnrolledCourses(): Promise<
+  EnrolledCourseWithProgress[]
+> {
+  try {
+    const { userId } = await auth()
+
+    if (!userId) {
+      throw new Error("Unauthorized")
+    }
+
+    const enrollments = await prisma.enrollment.findMany({
+      where: {
+        userId: userId,
+        OR: [{ status: "ACTIVE" }, { status: "PENDING" }],
+      },
+      select: {
+        status: true,
+        createdAt: true,
+        course: {
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            imageUrl: true,
+            category: true,
+            user: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
+            chapters: {
+              where: {
+                isPublished: true,
+              },
+              select: {
+                id: true,
+                title: true,
+                userProgress: {
+                  where: {
+                    userId: userId,
+                  },
+                  select: {
+                    isCompleted: true,
+                  },
+                },
+              },
+              orderBy: {
+                position: "asc",
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    })
+
+    const courses = enrollments.map((enrollment) => {
+      const course = enrollment.course
+      const completedChapters = course.chapters.filter(
+        (chapter) => chapter.userProgress[0]?.isCompleted,
+      ).length
+
+      const totalChapters = course.chapters.length
+      const progressPercentage =
+        totalChapters === 0 ? 0 : (completedChapters / totalChapters) * 100
+
+      return {
+        id: course.id,
+        title: course.title,
+        description: course.description,
+        imageUrl: course.imageUrl,
+        category: course.category?.name || "",
+        enrollmentStatus: enrollment.status as "ACTIVE" | "PENDING",
+        enrolledAt: enrollment.createdAt,
+        chapters: course.chapters.map((chapter) => ({
+          id: chapter.id,
+          title: chapter.title,
+          isCompleted: chapter.userProgress[0]?.isCompleted || false,
+        })),
+        progress: Math.round(progressPercentage),
+        courseProgress: {
+          isCompleted: completedChapters === totalChapters && totalChapters > 0,
+          completedChapters,
+          totalChapters,
+        },
+        instructor: course.user,
+      }
+    })
+
+    return courses
+  } catch (error) {
+    console.error("[GET_USER_ENROLLED_COURSES]", error)
+    throw error
   }
 }

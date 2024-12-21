@@ -25,6 +25,31 @@ export interface CourseWithCount extends Course {
   progress: number | null // percentage of completed chapters
 }
 
+export interface EnrolledCourseWithProgress {
+  id: string
+  title: string
+  description: string | null
+  imageUrl: string | null
+  category: string | null
+  enrollmentStatus: "PENDING" | "ACTIVE"
+  enrolledAt: Date
+  chapters: {
+    id: string
+    title: string
+    isCompleted: boolean
+  }[]
+  progress: number
+  courseProgress: {
+    isCompleted: boolean
+    completedChapters: number
+    totalChapters: number
+  }
+  instructor: {
+    firstName: string
+    lastName: string
+  }
+}
+
 export interface CourseWithCountAndRatings extends Course {
   user: {
     firstName: string
