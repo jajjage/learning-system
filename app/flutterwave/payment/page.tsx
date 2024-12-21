@@ -4,7 +4,10 @@ import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { useEnrollment } from "@/hooks/use-enrollment"
-import { grantCourseAccess } from "@/actions/enrollments"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Progress } from "@/components/ui/progress"
+import { Button } from "@/components/ui/button"
+import { Loader2, CheckCircle, XCircle } from "lucide-react"
 
 type PaymentStatus = "initializing" | "verifying" | "success" | "error"
 
@@ -16,12 +19,13 @@ const PaymentSuccessPage = () => {
   const amount = searchParams.get("amount") || ""
   const courseId = searchParams.get("courseId") || ""
 
-  const { enrollInCourse, isEnrolling } = useEnrollment(courseId)
+  const { enrollInCourse, purchaseCourse } = useEnrollment(courseId)
   const [paymentStatus, setPaymentStatus] =
     useState<PaymentStatus>("initializing")
   const [errorMessage, setErrorMessage] = useState<string>("")
   const [numericAmount, setNumericAmount] = useState<number | null>(null)
   const [verificationAttempts, setVerificationAttempts] = useState(0)
+  const [progress, setProgress] = useState(0)
   const MAX_ATTEMPTS = 3
   const VERIFICATION_DELAY = 2000 // 2 seconds delay between attempts
 
@@ -39,13 +43,12 @@ const PaymentSuccessPage = () => {
 
   useEffect(() => {
     if (!tx_ref || !transaction_id || numericAmount === null) {
-      // Don't show error immediately, wait a bit
       const timer = setTimeout(() => {
         if (paymentStatus === "initializing") {
           setPaymentStatus("error")
           setErrorMessage("Missing required payment parameters")
         }
-      }, 3000) // Wait 3 seconds before showing missing parameters error
+      }, 3000)
 
       return () => clearTimeout(timer)
     }
@@ -59,14 +62,11 @@ const PaymentSuccessPage = () => {
 
       try {
         setPaymentStatus("verifying")
+        setProgress((verificationAttempts + 1) * (100 / MAX_ATTEMPTS))
 
         const response = await fetch(
           `/api/flutterwave/verify?tx_ref=${tx_ref}&transaction_id=${transaction_id}&amount=${numericAmount}`,
-          {
-            headers: {
-              Accept: "application/json",
-            },
-          },
+          { headers: { Accept: "application/json" } },
         )
 
         const contentType = response.headers.get("content-type")
@@ -78,11 +78,10 @@ const PaymentSuccessPage = () => {
 
         if (response.ok && data.status === "success") {
           try {
-            // Try to enroll user in course
-            await grantCourseAccess(courseId)
-            enrollInCourse(courseId)
+            await enrollInCourse({ status: "PENDING" })
+            await purchaseCourse(courseId)
             setPaymentStatus("success")
-            router.push(`/learn/course/${courseId}`)
+            setTimeout(() => router.push(`/learn/course/${courseId}`), 2000)
           } catch (error) {
             if (
               error instanceof Error &&
@@ -95,7 +94,6 @@ const PaymentSuccessPage = () => {
             }
           }
         } else {
-          // If verification fails, try again after delay
           if (verificationAttempts < MAX_ATTEMPTS - 1) {
             setVerificationAttempts((prev) => prev + 1)
             setTimeout(verifyPayment, VERIFICATION_DELAY)
@@ -105,7 +103,6 @@ const PaymentSuccessPage = () => {
           }
         }
       } catch (error) {
-        // If there's an error, try again after delay
         if (verificationAttempts < MAX_ATTEMPTS - 1) {
           setVerificationAttempts((prev) => prev + 1)
           setTimeout(verifyPayment, VERIFICATION_DELAY)
@@ -120,70 +117,82 @@ const PaymentSuccessPage = () => {
       }
     }
 
-    // Start verification with initial delay
-    const initialTimer = setTimeout(verifyPayment, 1000) // Wait 1 second before first attempt
+    const initialTimer = setTimeout(verifyPayment, 1000)
 
     return () => clearTimeout(initialTimer)
-  }, [tx_ref, transaction_id, numericAmount, verificationAttempts])
+  }, [
+    tx_ref,
+    transaction_id,
+    numericAmount,
+    verificationAttempts,
+    courseId,
+    enrollInCourse,
+    purchaseCourse,
+    router,
+  ])
 
   const renderContent = () => {
     switch (paymentStatus) {
       case "initializing":
       case "verifying":
         return (
-          <Alert className="bg-blue-50">
-            <AlertTitle>Verifying Payment</AlertTitle>
-            <AlertDescription>
-              <div className="flex flex-col items-center space-y-4">
-                <p>Please wait while we verify your payment...</p>
-                {verificationAttempts > 0 && (
-                  <p className="text-sm text-gray-600">
-                    Verification attempt {verificationAttempts + 1} of{" "}
-                    {MAX_ATTEMPTS}
-                  </p>
-                )}
-                <div className="w-6 h-6 border-t-2 border-blue-500 rounded-full animate-spin"></div>
-              </div>
-            </AlertDescription>
-          </Alert>
+          <div className="space-y-4">
+            <div className="flex items-center justify-center">
+              <Loader2 className="w-12 h-12 animate-spin text-primary" />
+            </div>
+            <Progress value={progress} className="w-full" />
+            <p className="text-center text-sm text-muted-foreground">
+              Verifying payment... Attempt {verificationAttempts + 1} of{" "}
+              {MAX_ATTEMPTS}
+            </p>
+          </div>
         )
 
       case "success":
         return (
-          <Alert className="bg-green-50">
-            <AlertTitle>Payment Successful</AlertTitle>
-            <AlertDescription>
-              <div className="flex flex-col items-center">
-                <p>Your payment has been verified successfully.</p>
-              </div>
-            </AlertDescription>
-          </Alert>
+          <div className="space-y-4">
+            <div className="flex items-center justify-center">
+              <CheckCircle className="w-12 h-12 text-green-500" />
+            </div>
+            <p className="text-center">
+              Your payment has been verified successfully.
+            </p>
+            <p className="text-center text-sm text-muted-foreground">
+              Redirecting you to the course...
+            </p>
+          </div>
         )
 
       case "error":
         return (
-          <Alert variant="destructive">
-            <AlertTitle>Payment Verification Failed</AlertTitle>
-            <AlertDescription>
-              <div className="flex flex-col items-center">
-                <p>{errorMessage}</p>
-                <button
-                  onClick={() => router.push("/payment")}
-                  className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                >
-                  Try Again
-                </button>
-              </div>
-            </AlertDescription>
-          </Alert>
+          <div className="space-y-4">
+            <div className="flex items-center justify-center">
+              <XCircle className="w-12 h-12 text-red-500" />
+            </div>
+            <p className="text-center">{errorMessage}</p>
+            <div className="flex justify-center">
+              <Button
+                onClick={() => router.push("/payment")}
+                variant="destructive"
+              >
+                Try Again
+              </Button>
+            </div>
+          </div>
         )
     }
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Payment Status</h1>
-      {renderContent()}
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-center">
+            Payment Verification
+          </CardTitle>
+        </CardHeader>
+        <CardContent>{renderContent()}</CardContent>
+      </Card>
     </div>
   )
 }

@@ -22,7 +22,7 @@ export function CourseSidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="bg-gradient-to-b from-blue-600 to-blue-800 text-white">
+    <aside className="bg-gradient-to-b from-blue-500 to-blue-400 text-white">
       <div className="flex h-full flex-col items-center py-4">
         <div className="mb-8">
           <Grid className="h-8 w-8" />

@@ -133,6 +133,7 @@ export default function Course({ course, userId }: CourseProps) {
             })) || []
           }
           courseTitle={course?.title || ""}
+          courseIsFree={course?.isFree ?? false}
           isOpen={isCurriculumOpen}
           onClose={() => setIsCurriculumOpen(false)}
           onChapterSelect={handleChapterSelect}

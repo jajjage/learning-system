@@ -7,6 +7,7 @@ import {
 } from "@/actions/enrollments"
 import toast from "react-hot-toast"
 import { CoursePurchase } from "@/actions/purchase"
+import { Enrollment } from "@/types/enrollment"
 
 export const useEnrollment = (courseId: string) => {
   const queryClient = useQueryClient()
@@ -19,8 +20,10 @@ export const useEnrollment = (courseId: string) => {
     })
 
   const enrollMutation = useMutation({
-    mutationFn: createEnrollment,
-    onMutate: async () => {
+    mutationFn: async (data: Partial<Enrollment>) => {
+      return createEnrollment(courseId, data)
+    },
+    onMutate: async (data) => {
       await queryClient.cancelQueries({ queryKey: ["enrollment", courseId] })
 
       const previousStatus = queryClient.getQueryData<EnrollmentStatusType>([
@@ -28,10 +31,9 @@ export const useEnrollment = (courseId: string) => {
         courseId,
       ])
 
-      // Optimistically update enrollment status
       queryClient.setQueryData<EnrollmentStatusType>(["enrollment", courseId], {
         isEnrolled: true,
-        enrollStatus: "PENDING",
+        enrollStatus: data.status || "PENDING",
         courseId,
         enrolledAt: new Date(),
       })
@@ -47,8 +49,12 @@ export const useEnrollment = (courseId: string) => {
         )
       }
     },
-    onSuccess: () => {
-      toast.success("Successfully enrolled in course!")
+    onSuccess: (data) => {
+      toast.success(
+        data.status === "ACTIVE"
+          ? "Successfully enrolled in course!"
+          : "Enrollment pending confirmation",
+      )
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["enrollment", courseId] })
@@ -57,8 +63,11 @@ export const useEnrollment = (courseId: string) => {
 
   const purchaseMutation = useMutation({
     mutationFn: CoursePurchase,
-
-    onError: (error: any, variables, context) => {
+    onSuccess: async () => {
+      // Update enrollment status to ACTIVE after successful purchase
+      await enrollMutation.mutateAsync({ status: "ACTIVE" })
+    },
+    onError: (error: any) => {
       toast.error(error.message || "Failed to purchase the course")
     },
     onSettled: () => {

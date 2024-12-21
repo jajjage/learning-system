@@ -4,7 +4,10 @@ import { useState, useEffect, useRef } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { CheckCircle, Lock, Play } from "lucide-react"
-import { markChapterCompleted } from "@/actions/user-progress"
+import {
+  initializeChapterProgress,
+  markChapterCompleted,
+} from "@/actions/user-progress"
 import MuxPlayer from "@mux/mux-player-react"
 import { toast } from "@/hooks/use-toast"
 
@@ -26,16 +29,14 @@ interface VideoPlayerProps {
   isPurchased?: boolean
 }
 
-export function VideoPlayer({
-  chapter,
-  isPurchased = false,
-}: VideoPlayerProps) {
+export function VideoPlayer({ chapter }: VideoPlayerProps) {
   const [isCompleted, setIsCompleted] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const previousChapterId = useRef(chapter.id)
+  const initializedChapters = useRef<Set<string>>(new Set())
 
   const isLocked = !chapter.isFree && !chapter.hasAccess
-
+  console.log(initializedChapters.current)
   useEffect(() => {
     if (previousChapterId.current !== chapter.id) {
       setIsCompleted(false)
@@ -43,7 +44,13 @@ export function VideoPlayer({
     }
 
     setIsCompleted(!!chapter.userProgress?.isCompleted)
-  }, [chapter.id, chapter.userProgress])
+
+    // Check and initialize chapter progress
+    if (!initializedChapters.current.has(chapter.id)) {
+      initializeChapterProgress(chapter.id)
+      initializedChapters.current.add(chapter.id)
+    }
+  }, [chapter.id, chapter.userProgress, initializeChapterProgress])
 
   const onEnd = async () => {
     if (isLocked) return

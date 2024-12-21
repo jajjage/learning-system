@@ -6,7 +6,6 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 import { useEffect, useState } from "react"
-import { initializeChapterProgress } from "@/actions/user-progress"
 import toast from "react-hot-toast"
 
 interface Chapter {
@@ -33,6 +32,7 @@ interface CurriculumProps {
   currentChapterId: string
   isPurchased?: boolean
   courseTitle: string
+  courseIsFree: boolean
 }
 
 export function Curriculum({
@@ -41,8 +41,8 @@ export function Curriculum({
   onClose,
   onChapterSelect,
   currentChapterId,
-  isPurchased = false,
   courseTitle,
+  courseIsFree,
 }: CurriculumProps) {
   const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null)
 
@@ -60,12 +60,11 @@ export function Curriculum({
       (!selectedChapter || selectedChapter.id !== currentChapter.id)
     ) {
       setSelectedChapter(currentChapter)
-      initializeChapterProgress(currentChapter.id)
     }
   }, [currentChapterId, publishedChapters])
 
   const handleChapterSelect = async (chapter: Chapter) => {
-    if (!chapter.isFree && !isPurchased) {
+    if (!chapter.isFree && !chapter.hasAccess) {
       toast.error("Purchase the course to access this chapter.")
       setSelectedChapter(chapter)
       onChapterSelect(chapter)
@@ -73,7 +72,7 @@ export function Curriculum({
     setSelectedChapter(chapter)
     onChapterSelect(chapter)
   }
-
+  console.log("isfree", courseIsFree)
   const content = (
     <div className="space-y-6 p-6">
       {publishedChapters.map((chapter) => {
@@ -109,7 +108,7 @@ export function Curriculum({
               </span>
               <span className="truncate">
                 {chapter.title}
-                {!chapter.isFree && !isLocked && (
+                {!courseIsFree && !isLocked && (
                   <span className="ml-2 text-xs text-muted-foreground">
                     (Premium)
                   </span>
